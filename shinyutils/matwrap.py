@@ -1,12 +1,11 @@
+"""matwrap.py: wrapper around matplotlib."""
 import json
 from pkg_resources import resource_filename
 
 
 class MatWrap:
 
-    """Wrapper around matplotlib."""
-
-    _rc_defaults_path = resource_filename("matwrap", "data/default.json")
+    _rc_defaults_path = resource_filename("shinyutils", "data/mplcfg.json")
     with open(_rc_defaults_path, "r") as f:
         _rc_defaults = json.load(f)
 
