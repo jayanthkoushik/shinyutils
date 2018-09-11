@@ -7,7 +7,7 @@ with open(readme_file) as f:
 
 setup(
     name="shinyutils",
-    version="0.0.1",
+    version="0.0.2",
     description="Various utilities for common tasks",
     long_description=long_description,
     long_description_content_type="text/markdown",
