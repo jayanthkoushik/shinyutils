@@ -1,3 +1,5 @@
+__version__ = "0.0.0"
+
 from shinyutils.matwrap import MatWrap
 from shinyutils.subcls import (
     get_subclasses,
