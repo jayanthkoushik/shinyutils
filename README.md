@@ -29,10 +29,10 @@ mw.set_size_tight(fig, (4, 3))
 ## `subcls`
 Utility functions for dealing with subclasses.
 ### Functions
-__`get_subclasses(cls)`__: returns a list of all the subclasses of `cls`.<br>
-__`get_subclass_names(cls)`__: returns a list of names of all subclasses of `cls`.<br>
-__`get_subclass_from_name(base_cls, cls_name)`__: return the subclass of `base_cls` named `cls_name`.<br>
-__`build_subclass_object(base_cls, cls_name, kwargs)`__: return an instance of `get_subclass_from_name` initialized using `kwargs`.
+* __`get_subclasses(cls)`__: returns a list of all the subclasses of `cls`.
+* __`get_subclass_names(cls)`__: returns a list of names of all subclasses of `cls`.
+* __`get_subclass_from_name(base_cls, cls_name)`__: return the subclass of `base_cls` named `cls_name`.
+* __`build_subclass_object(base_cls, cls_name, kwargs)`__: return an instance of `get_subclass_from_name` initialized using `kwargs`.
 
 ## `argp`
 Utilities for argument parsing.
