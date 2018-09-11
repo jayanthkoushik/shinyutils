@@ -45,7 +45,7 @@ class LazyHelpFormatter(
             return action.type.__name__
 
 
-def comma_seperated_ints(string):
+def comma_separated_ints(string):
     try:
         return list(map(int, string.split(",")))
     except:
