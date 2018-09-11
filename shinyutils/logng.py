@@ -46,13 +46,13 @@ class ColorfulLogRecord(logging.LogRecord):
 def conf_logging(args=None, log_level=None, log_file=None):
     """Configure logging using args from `build_log_argp`."""
     if log_level is None:
-        if args is not None and hasattr(args, log_level):
+        if args is not None and hasattr(args, "log_level"):
             log_level = args.log_level
         else:
             log_level = "INFO"
     log_level_i = getattr(logging, log_level, logging.INFO)
 
-    if log_file is None and args is not None and hasattr(args, log_file):
+    if log_file is None and args is not None and hasattr(args, "log_file"):
         log_file = args.log_file
 
     logging.basicConfig(
