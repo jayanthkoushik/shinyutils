@@ -1,4 +1,4 @@
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 from shinyutils.matwrap import MatWrap
 from shinyutils.subcls import (
