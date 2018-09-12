@@ -5,7 +5,7 @@ Various utilities for common tasks. :sparkles: :sparkles: :sparkles:
 Install with `pip`.
 
 ```bash
-pip install git+ssh://git@github.com/jayanthkoushik/shinyutils.git
+pip install shinyutils
 ```
 
 ## `matwrap`
@@ -37,7 +37,7 @@ Utility functions for dealing with subclasses.
 ## `argp`
 Utilities for argument parsing.
 ### `LazyHelpFormatter`
-`HelpFormatter` with sane defaults, and colors (courtesy of crayons)! To use, simply pass `formatter_class=LazyHelpFormatter` when creating `ArgumentParser` instances.
+`HelpFormatter` with sane defaults, and colors (courtesy of `crayons`)! To use, simply pass `formatter_class=LazyHelpFormatter` when creating `ArgumentParser` instances.
 
 ```python
 arg_parser = ArgumentParser(formatter_class=LazyHelpFormatter)
@@ -73,7 +73,7 @@ logging:
 ```
 
 ### `conf_logging`
-Configure global logging (and add colors!) using arguments returned by `ArgumentParser.parse_args`. Both `log_level` and `log_file` can be over-ridden with keyword arguments to the function. Colors are not enabled if logging to a file.
+Configures global logging (and adds colors!) using arguments returned by `ArgumentParser.parse_args`. Both `log_level` and `log_file` can be over-ridden with keyword arguments to the function. Colors are not enabled if logging to a file.
 ```python
 args = arg_parser.parse_args()
 conf_logging(args)
