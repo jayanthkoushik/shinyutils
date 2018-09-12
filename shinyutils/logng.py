@@ -38,7 +38,7 @@ class ColorfulLogRecord(logging.LogRecord):
 
         self.msg = (
             crayons.colorama.Style.BRIGHT
-            + self.msg
+            + str(self.msg)
             + crayons.colorama.Style.NORMAL
         )
 
