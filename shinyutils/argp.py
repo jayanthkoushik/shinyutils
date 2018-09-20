@@ -15,7 +15,7 @@ class LazyHelpFormatter(
 ):
 
     DEF_PAT = re.compile(r"(\(default: (.*?)\))")
-    TYPE_PAT = re.compile(r"\b(int|float|str)\b")
+    TYPE_PAT = re.compile(r"(?<![\w-])int|str|float(?![\w-])")
     DEF_CSTR = str(crayons.magenta("default"))
 
     def _format_action(self, action):
@@ -30,11 +30,11 @@ class LazyHelpFormatter(
                 mstr, f"({self.DEF_CSTR}: {crayons.magenta(dstr, bold=True)})"
             )
 
-        m = re.findall(self.TYPE_PAT, astr)
-        for dstr in m:
-            astr = astr.replace(dstr, str(crayons.red(dstr, bold=True)))
-
-        return astr
+        return re.sub(
+            self.TYPE_PAT,
+            lambda s: str(crayons.red(s.group(), bold=True)),
+            astr,
+        )
 
     def _get_default_metavar_for_optional(self, action):
         if action.type:
