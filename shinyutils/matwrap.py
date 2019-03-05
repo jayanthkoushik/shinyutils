@@ -14,13 +14,29 @@ class MatWrap:
     _sns = None
 
     @classmethod
-    def configure(cls, context="paper", style="ticks", **rc_extra):
+    def configure(
+        cls,
+        context="paper",
+        style="ticks",
+        font="Latin Modern Roman",
+        latex_pkgs=None,
+        **rc_extra,
+    ):
         """
         Arguments:
             context: seaborn context (paper/notebook/poster).
+            style: seaborn style (whitegrid, darkgrid, etc.)
+            font: latex font (passed directly to fontspec).
+            latex_pkgs: list of packages to load in pgf preamble.
             rc_extra: matplotlib params (will overwrite defaults).
         """
         rc = MatWrap._rc_defaults.copy()
+        rc["pgf.preamble"] = [r"\usepackage{fontspec}"]
+        rc["pgf.preamble"].append(rf"\setmainfont{{{font}}}")
+        rc["pgf.preamble"].append(rf"\setsansfont{{{font}}}")
+        if latex_pkgs is not None:
+            for pkg in reversed(latex_pkgs):
+                rc["pgf.preamble"].insert(0, rf"\usepackage{{{pkg}}}")
         rc.update(rc_extra)
 
         if cls._mpl is None:
