@@ -4,7 +4,10 @@ from argparse import (
     ArgumentDefaultsHelpFormatter,
     ArgumentTypeError,
     MetavarTypeHelpFormatter,
+    FileType,
 )
+import logging
+import os
 import re
 
 import crayons
@@ -60,3 +63,19 @@ def comma_separated_ints(string):
         raise ArgumentTypeError(
             f"`{string}` is not a comma separated list of ints"
         )
+
+
+class OutputFileType(FileType):
+    def __init__(self, *args, **kwargs):
+        super().__init__("w", *args, **kwargs)
+
+    def __call__(self, string):
+        file_dir = os.path.dirname(string)
+        if not os.path.exists(file_dir):
+            logging.warning(f"no directory for {string}: trying to create")
+            try:
+                os.makedirs(file_dir)
+            except Exception as e:
+                raise ArgumentTypeError(f"could not create {file_dir}: {e}")
+            logging.info(f"created {file_dir}")
+        return super().__call__(string)

@@ -9,7 +9,11 @@ from shinyutils.subcls import (
     get_subclass_from_name,
     build_subclass_object,
 )
-from shinyutils.argp import LazyHelpFormatter, comma_separated_ints
+from shinyutils.argp import (
+    comma_separated_ints,
+    LazyHelpFormatter,
+    OutputFileType,
+)
 from shinyutils.logng import build_log_argp, conf_logging
 
 shiny_arg_parser = argparse.ArgumentParser(formatter_class=LazyHelpFormatter)
