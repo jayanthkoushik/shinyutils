@@ -14,6 +14,7 @@ class LazyHelpFormatter(
     ArgumentDefaultsHelpFormatter, MetavarTypeHelpFormatter
 ):
 
+    # pylint: disable=no-member
     DEF_PAT = re.compile(r"(\(default: (.*?)\))")
     TYPE_PAT = re.compile(r"(?<![\w-])int|str|float(?![\w-])")
     DEF_CSTR = str(crayons.magenta("default"))
@@ -43,6 +44,13 @@ class LazyHelpFormatter(
     def _get_default_metavar_for_positional(self, action):
         if action.type:
             return action.type.__name__
+
+    def __init__(self, *args, **kwargs):
+        if "max_help_position" not in kwargs:
+            kwargs["max_help_position"] = float("inf")
+        if "width" not in kwargs:
+            kwargs["width"] = float("inf")
+        super().__init__(*args, **kwargs)
 
 
 def comma_separated_ints(string):

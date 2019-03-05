@@ -1,5 +1,7 @@
 __version__ = "0.0.4"
 
+import argparse
+
 from shinyutils.matwrap import MatWrap
 from shinyutils.subcls import (
     get_subclasses,
@@ -9,3 +11,6 @@ from shinyutils.subcls import (
 )
 from shinyutils.argp import LazyHelpFormatter, comma_separated_ints
 from shinyutils.logng import build_log_argp, conf_logging
+
+shiny_arg_parser = argparse.ArgumentParser(formatter_class=LazyHelpFormatter)
+conf_logging()
