@@ -53,31 +53,33 @@ cmd1_parser = sub_parsers.add_parser("cmd1", formatter_class=LazyHelpFormatter)
 arg_parser.add_argument("--csi", type=comma_separated_ints)
 ```
 
+### `OutputFileType`
+`ArgumentParser` type representing an output file. The returned value is a file object.
+
+### `shiny_arg_parser`
+`ArgumentParser` object with LazyHelpFormatter, and logging argument.
+
 ## `logng`
 Utilities for logging.
 ### `build_log_argp`
 Creates an argument group with logging arguments.
 ```
 >>> arg_parser = ArgumentParser()
->>> log_parser = build_log_argp(arg_parser)
+>>> build_log_argp(arg_parser)
 >>> arg_parser.print_help()
 usage: python [-h] [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
-            [--log-file LOG_FILE]
 
 optional arguments:
 -h, --help            show this help message and exit
 
 logging:
 --log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
---log-file LOG_FILE
 ```
 
 ### `conf_logging`
-Configures global logging (and adds colors!) using arguments returned by `ArgumentParser.parse_args`. Both `log_level` and `log_file` can be over-ridden with keyword arguments to the function. Colors are not enabled if logging to a file.
+Configures global logging (and adds colors!) using arguments returned by `ArgumentParser.parse_args`. `log_level` can be over-ridden with the keyword argument. Colors are not enabled if output isn't a tty.
 ```python
 args = arg_parser.parse_args()
 conf_logging(args)
 conf_logging(args, log_level="INFO")  # override `log_level`
-conf_logging(log_level="ERROR", log_file="log.out")  # `args` is also optional
-logging.info("this won't be logged")
 ```
