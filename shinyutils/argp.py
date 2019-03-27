@@ -79,3 +79,15 @@ class OutputFileType(FileType):
                 raise ArgumentTypeError(f"could not create {file_dir}: {e}")
             logging.info(f"created {file_dir}")
         return super().__call__(string)
+
+
+class OutputDirectoryType:
+    def __call__(self, string):
+        if not os.path.exists(string):
+            logging.warning(f"{string} not found: trying to create")
+            try:
+                os.makedirs(string)
+            except Exception as e:
+                raise ArgumentTypeError(f"cound not create {string}: {e}")
+            logging.info(f"created {string}")
+        return string

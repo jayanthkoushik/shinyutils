@@ -13,6 +13,7 @@ from shinyutils.argp import (
     comma_separated_ints,
     LazyHelpFormatter,
     OutputFileType,
+    OutputDirectoryType,
 )
 from shinyutils.logng import build_log_argp, conf_logging
 
