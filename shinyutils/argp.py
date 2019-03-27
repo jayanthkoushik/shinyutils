@@ -22,6 +22,9 @@ class LazyHelpFormatter(
     DEF_CSTR = str(crayons.magenta("default"))
 
     def _format_action(self, action):
+        if action.dest == "help":
+            return ""
+
         if not action.help:
             action.help = "\b"
         astr = super()._format_action(action)
