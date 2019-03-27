@@ -19,7 +19,6 @@ class LazyHelpFormatter(
 
     # pylint: disable=no-member
     DEF_PAT = re.compile(r"(\(default: (.*?)\))")
-    TYPE_PAT = re.compile(r"(?<![\w-])int|str|float(?![\w-])")
     DEF_CSTR = str(crayons.magenta("default"))
 
     def _format_action(self, action):
@@ -34,19 +33,32 @@ class LazyHelpFormatter(
                 mstr, f"({self.DEF_CSTR}: {crayons.magenta(dstr, bold=True)})"
             )
 
-        return re.sub(
-            self.TYPE_PAT,
-            lambda s: str(crayons.red(s.group(), bold=True)),
-            astr,
-        )
+        return astr
 
     def _get_default_metavar_for_optional(self, action):
         if action.type:
-            return action.type.__name__
+            try:
+                return action.type.__name__
+            except AttributeError:
+                return type(action.type).__name__
+        return None
 
     def _get_default_metavar_for_positional(self, action):
         if action.type:
-            return action.type.__name__
+            try:
+                return action.type.__name__
+            except AttributeError:
+                return type(action.type).__name__
+        return None
+
+    def _metavar_formatter(self, action, default_metavar):
+        base_formatter = super()._metavar_formatter(action, default_metavar)
+
+        def color_wrapper(tuple_size):
+            f = base_formatter(tuple_size)
+            return tuple(str(crayons.red(s, bold=True)) for s in f)
+
+        return color_wrapper
 
     def __init__(self, *args, **kwargs):
         if "max_help_position" not in kwargs:
