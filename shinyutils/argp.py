@@ -12,7 +12,7 @@ import re
 
 import crayons
 
-from shinyutils.subcls import get_subclass_names, get_subclass_from_name
+from shinyutils.subcls import get_subclass_from_name
 
 
 class LazyHelpFormatter(
@@ -112,7 +112,6 @@ class OutputDirectoryType:
 
 class ClassType:
     def __init__(self, cls):
-        choices = get_subclass_names(cls)
         self.cls = cls
 
     def __call__(self, string):

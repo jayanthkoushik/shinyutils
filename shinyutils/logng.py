@@ -1,5 +1,6 @@
 """logng.py: utilities for logging."""
 
+import argparse
 import logging
 import sys
 
@@ -8,11 +9,18 @@ import crayons
 
 def build_log_argp(base_parser):
     """Add an argument for logging to the base_parser."""
+
+    class _SetLogLevel(argparse.Action):
+        def __call__(self, parser, namespace, values, option_string=None):
+            conf_logging(log_level=values)
+            setattr(namespace, self.dest, values)
+
     base_parser.add_argument(
         "--log-level",
         type=str,
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         default="INFO",
+        action=_SetLogLevel,
     )
     return base_parser
 

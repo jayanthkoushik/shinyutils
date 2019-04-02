@@ -18,5 +18,7 @@ from shinyutils.argp import (
 )
 from shinyutils.logng import build_log_argp, conf_logging
 
-shiny_arg_parser = argparse.ArgumentParser(formatter_class=LazyHelpFormatter)
-conf_logging()
+shiny_arg_parser = argparse.ArgumentParser(
+    usage=argparse.SUPPRESS, formatter_class=LazyHelpFormatter
+)
+build_log_argp(shiny_arg_parser)
