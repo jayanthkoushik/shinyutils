@@ -27,8 +27,15 @@ class LazyHelpFormatter(
         if action.dest == "help":
             return ""
 
-        if not action.help:
-            action.help = "\b"
+        helpstr = action.help
+        action.help = "\b"
+
+        if action.nargs == 0:
+            # hack to fix length of option strings
+            action.option_strings = [
+                s + str(crayons.normal("", bold=True))
+                for s in action.option_strings
+            ]
         astr = super()._format_action(action)
 
         m = re.search(self.DEF_PAT, astr)
@@ -37,6 +44,9 @@ class LazyHelpFormatter(
             astr = astr.replace(
                 mstr, f"({self.DEF_CSTR}: {crayons.magenta(dstr, bold=True)})"
             )
+
+        if helpstr:
+            astr += f"\t{helpstr}\n"
 
         return astr
 
