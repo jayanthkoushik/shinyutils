@@ -14,6 +14,7 @@ from shinyutils.argp import (
     LazyHelpFormatter,
     OutputFileType,
     OutputDirectoryType,
+    ClassType,
 )
 from shinyutils.logng import build_log_argp, conf_logging
 
