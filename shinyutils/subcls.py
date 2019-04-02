@@ -20,8 +20,9 @@ def get_subclass_from_name(base_cls, cls_name):
     for c in get_subclasses(base_cls):
         if c.__name__ == cls_name:
             return c
-    print(base_cls.__subclasses__())
-    raise RuntimeError("No such subclass of {}: {}".format(base_cls, cls_name))
+    raise RuntimeError(
+        "No such subclass of {}: {}".format(base_cls.__name__, cls_name)
+    )
 
 
 def build_subclass_object(base_cls, cls_name, kwargs):
