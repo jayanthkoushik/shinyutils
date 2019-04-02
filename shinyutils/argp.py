@@ -12,6 +12,8 @@ import re
 
 import crayons
 
+from shinyutils.subcls import get_subclass_names, get_subclass_from_name
+
 
 class LazyHelpFormatter(
     ArgumentDefaultsHelpFormatter, MetavarTypeHelpFormatter
@@ -106,3 +108,15 @@ class OutputDirectoryType:
                 raise ArgumentTypeError(f"cound not create {string}: {e}")
             logging.info(f"created {string}")
         return string
+
+
+class ClassType:
+    def __init__(self, cls):
+        choices = get_subclass_names(cls)
+        self.cls = cls
+
+    def __call__(self, string):
+        try:
+            return get_subclass_from_name(self.cls, string)
+        except Exception as e:
+            raise ArgumentTypeError(e)
