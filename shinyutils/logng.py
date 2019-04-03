@@ -19,7 +19,6 @@ def build_log_argp(base_parser):
         "--log-level",
         type=str,
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-        default="INFO",
         action=_SetLogLevel,
     )
     return base_parser
@@ -64,5 +63,6 @@ def conf_logging(args=None, log_level=None):
         level=log_level_i,
         format="%(levelname)s:%(filename)s.%(funcName)s.%(lineno)d:%(message)s",
     )
+    logging.root.setLevel(log_level_i)
     if sys.stderr.isatty():
         logging.setLogRecordFactory(ColorfulLogRecord)

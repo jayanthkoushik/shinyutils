@@ -22,3 +22,4 @@ shiny_arg_parser = argparse.ArgumentParser(
     usage=argparse.SUPPRESS, formatter_class=LazyHelpFormatter
 )
 build_log_argp(shiny_arg_parser)
+conf_logging()
