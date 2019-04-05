@@ -1,5 +1,6 @@
 """matwrap.py: wrapper around matplotlib."""
 import json
+import warnings
 from pkg_resources import resource_filename
 
 
@@ -81,5 +82,9 @@ class MatWrap:
 
     @staticmethod
     def set_size_tight(fig, size):
+        warnings.warn(
+            "constrained_layout is enabled by default: don't use tight_layout",
+            DeprecationWarning,
+        )
         fig.set_size_inches(*size)
         fig.tight_layout(pad=0, w_pad=0, h_pad=0)
