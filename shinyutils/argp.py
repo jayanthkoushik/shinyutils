@@ -71,7 +71,12 @@ class LazyHelpFormatter(
 
         def color_wrapper(tuple_size):
             f = base_formatter(tuple_size)
-            return tuple(str(crayons.red(s, bold=True)) for s in f)
+            if not f:
+                return f
+            return (
+                str(crayons.red(" ".join(map(str, f)), bold=True)),
+                *(("",) * (len(f) - 1)),
+            )
 
         return color_wrapper
 
