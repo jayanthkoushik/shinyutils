@@ -25,6 +25,16 @@ mw.plt()  # returns `matplotlib.pyplot` module
 mw.sns()  # returns `seaborn` module
 ```
 
+### Configuration
+Use `mw.configure` to configure plots. Arguments (defaults indicated with []) are:
+```python
+context: seaborn context ([paper]/poster/talk/notebook)
+style: seaborn style (white/whitegrid/dark/darkgrid/[ticks])
+font: any font available to fontspec (default [Latin Modern Roman])
+latex_pkgs: additional latex packages to be included before defaults
+**rc_extra: matplotlib rc parameters to override defaults
+```
+
 ## `subcls`
 Utility functions for dealing with subclasses.
 ### Functions
@@ -37,7 +47,6 @@ Utility functions for dealing with subclasses.
 Utilities for argument parsing.
 ### `LazyHelpFormatter`
 `HelpFormatter` with sane defaults, and colors (courtesy of `crayons`)! To use, simply pass `formatter_class=LazyHelpFormatter` when creating `ArgumentParser` instances.
-
 ```python
 arg_parser = ArgumentParser(formatter_class=LazyHelpFormatter)
 sub_parsers = arg_parser.add_subparsers(dest="cmd")
@@ -53,10 +62,10 @@ arg_parser.add_argument("--csi", type=comma_separated_ints)
 ```
 
 ### `OutputFileType`
-`ArgumentParser` type representing an output file. The returned value is a file object.
+`ArgumentParser` type representing an output file. The file's base directory is created if needed. The returned value is a file object.
 
 ### `OutputDirectoryType`
-`ArgumentParser` type representing an output directory. The directory is created if id doesn't exist.
+`ArgumentParser` type representing an output directory. The directory is created if it doesn't exist.
 
 ### `ClassType`
 `ArgumentParser` type representing sub-classes of a given base class. The returned value is a class.
