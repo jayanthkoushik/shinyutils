@@ -21,9 +21,6 @@ ax = fig.add_subplot(111)  # `ax` can be used normally now
 mw.mpl()  # returns `matplotlib` module
 mw.plt()  # returns `matplotlib.pyplot` module
 mw.sns()  # returns `seaborn` module
-
-# Use `set_size_tight` to set size with a tight layout.
-mw.set_size_tight(fig, (4, 3))
 ```
 
 ## `subcls`
@@ -56,6 +53,24 @@ arg_parser.add_argument("--csi", type=comma_separated_ints)
 ### `OutputFileType`
 `ArgumentParser` type representing an output file. The returned value is a file object.
 
+### `OutputDirectoryType`
+`ArgumentParser` type representing an output directory. The directory is created if id doesn't exist.
+
+### `ClassType`
+`ArgumentParser` type representing sub-classes of a given base class. The returned value is a class.
+```python
+class Base:
+    pass
+
+class A(Base):
+    pass
+
+class B(Base):
+    pass
+
+arg_parser.add_argument("--cls", type=ClassType(Base), default=A)
+```
+
 ### `shiny_arg_parser`
 `ArgumentParser` object with LazyHelpFormatter, and logging argument.
 
@@ -67,13 +82,11 @@ Creates an argument group with logging arguments.
 >>> arg_parser = ArgumentParser()
 >>> build_log_argp(arg_parser)
 >>> arg_parser.print_help()
-usage: python [-h] [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
+usage: test.py [-h] [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
 
 optional arguments:
--h, --help            show this help message and exit
-
-logging:
---log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
+  -h, --help            show this help message and exit
+  --log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
 ```
 
 ### `conf_logging`
@@ -83,3 +96,4 @@ args = arg_parser.parse_args()
 conf_logging(args)
 conf_logging(args, log_level="INFO")  # override `log_level`
 ```
+By default, the package configures logging at INFO level.
