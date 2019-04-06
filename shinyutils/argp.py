@@ -87,6 +87,9 @@ class LazyHelpFormatter(
             kwargs["width"] = float("inf")
         super().__init__(*args, **kwargs)
 
+    def add_usage(self, *args, **kwargs):
+        pass
+
 
 def comma_separated_ints(string):
     try:
