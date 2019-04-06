@@ -14,6 +14,8 @@ Wrapper around `matplotlib` and `seaborn`.
 ```python
 from shinyutils import MatWrap as mw  # do not import `matplotlib`, `seaborn`
 
+mw.configure()  # this should be called before importing any packages that import matplotlib
+
 fig = mw.plt().figure()
 ax = fig.add_subplot(111)  # `ax` can be used normally now
 
