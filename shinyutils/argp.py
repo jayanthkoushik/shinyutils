@@ -159,3 +159,4 @@ class KeyValuePairsType:
                 out[k] = v
         except Exception as e:
             raise ArgumentTypeError(e)
+        return out
