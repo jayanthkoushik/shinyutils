@@ -3,7 +3,7 @@ line-length = 80
 
 [tool.poetry]
 name = "shinyutils"
-version = "0.6.1"
+version = "0.7.0"
 description = "Personal collection of common utilities"
 authors = ["Jayanth Koushik <jnkoushik@gmail.com>"]
 license = "MIT"
