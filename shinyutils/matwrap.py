@@ -80,6 +80,19 @@ class MatWrap:
         cls._ensure_conf()
         return cls._sns
 
+    @classmethod
+    def palette(cls):
+        return [
+            "#e41a1c",
+            "#6a3d9a",
+            "#d55e00",
+            "#34495e",
+            "#377eb8",
+            "#4daf4a",
+            "#95a5a6",
+            "#222222",
+        ]
+
     @staticmethod
     def set_size_tight(fig, size):
         warnings.warn(
