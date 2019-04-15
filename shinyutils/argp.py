@@ -12,7 +12,7 @@ import re
 
 import crayons
 
-from shinyutils.subcls import get_subclass_from_name
+from shinyutils.subcls import get_subclass_from_name, get_subclass_names
 
 
 class LazyHelpFormatter(
@@ -135,5 +135,27 @@ class ClassType:
     def __call__(self, string):
         try:
             return get_subclass_from_name(self.cls, string)
+        except RuntimeError:
+            choices = [f"'{c}'" for c in get_subclass_names(self.cls)]
+            raise ArgumentTypeError(
+                f"invalid choice: '{string}' "
+                f"(choose from {', '.join(choices)})"
+            )
+
+
+class KeyValuePairsType:
+    def __call__(self, string):
+        out = dict()
+        try:
+            for kv in string.split(","):
+                k, v = kv.split("=")
+                try:
+                    v = int(v)
+                except ValueError:
+                    try:
+                        v = float(v)
+                    except ValueError:
+                        pass
+                out[k] = v
         except Exception as e:
             raise ArgumentTypeError(e)

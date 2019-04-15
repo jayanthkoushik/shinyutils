@@ -10,11 +10,12 @@ from shinyutils.subcls import (
     build_subclass_object,
 )
 from shinyutils.argp import (
+    ClassType,
     comma_separated_ints,
+    KeyValuePairsType,
     LazyHelpFormatter,
     OutputFileType,
     OutputDirectoryType,
-    ClassType,
 )
 from shinyutils.logng import build_log_argp, conf_logging
 
