@@ -106,7 +106,7 @@ class OutputFileType(FileType):
 
     def __call__(self, string):
         file_dir = os.path.dirname(string)
-        if not os.path.exists(file_dir):
+        if file_dir and not os.path.exists(file_dir):
             logging.warning(f"no directory for {string}: trying to create")
             try:
                 os.makedirs(file_dir)
