@@ -22,3 +22,4 @@ from shinyutils.logng import build_log_argp, conf_logging
 shiny_arg_parser = argparse.ArgumentParser(formatter_class=LazyHelpFormatter)
 build_log_argp(shiny_arg_parser)
 conf_logging()
+MatWrap.configure()
