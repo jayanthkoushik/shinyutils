@@ -13,7 +13,6 @@
     "pgf.rcfonts": false,
     "pgf.texsystem": "lualatex",
     "savefig.format": "pdf",
-    "savefig.frameon": false,
     "savefig.transparent": false,
     "scatter.marker": ".",
     "text.usetex": false,
