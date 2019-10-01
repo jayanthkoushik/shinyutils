@@ -8,6 +8,7 @@ from argparse import (
 )
 import logging
 import os
+from pathlib import Path
 import re
 
 import crayons
@@ -15,9 +16,7 @@ import crayons
 from shinyutils.subcls import get_subclass_from_name, get_subclass_names
 
 
-class LazyHelpFormatter(
-    ArgumentDefaultsHelpFormatter, MetavarTypeHelpFormatter
-):
+class LazyHelpFormatter(ArgumentDefaultsHelpFormatter, MetavarTypeHelpFormatter):
 
     # pylint: disable=no-member
     DEF_PAT = re.compile(r"(\(default: (.*?)\))")
@@ -33,8 +32,7 @@ class LazyHelpFormatter(
         if action.nargs == 0:
             # hack to fix length of option strings
             action.option_strings = [
-                s + str(crayons.normal("", bold=True))
-                for s in action.option_strings
+                s + str(crayons.normal("", bold=True)) for s in action.option_strings
             ]
         astr = super()._format_action(action)
 
@@ -95,14 +93,21 @@ def comma_separated_ints(string):
     try:
         return list(map(int, string.split(",")))
     except:
-        raise ArgumentTypeError(
-            f"`{string}` is not a comma separated list of ints"
-        )
+        raise ArgumentTypeError(f"`{string}` is not a comma separated list of ints")
+
+
+class InputFileType(FileType):
+    def __init__(self, mode="r", **kwargs):
+        if mode not in {"r", "rb"}:
+            raise ValueError("mode should be 'r'/'rb'")
+        super().__init__(mode, **kwargs)
 
 
 class OutputFileType(FileType):
-    def __init__(self, *args, **kwargs):
-        super().__init__("w", *args, **kwargs)
+    def __init__(self, mode="w", **kwargs):
+        if mode not in {"w", "wb"}:
+            raise ValueError("mode should be 'w'/'wb'")
+        super().__init__(mode, **kwargs)
 
     def __call__(self, string):
         file_dir = os.path.dirname(string)
@@ -116,6 +121,13 @@ class OutputFileType(FileType):
         return super().__call__(string)
 
 
+class InputDirectoryType:
+    def __call__(self, string):
+        if not os.path.exists(string):
+            raise ArgumentTypeError(f"no such directory: {string}")
+        return Path(string)
+
+
 class OutputDirectoryType:
     def __call__(self, string):
         if not os.path.exists(string):
@@ -125,7 +137,7 @@ class OutputDirectoryType:
             except Exception as e:
                 raise ArgumentTypeError(f"cound not create {string}: {e}")
             logging.info(f"created {string}")
-        return string
+        return Path(string)
 
 
 class ClassType:
@@ -138,8 +150,7 @@ class ClassType:
         except RuntimeError:
             choices = [f"'{c}'" for c in get_subclass_names(self.cls)]
             raise ArgumentTypeError(
-                f"invalid choice: '{string}' "
-                f"(choose from {', '.join(choices)})"
+                f"invalid choice: '{string}' " f"(choose from {', '.join(choices)})"
             )
 
 
