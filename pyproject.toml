@@ -4,7 +4,7 @@ target-version = ["py36"]
 
 [tool.poetry]
 name = "shinyutils"
-version = "1.1.0"
+version = "1.1.1"
 description = "Personal collection of common utilities"
 authors = ["Jayanth Koushik <jnkoushik@gmail.com>"]
 license = "MIT"
