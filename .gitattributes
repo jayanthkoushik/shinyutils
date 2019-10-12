@@ -1,0 +1,4 @@
+.git*                       export-ignore
+.bumpversion.cfg            export-ignore
+.pre-commit-config.yaml     export-ignore
+poetry.lock                 export-ignore
