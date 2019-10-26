@@ -10,6 +10,7 @@ import logging
 import os
 from pathlib import Path
 import re
+from unittest.mock import patch
 
 import crayons
 
@@ -46,7 +47,20 @@ class LazyHelpFormatter(ArgumentDefaultsHelpFormatter, MetavarTypeHelpFormatter)
         if helpstr:
             astr += f"\t{helpstr}\n"
 
+        # add choices to help
+        if action.choices:
+            choice_strs = [str(crayons.green(c, bold=True)) for c in action.choices]
+            astr += f"\t{' / '.join(choice_strs)}\n"
+
         return astr
+
+    def _format_action_invocation(self, action):
+        if action.option_strings and action.nargs != 0:
+            # show action as -s, --long ARGS rather than -s ARGS, --long ARGS
+            combined_opt_strings = ", ".join(action.option_strings)
+            with patch.object(action, "option_strings", [combined_opt_strings]):
+                return super()._format_action_invocation(action)
+        return super()._format_action_invocation(action)
 
     def _get_default_metavar_for_optional(self, action):
         if action.type:
@@ -65,7 +79,8 @@ class LazyHelpFormatter(ArgumentDefaultsHelpFormatter, MetavarTypeHelpFormatter)
         return None
 
     def _metavar_formatter(self, action, default_metavar):
-        base_formatter = super()._metavar_formatter(action, default_metavar)
+        with patch.object(action, "choices", None):
+            base_formatter = super()._metavar_formatter(action, default_metavar)
 
         def color_wrapper(tuple_size):
             f = base_formatter(tuple_size)
