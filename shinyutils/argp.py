@@ -34,6 +34,8 @@ class LazyHelpFormatter(ArgumentDefaultsHelpFormatter, MetavarTypeHelpFormatter)
             # hack to fix length of option strings
             action.option_strings[0] += str(crayons.normal("", bold=True))
         astr = super()._format_action(action)
+        if not action.option_strings:
+            astr = astr[:-1]
 
         m = re.search(self.DEF_PAT, astr)
         if m:
@@ -50,15 +52,22 @@ class LazyHelpFormatter(ArgumentDefaultsHelpFormatter, MetavarTypeHelpFormatter)
             choice_strs = [str(crayons.green(c, bold=True)) for c in action.choices]
             astr += f"\t{' / '.join(choice_strs)}\n"
 
+        if not astr.endswith("\n"):
+            astr += "\n"
+
         return astr
 
     def _format_action_invocation(self, action):
         if action.option_strings and action.nargs != 0:
-            # show action as -s, --long ARGS rather than -s ARGS, --long ARGS
-            combined_opt_strings = ", ".join(action.option_strings)
+            # show action as -s/--long ARGS rather than -s ARGS, --long ARGS
+            combined_opt_strings = "/".join(action.option_strings)
             with patch.object(action, "option_strings", [combined_opt_strings]):
                 return super()._format_action_invocation(action)
-        return super()._format_action_invocation(action)
+
+        with patch.object(  # format positional arguments same as optional
+            action, "option_strings", action.option_strings or [action.dest]
+        ):
+            return super()._format_action_invocation(action)
 
     def _get_default_metavar_for_optional(self, action):
         if action.type:
