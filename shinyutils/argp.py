@@ -24,7 +24,7 @@ class LazyHelpFormatter(ArgumentDefaultsHelpFormatter, MetavarTypeHelpFormatter)
     DEF_CSTR = str(crayons.magenta("default"))
 
     def _format_action(self, action):
-        if action.dest == "help":
+        if action.dest == "help" and self.disable_help_usage:
             return ""
 
         helpstr = action.help
@@ -32,9 +32,7 @@ class LazyHelpFormatter(ArgumentDefaultsHelpFormatter, MetavarTypeHelpFormatter)
 
         if action.nargs == 0:
             # hack to fix length of option strings
-            action.option_strings = [
-                s + str(crayons.normal("", bold=True)) for s in action.option_strings
-            ]
+            action.option_strings[0] += str(crayons.normal("", bold=True))
         astr = super()._format_action(action)
 
         m = re.search(self.DEF_PAT, astr)
@@ -93,12 +91,13 @@ class LazyHelpFormatter(ArgumentDefaultsHelpFormatter, MetavarTypeHelpFormatter)
 
         return color_wrapper
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, disable_help_usage=True, **kwargs):
         if "max_help_position" not in kwargs:
             kwargs["max_help_position"] = float("inf")
         if "width" not in kwargs:
             kwargs["width"] = float("inf")
         super().__init__(*args, **kwargs)
+        self.disable_help_usage = disable_help_usage
 
     def add_usage(self, *args, **kwargs):
         pass
