@@ -1,15 +1,9 @@
 """argp.py: utilities for argparse."""
 
-from argparse import (
-    ArgumentDefaultsHelpFormatter,
-    ArgumentTypeError,
-    MetavarTypeHelpFormatter,
-    FileType,
-)
+from argparse import ArgumentTypeError, MetavarTypeHelpFormatter, FileType, SUPPRESS
 import logging
 import os
 from pathlib import Path
-import re
 from unittest.mock import patch
 
 import crayons
@@ -17,45 +11,28 @@ import crayons
 from shinyutils.subcls import get_subclass_from_name, get_subclass_names
 
 
-class LazyHelpFormatter(ArgumentDefaultsHelpFormatter, MetavarTypeHelpFormatter):
+class LazyHelpFormatter(MetavarTypeHelpFormatter):
 
     # pylint: disable=no-member
-    DEF_PAT = re.compile(r"(\(default: (.*?)\))")
-    DEF_CSTR = str(crayons.magenta("default"))
+    CHOICE_SEP = "/"
+    DEF_CSTR = str(crayons.green("default"))
+    REQ_CSTR = str(crayons.green("required"))
+    OPT_CSTR = str(crayons.green("optional"))
+    COLOR_CHOICE = lambda s: str(crayons.blue(s, bold=False))
+    COLOR_DEFAULT = lambda s: str(crayons.blue(s, bold=True))
+    COLOR_METAVAR = lambda s: str(crayons.red(s, bold=True))
 
     def _format_action(self, action):
-        if action.dest == "help" and self.disable_help_usage:
-            return ""
-
-        helpstr = action.help
-        action.help = "\b"
+        if not action.help and action.option_strings:
+            # dummy help for optional arguments for proper formatting
+            action.help = " "
 
         if action.nargs == 0:
             # hack to fix length of option strings
+            # when nargs=0, there's no metavar, or the extra color codes
             action.option_strings[0] += str(crayons.normal("", bold=True))
-        astr = super()._format_action(action)
-        if not action.option_strings:
-            astr = astr[:-1]
 
-        m = re.search(self.DEF_PAT, astr)
-        if m:
-            mstr, dstr = m.groups()
-            astr = astr.replace(
-                mstr, f"({self.DEF_CSTR}: {crayons.magenta(dstr, bold=True)})"
-            )
-
-        if helpstr:
-            astr += f"\t{helpstr}\n"
-
-        # add choices to help
-        if action.choices:
-            choice_strs = [str(crayons.green(c, bold=True)) for c in action.choices]
-            astr += f"\t{' / '.join(choice_strs)}\n"
-
-        if not astr.endswith("\n"):
-            astr += "\n"
-
-        return astr
+        return super()._format_action(action)
 
     def _format_action_invocation(self, action):
         if action.option_strings and action.nargs != 0:
@@ -69,24 +46,41 @@ class LazyHelpFormatter(ArgumentDefaultsHelpFormatter, MetavarTypeHelpFormatter)
         ):
             return super()._format_action_invocation(action)
 
-    def _get_default_metavar_for_optional(self, action):
-        if action.type:
+    def _get_help_string(self, action):
+        if action.choices:
+            choice_strs = list(map(LazyHelpFormatter.COLOR_CHOICE, action.choices))
             try:
-                return action.type.__name__
-            except AttributeError:
-                return type(action.type).__name__
-        return None
+                def_pos_in_choices = action.choices.index(action.default)
+            except ValueError:
+                pass
+            else:
+                # mark the default option with '[]'
+                if def_pos_in_choices != -1:
+                    defstr = LazyHelpFormatter.COLOR_DEFAULT(action.default)
+                    choice_strs[def_pos_in_choices] = f"[{defstr}]"
 
-    def _get_default_metavar_for_positional(self, action):
-        if action.type:
-            try:
-                return action.type.__name__
-            except AttributeError:
-                return type(action.type).__name__
-        return None
+            _h = self.CHOICE_SEP.join(choice_strs)
+            if action.required and action.option_strings:
+                # indicate optional arguments which are required
+                _h = f"{self.REQ_CSTR} {_h}"
+        elif action.required:
+            if action.option_strings:
+                _h = self.REQ_CSTR
+            else:
+                # positional arguments are always required - no need to specify
+                return super()._get_help_string(action)
+        elif action.default is None:
+            # optional argument
+            _h = self.OPT_CSTR
+        elif action.default != SUPPRESS:
+            _h = f"{self.DEF_CSTR}: {LazyHelpFormatter.COLOR_DEFAULT(action.default)}"
+        else:
+            return super()._get_help_string(action)
+        return action.help + f" ({_h})"
 
     def _metavar_formatter(self, action, default_metavar):
         with patch.object(action, "choices", None):
+            # don't put choices in the metavar
             base_formatter = super()._metavar_formatter(action, default_metavar)
 
         def color_wrapper(tuple_size):
@@ -94,19 +88,16 @@ class LazyHelpFormatter(ArgumentDefaultsHelpFormatter, MetavarTypeHelpFormatter)
             if not f:
                 return f
             return (
-                str(crayons.red(" ".join(map(str, f)), bold=True)),
-                *(("",) * (len(f) - 1)),
+                LazyHelpFormatter.COLOR_METAVAR(" ".join(map(str, f))),
+                *(("",) * (len(f) - 1)),  # collapse to single metavar
             )
 
         return color_wrapper
 
-    def __init__(self, *args, disable_help_usage=True, **kwargs):
-        if "max_help_position" not in kwargs:
-            kwargs["max_help_position"] = float("inf")
-        if "width" not in kwargs:
-            kwargs["width"] = float("inf")
+    def __init__(self, *args, **kwargs):
+        kwargs["max_help_position"] = float("inf")
+        kwargs["width"] = float("inf")
         super().__init__(*args, **kwargs)
-        self.disable_help_usage = disable_help_usage
 
     def add_usage(self, *args, **kwargs):
         pass
