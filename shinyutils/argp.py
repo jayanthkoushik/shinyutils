@@ -1,6 +1,6 @@
 """argp.py: utilities for argparse."""
 
-from argparse import ArgumentTypeError, MetavarTypeHelpFormatter, FileType, SUPPRESS
+from argparse import ArgumentTypeError, HelpFormatter, FileType, SUPPRESS
 import logging
 import os
 from pathlib import Path
@@ -11,7 +11,7 @@ import crayons
 from shinyutils.subcls import get_subclass_from_name, get_subclass_names
 
 
-class LazyHelpFormatter(MetavarTypeHelpFormatter):
+class LazyHelpFormatter(HelpFormatter):
 
     # pylint: disable=no-member
     CHOICE_SEP = "/"
@@ -77,6 +77,22 @@ class LazyHelpFormatter(MetavarTypeHelpFormatter):
         else:
             return super()._get_help_string(action)
         return action.help + f" ({_h})"
+
+    def _get_default_metavar_for_optional(self, action):
+        if action.type:
+            try:
+                return action.type.__name__
+            except AttributeError:
+                return type(action.type).__name__
+        return None
+
+    def _get_default_metavar_for_positional(self, action):
+        if action.type:
+            try:
+                return action.type.__name__
+            except AttributeError:
+                return type(action.type).__name__
+        return None
 
     def _metavar_formatter(self, action, default_metavar):
         with patch.object(action, "choices", None):
