@@ -111,6 +111,13 @@ class LazyHelpFormatter(ArgumentDefaultsHelpFormatter, MetavarTypeHelpFormatter)
     def add_usage(self, *args, **kwargs):
         pass
 
+    def start_section(self, heading):
+        if heading == "positional arguments":
+            heading = "arguments"
+        elif heading == "optional arguments":
+            heading = "options"
+        super().start_section(heading)
+
 
 def comma_separated_ints(string):
     try:
