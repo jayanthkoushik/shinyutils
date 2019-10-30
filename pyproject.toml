@@ -4,7 +4,7 @@ target-version = ["py36"]
 
 [tool.poetry]
 name = "shinyutils"
-version = "3.0.1"
+version = "3.1.0"
 description = "Personal collection of common utilities"
 authors = ["Jayanth Koushik <jnkoushik@gmail.com>"]
 license = "MIT"
@@ -22,7 +22,7 @@ classifiers=[
 
 [tool.poetry.dependencies]
 python = "^3.6"
-matplotlib = "^3.0.1"
+matplotlib = "^3.1.0"
 seaborn = "^0.9.0"
 crayons = "*"
 
