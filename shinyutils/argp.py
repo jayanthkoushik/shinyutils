@@ -67,6 +67,7 @@ class LazyHelpFormatter(HelpFormatter):
         base_fmt = super()._format_action(action)
 
         # compute extra help text (choices, default etc.)
+        def_pos_in_choices = -1
         if action.choices:
             choice_strs = list(map(str, action.choices))
             # replace separators in choices with placeholders to restore later
@@ -77,7 +78,7 @@ class LazyHelpFormatter(HelpFormatter):
             try:
                 def_pos_in_choices = action.choices.index(action.default)
             except ValueError:
-                def_pos_in_choices = -1
+                pass
             else:
                 if def_pos_in_choices != -1:
                     c = choice_strs[def_pos_in_choices]
