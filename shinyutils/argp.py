@@ -17,13 +17,13 @@ from shinyutils.subcls import get_subclass_from_name, get_subclass_names
 class LazyHelpFormatter(HelpFormatter):
 
     _CHOICE_SEP = "/"
-    _DEFAULT_CHOICE_WRAP = "[]"
     _UNICODE_REPL = "\ufffc"  # placeholder character
     _PATTERN_HEXT = re.compile(r"\(.*?\)$", re.DOTALL)
-    _PATTERN_DEFAULT = re.compile(r"(?<=default: ).+?(?=\))")
+    _PATTERN_DEFAULT = re.compile(r"(?<=default:).+?(?=\))", re.DOTALL)
     _PATTERN_KEYWORD = re.compile(r"default|optional|required")
     _PATTERN_CHOICE = re.compile(
-        fr"(?<=\{{|{_CHOICE_SEP}| )[^{_CHOICE_SEP}\b]+?(?=\}}|{_CHOICE_SEP}|\n)"
+        fr"(?<=\{{|{_CHOICE_SEP}).+?(?=\}}|{_CHOICE_SEP}|\n)"
+        + fr"|(?<=\{{|{_CHOICE_SEP}| ).+?(?=\}}|{_CHOICE_SEP})"
     )
 
     def _color_helper(self, s, color, isbold):
@@ -40,7 +40,7 @@ class LazyHelpFormatter(HelpFormatter):
         return self._color_helper(s, "blue", isbold=False)
 
     def _COLOR_DEFAULT(self, s):
-        return self._color_helper(s, "blue", isbold=True)
+        return self._color_helper(s, "yellow", isbold=True)
 
     def _COLOR_METAVAR(self, s):
         return self._color_helper(s, "red", isbold=True)
@@ -66,46 +66,30 @@ class LazyHelpFormatter(HelpFormatter):
         action.help = "\b"
         base_fmt = super()._format_action(action)
 
-        # compute extra help text (choices, default etc.)
-        def_pos_in_choices = -1
+        # create formatted choice list
         if action.choices:
             choice_strs = list(map(str, action.choices))
             # replace separators in choices with placeholders to restore later
             choice_strs = [
                 c.replace(self._CHOICE_SEP, self._UNICODE_REPL) for c in choice_strs
             ]
-            # mark the default choice if present
-            try:
-                def_pos_in_choices = action.choices.index(action.default)
-            except ValueError:
-                pass
-            else:
-                if def_pos_in_choices != -1:
-                    c = choice_strs[def_pos_in_choices]
-                    wpref, wsuff = self._DEFAULT_CHOICE_WRAP
-                    choice_strs[def_pos_in_choices] = f"{wpref}{c}{wsuff}"
             # combine all the choices
-            hext = f"{{{self._CHOICE_SEP.join(choice_strs)}}}"
-            if action.required and action.option_strings:
-                # indicate optional arguments which are required
-                hext = f"({hext} required)"
-            elif def_pos_in_choices == -1 and action.option_strings:
-                # mark as optional
-                hext = f"({hext} optional)"
-            else:
-                hext = f"({hext})"
-        elif not action.option_strings:
+            choice_list_fmt = "{" + self._CHOICE_SEP.join(choice_strs) + "} "
+        else:
+            choice_list_fmt = ""
+
+        # compute extra help text (required/optional/default)
+        if not action.option_strings:
             # positional arguments can't be optional, don't have defaults,
             #   and are always required - so no extra text required
-            hext = None
+            hext = f"({choice_list_fmt[:-1]})" if choice_list_fmt else None
         elif action.required:
-            hext = "(required)"
-        elif action.default is None:
-            hext = "(optional)"
-        elif action.default != SUPPRESS:
-            hext = f"(default: {action.default})"
+            # indicate optional arguments which are required
+            hext = f"({choice_list_fmt}required)"
+        elif action.default is None or action.default == SUPPRESS:
+            hext = f"({choice_list_fmt}optional)"
         else:
-            hext = None
+            hext = f"({choice_list_fmt}default: {action.default})"
 
         # combine 'base_fmt' with 'help_' and 'hext'
         fmt = base_fmt.strip("\n")
@@ -130,41 +114,23 @@ class LazyHelpFormatter(HelpFormatter):
         if fmt_hext_match:
             fmt_hext = fmt_hext_match.group(0)
             # color default values
-            fmt_hext_colored = re.sub(
-                self._PATTERN_DEFAULT, self._COLOR_DEFAULT, fmt_hext
-            )
+            def_match = re.search(self._PATTERN_DEFAULT, fmt_hext)
+            if def_match:
+                def_match = def_match.group(0)
+                def_match_colored = def_match.replace(self._COLOR_METAVAR("\b\b"), "")
+                def_match_colored = self._COLOR_DEFAULT(def_match_colored)
+                fmt_hext_colored = fmt_hext.replace(def_match, def_match_colored)
+            else:
+                fmt_hext_colored = fmt_hext
+
             # color keywords
             fmt_hext_colored = re.sub(
                 self._PATTERN_KEYWORD, self._COLOR_KEYWORD, fmt_hext_colored
             )
 
             # color choices
-            def _sub_choice(m):
-                c = m.group(0)
-                nonlocal choice_strs, def_pos_in_choices
-                if def_pos_in_choices != -1:
-                    def_str = choice_strs[def_pos_in_choices]
-                else:
-                    def_str = None
-
-                # check if the match is surrounded by the default marking wrapper
-                pref, suff = "", ""
-                if def_str and def_str.startswith(c):
-                    pref = c[0]
-                    c = c[1:]
-                if def_str and def_str.endswith(c):
-                    suff = c[-1]
-                    c = c[:-1]
-
-                if pref or suff:
-                    sub = self._COLOR_DEFAULT(c)
-                else:
-                    sub = self._COLOR_CHOICE(c)
-
-                return pref + sub + suff
-
             fmt_hext_colored = re.sub(
-                self._PATTERN_CHOICE, _sub_choice, fmt_hext_colored
+                self._PATTERN_CHOICE, self._COLOR_CHOICE, fmt_hext_colored
             )
 
             # replace the placeholders with separators
