@@ -107,7 +107,13 @@ class LazyHelpFormatter(HelpFormatter):
             - 1
             + self._indent_increment
         )
-        fmt = textwrap.fill(fmt, width=self._HELP_WIDTH, subsequent_indent=indent)
+        fmt = textwrap.fill(
+            fmt,
+            width=self._HELP_WIDTH,
+            subsequent_indent=indent,
+            break_on_hyphens=False,
+            break_long_words=False,
+        )
 
         # add colors to 'hext' inside the formatted text
         fmt_hext_match = re.search(self._PATTERN_HEXT, fmt)
