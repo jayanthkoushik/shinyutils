@@ -4,7 +4,7 @@ import argparse
 import logging
 import sys
 
-import crayons
+from rich.logging import RichHandler
 
 
 def build_log_argp(base_parser):
@@ -24,36 +24,14 @@ def build_log_argp(base_parser):
     return base_parser
 
 
-class ColorfulLogRecord(logging.LogRecord):
-
-    """LogRecord with colors."""
-
-    def __init__(self, *args, **kwargs):
-        # pylint: disable=no-member
-        super().__init__(*args, **kwargs)
-        if self.levelno == logging.CRITICAL:
-            colf = crayons.red
-        elif self.levelno == logging.ERROR:
-            colf = crayons.magenta
-        elif self.levelno == logging.WARNING:
-            colf = crayons.yellow
-        elif self.levelno == logging.INFO:
-            colf = crayons.cyan
-        else:
-            colf = crayons.green
-        self.levelname = str(colf(self.levelname, bold=True, always=True))
-
-        self.msg = (
-            crayons.colorama.Style.BRIGHT
-            + str(self.msg)
-            + crayons.colorama.Style.NORMAL
-        )
-
-
 def conf_logging(args=None, log_level=None):
     """Configure logging using args from `build_log_argp`."""
     if log_level is None:
-        if args is not None and hasattr(args, "log_level"):
+        if (
+            args is not None
+            and hasattr(args, "log_level")
+            and args.log_level is not None
+        ):
             log_level = args.log_level
         else:
             log_level = "INFO"
@@ -61,8 +39,8 @@ def conf_logging(args=None, log_level=None):
 
     logging.basicConfig(
         level=log_level_i,
-        format="%(levelname)s:%(filename)s.%(funcName)s.%(lineno)d:%(message)s",
+        format="%(message)s",
+        datefmt="[%X] ",
+        handlers=[RichHandler()],
     )
     logging.root.setLevel(log_level_i)
-    if sys.stderr.isatty():
-        logging.setLogRecordFactory(ColorfulLogRecord)
