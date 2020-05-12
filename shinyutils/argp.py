@@ -17,13 +17,17 @@ from shinyutils.subcls import get_subclass_from_name, get_subclass_names
 class LazyHelpFormatter(HelpFormatter):
 
     _CHOICE_SEP = "/"
-    _UNICODE_REPL = "\ufffc"  # placeholder character
+    _UNICODE_REPL_SEP = "\ufffc"  # placeholder character for separator
+    _CHOICES_START = "{"
+    _CHOICES_END = "}"
+    _UNICODE_REPL_START = "\ufffe"  # placeholder for choice list start
+    _UNICODE_REPL_END = "\uffff"  # -"- end
     _PATTERN_HEXT = re.compile(r"\(.*?\)$", re.DOTALL)
     _PATTERN_DEFAULT = re.compile(r"(?<=default:).+?(?=\))", re.DOTALL)
     _PATTERN_KEYWORD = re.compile(r"default|optional|required")
     _PATTERN_CHOICE = re.compile(
-        fr"(?<=\{{|{_CHOICE_SEP}).+?(?=\}}|{_CHOICE_SEP}|\n)"
-        + fr"|(?<=\{{|{_CHOICE_SEP}| ).+?(?=\}}|{_CHOICE_SEP})"
+        fr"(?<={_CHOICES_START}|{_CHOICE_SEP}).+?(?={_CHOICES_END}|{_CHOICE_SEP}|\n)"
+        + fr"|(?<={_CHOICES_START}|{_CHOICE_SEP}| ).+?(?={_CHOICES_END}|{_CHOICE_SEP})"
     )
 
     def _color_helper(self, s, color, isbold):
@@ -57,6 +61,17 @@ class LazyHelpFormatter(HelpFormatter):
         basew = shutil.get_terminal_size()[0]
         return basew + len(self._DUMMY_CMV)
 
+    def _cstr(self, c):
+        # pylint: disable=no-self-use
+        # convert choice to string
+        try:
+            s = c.__name__
+        except AttributeError:
+            s = str(c)
+        s = s.replace(self._CHOICES_START, self._UNICODE_REPL_START)
+        s = s.replace(self._CHOICES_END, self._UNICODE_REPL_END)
+        return s
+
     def _format_action(self, action):
         if action.nargs == 0 and action.option_strings:
             # hack to fix length of option strings
@@ -70,10 +85,10 @@ class LazyHelpFormatter(HelpFormatter):
 
         # create formatted choice list
         if action.choices:
-            choice_strs = list(map(str, action.choices))
+            choice_strs = list(map(self._cstr, action.choices))
             # replace separators in choices with placeholders to restore later
             choice_strs = [
-                c.replace(self._CHOICE_SEP, self._UNICODE_REPL) for c in choice_strs
+                c.replace(self._CHOICE_SEP, self._UNICODE_REPL_SEP) for c in choice_strs
             ]
             # combine all the choices
             choice_list_fmt = "{" + self._CHOICE_SEP.join(choice_strs) + "} "
@@ -91,7 +106,7 @@ class LazyHelpFormatter(HelpFormatter):
         elif action.default is None or action.default == SUPPRESS:
             hext = f"({choice_list_fmt}optional)"
         else:
-            hext = f"({choice_list_fmt}default: {action.default})"
+            hext = f"({choice_list_fmt}default: {self._cstr(action.default)})"
 
         # combine 'base_fmt' with 'help_' and 'hext'
         fmt = base_fmt.strip("\n")
@@ -143,7 +158,13 @@ class LazyHelpFormatter(HelpFormatter):
 
             # replace the placeholders with separators
             fmt_hext_colored = fmt_hext_colored.replace(
-                self._UNICODE_REPL, self._CHOICE_SEP
+                self._UNICODE_REPL_SEP, self._CHOICE_SEP
+            )
+            fmt_hext_colored = fmt_hext_colored.replace(
+                self._UNICODE_REPL_START, self._CHOICES_START
+            )
+            fmt_hext_colored = fmt_hext_colored.replace(
+                self._UNICODE_REPL_END, self._CHOICES_END
             )
 
             # replace hext in the formatted text with the new colored version

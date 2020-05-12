@@ -48,7 +48,9 @@ shiny_arg_parser.add_argument(
     "--opt-many", nargs="+", help="option with multiple values"
 )
 shiny_arg_parser.add_argument(
-    "--bad-choices", type=str, choices=["a/b", "[]", "()", "[hello]"]
+    "--bad-choices",
+    type=str,
+    choices=["a/b", "[]", "()", "[hello]", "{}", "{0", "0}", "(}", "{]", "{{)(}}]][["],
 )
 shiny_arg_parser.add_argument("--long-help", type=int, help="help " * 25)
 
