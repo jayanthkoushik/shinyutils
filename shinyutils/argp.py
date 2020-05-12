@@ -28,8 +28,10 @@ class LazyHelpFormatter(HelpFormatter):
 
     def _color_helper(self, s, color, isbold):
         # pylint: disable=no-self-use
-        if isinstance(s, re.Match):
+        try:
             s = s.group(0)
+        except AttributeError:
+            pass
         color_fun = getattr(crayons, color)
         return str(color_fun(s, isbold))
 
