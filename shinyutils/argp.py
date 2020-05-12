@@ -201,6 +201,7 @@ class LazyHelpFormatter(HelpFormatter):
         super().__init__(*args, **kwargs)
 
     def add_usage(self, *args, **kwargs):
+        # pylint: disable=signature-differs
         pass
 
     def start_section(self, heading):
