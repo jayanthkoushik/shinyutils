@@ -1,7 +1,11 @@
 """matwrap.py: wrapper around matplotlib."""
+
 import json
-import warnings
+import logging
+
 from pkg_resources import resource_filename
+
+__all__ = ["MatWrap"]
 
 
 class MatWrap:
@@ -41,13 +45,23 @@ class MatWrap:
         rc.update(rc_extra)
 
         if cls._mpl is None:
-            import matplotlib
+            # pylint: disable=import-outside-toplevel
+            try:
+                import matplotlib
+            except ImportError as e:
+                e.msg += ": install shinyutils[plotting] to use MatWrap"
+                raise e
 
             cls._mpl = matplotlib
             cls._mpl.rcParams.update(rc)
 
             import matplotlib.pyplot
-            import seaborn
+
+            try:
+                import seaborn
+            except ImportError as e:
+                e.msg += ": install shinyutils[plotting] to use MatWrap"
+                raise e
 
             cls._plt = matplotlib.pyplot
             cls._sns = seaborn
@@ -95,9 +109,11 @@ class MatWrap:
 
     @staticmethod
     def set_size_tight(fig, size):
-        warnings.warn(
-            "constrained_layout is enabled by default: don't use tight_layout",
-            DeprecationWarning,
+        logging.warning(
+            "constrained_layout is enabled by default: don't use tight_layout"
         )
         fig.set_size_inches(*size)
         fig.tight_layout(pad=0, w_pad=0, h_pad=0)
+
+
+MatWrap.configure()

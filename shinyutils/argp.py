@@ -1,17 +1,38 @@
 """argp.py: utilities for argparse."""
 
-from argparse import ArgumentTypeError, HelpFormatter, FileType, SUPPRESS
 import logging
 import os
-from pathlib import Path
 import re
 import shutil
+import sys
 import textwrap
+from argparse import ArgumentTypeError, FileType, HelpFormatter, SUPPRESS
+from pathlib import Path
+from typing import Any, Dict, Generic, IO, List, Optional, Type, TypeVar, Union
 from unittest.mock import patch
 
-import crayons
-
 from shinyutils.subcls import get_subclass_from_name, get_subclass_names
+
+try:
+    import crayons
+except ImportError as e:
+    CRAYONS_IMPORT_ERROR = e
+    HAS_CRAYONS = False
+else:
+    HAS_CRAYONS = True
+
+
+__all__ = [
+    "LazyHelpFormatter",
+    "comma_separated_ints",
+    "CommaSeparatedInts",
+    "InputFileType",
+    "OutputFileType",
+    "InputDirectoryType",
+    "OutputDirectoryType",
+    "ClassType",
+    "KeyValuePairsType",
+]
 
 
 class LazyHelpFormatter(HelpFormatter):
@@ -30,12 +51,16 @@ class LazyHelpFormatter(HelpFormatter):
         + fr"|(?<={_CHOICES_START}|{_CHOICE_SEP}| ).+?(?={_CHOICES_END}|{_CHOICE_SEP})"
     )
 
+    use_colors: Optional[bool] = None
+    _color_info_shown = False
+
     def _color_helper(self, s, color, isbold):
-        # pylint: disable=no-self-use
         try:
             s = s.group(0)
         except AttributeError:
             pass
+        if not self._use_colors:
+            return s
         color_fun = getattr(crayons, color)
         return str(color_fun(s, isbold))
 
@@ -187,17 +212,23 @@ class LazyHelpFormatter(HelpFormatter):
     def _get_default_metavar_for_optional(self, action):
         if action.type:
             try:
-                return action.type.__name__
+                return action.type.metavar
             except AttributeError:
-                return type(action.type).__name__
+                try:
+                    return action.type.__name__
+                except AttributeError:
+                    return type(action.type).__name__
         return None
 
     def _get_default_metavar_for_positional(self, action):
         if action.type:
             try:
-                return action.type.__name__
+                return action.type.metavar
             except AttributeError:
-                return type(action.type).__name__
+                try:
+                    return action.type.__name__
+                except AttributeError:
+                    return type(action.type).__name__
         return None
 
     def _metavar_formatter(self, action, default_metavar):
@@ -216,16 +247,33 @@ class LazyHelpFormatter(HelpFormatter):
 
         return color_wrapper
 
-    def __init__(self, *args, **kwargs):
-        kwargs["max_help_position"] = float("inf")
-        kwargs["width"] = float("inf")
-        super().__init__(*args, **kwargs)
+    def __init__(self, prog: str, indent_increment: int = 2) -> None:
+        cls = self.__class__
+        self._use_colors: bool
+        if cls.use_colors is False:
+            self._use_colors = False
+        elif cls.use_colors is True:
+            self._use_colors = True
+            if not HAS_CRAYONS:
+                raise ImportError(
+                    f"{CRAYONS_IMPORT_ERROR}: "
+                    "disable colors or install shinyutils[color]"
+                )
+        else:
+            self._use_colors = HAS_CRAYONS
+            if not HAS_CRAYONS and not cls._color_info_shown:
+                logging.info("for argparse color support install shinyutils[color]")
+                cls._color_info_shown = True
 
-    def add_usage(self, *args, **kwargs):
+        max_help_position = sys.maxsize
+        width = sys.maxsize
+        super().__init__(prog, indent_increment, max_help_position, width)
+
+    def add_usage(self, *args: Any, **kwargs: Any) -> None:
         # pylint: disable=signature-differs
         pass
 
-    def start_section(self, heading):
+    def start_section(self, heading: Optional[str] = None) -> None:
         if heading == "positional arguments":
             heading = "arguments"
         elif heading == "optional arguments":
@@ -233,27 +281,61 @@ class LazyHelpFormatter(HelpFormatter):
         super().start_section(heading)
 
 
-def comma_separated_ints(string):
+def comma_separated_ints(string: str) -> List[int]:
+    logging.warning("comma_separated_ints is deprecated and will be removed")
     try:
         return list(map(int, string.split(",")))
     except:
         raise ArgumentTypeError(f"`{string}` is not a comma separated list of ints")
 
 
+class CommaSeparatedInts:
+
+    metavar = "int,[...]"
+
+    def __call__(self, string: str) -> List[int]:
+        try:
+            return list(map(int, string.split(",")))
+        except:
+            raise ArgumentTypeError(f"`{string}` is not a comma separated list of ints")
+
+
 class InputFileType(FileType):
-    def __init__(self, mode="r", **kwargs):
+
+    metavar = "file"
+
+    def __init__(
+        self,
+        mode: str = "r",
+        bufsize: int = -1,
+        encoding: Optional[str] = None,
+        errors: Optional[str] = None,
+    ) -> None:
         if mode not in {"r", "rb"}:
             raise ValueError("mode should be 'r'/'rb'")
-        super().__init__(mode, **kwargs)
+        super().__init__(mode, bufsize, encoding, errors)
+
+    def __call__(self, string: str) -> IO:
+        # pylint: disable=useless-super-delegation
+        return super().__call__(string)
 
 
 class OutputFileType(FileType):
-    def __init__(self, mode="w", **kwargs):
+
+    metavar = "file"
+
+    def __init__(
+        self,
+        mode: str = "w",
+        bufsize: int = -1,
+        encoding: Optional[str] = None,
+        errors: Optional[str] = None,
+    ) -> None:
         if mode not in {"w", "wb"}:
             raise ValueError("mode should be 'w'/'wb'")
-        super().__init__(mode, **kwargs)
+        super().__init__(mode, bufsize, encoding, errors)
 
-    def __call__(self, string):
+    def __call__(self, string: str) -> IO:
         file_dir = os.path.dirname(string)
         if file_dir and not os.path.exists(file_dir):
             logging.warning(f"no directory for {string}: trying to create")
@@ -266,14 +348,22 @@ class OutputFileType(FileType):
 
 
 class InputDirectoryType:
-    def __call__(self, string):
+
+    metavar = "dir"
+
+    def __call__(self, string: str) -> Path:
         if not os.path.exists(string):
             raise ArgumentTypeError(f"no such directory: {string}")
+        if not os.path.isdir(string):
+            raise ArgumentTypeError(f"{string} is a file: expected directory")
         return Path(string)
 
 
 class OutputDirectoryType:
-    def __call__(self, string):
+
+    metavar = "dir"
+
+    def __call__(self, string: str) -> Path:
         if not os.path.exists(string):
             logging.warning(f"{string} not found: trying to create")
             try:
@@ -281,14 +371,22 @@ class OutputDirectoryType:
             except Exception as e:
                 raise ArgumentTypeError(f"cound not create {string}: {e}")
             logging.info(f"created {string}")
+        elif not os.path.isdir(string):
+            raise ArgumentTypeError(f"{string} is a file: expected directory")
         return Path(string)
 
 
-class ClassType:
-    def __init__(self, cls):
+T = TypeVar("T")
+
+
+class ClassType(Generic[T]):
+
+    metavar = "cls"
+
+    def __init__(self, cls: Type[T]) -> None:
         self.cls = cls
 
-    def __call__(self, string):
+    def __call__(self, string: str) -> Type[T]:
         try:
             return get_subclass_from_name(self.cls, string)
         except RuntimeError:
@@ -299,19 +397,24 @@ class ClassType:
 
 
 class KeyValuePairsType:
-    def __call__(self, string):
+
+    metavar = "str=val[,...]"
+    ValType = Union[int, float, str]
+
+    def __call__(self, string: str) -> Dict[str, ValType]:
         out = dict()
         try:
             for kv in string.split(","):
                 k, v = kv.split("=")
+                pv: KeyValuePairsType.ValType = v
                 try:
-                    v = int(v)
+                    pv = int(v)
                 except ValueError:
                     try:
-                        v = float(v)
+                        pv = float(v)
                     except ValueError:
                         pass
-                out[k] = v
+                out[k] = pv
         except Exception as e:
             raise ArgumentTypeError(e)
         return out
