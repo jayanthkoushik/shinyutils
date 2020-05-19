@@ -47,8 +47,9 @@ class LazyHelpFormatter(HelpFormatter):
     _PATTERN_DEFAULT = re.compile(r"(?<=default:).+?(?=\))", re.DOTALL)
     _PATTERN_KEYWORD = re.compile(r"default|optional|required")
     _PATTERN_CHOICE = re.compile(
-        fr"(?<={_CHOICES_START}|{_CHOICE_SEP}).+?(?={_CHOICES_END}|{_CHOICE_SEP}|\n)"
-        + fr"|(?<={_CHOICES_START}|{_CHOICE_SEP}| ).+?(?={_CHOICES_END}|{_CHOICE_SEP})"
+        fr"(?<=\({_CHOICES_START}|{_CHOICE_SEP} |  )"
+        + fr"[^{_CHOICES_START}{_CHOICE_SEP}{_CHOICES_END}]+?"
+        + fr"(?={_CHOICES_END}| (\n *)?{_CHOICE_SEP})"
     )
 
     use_colors: Optional[bool] = None
@@ -95,6 +96,7 @@ class LazyHelpFormatter(HelpFormatter):
             s = str(c)
         s = s.replace(self._CHOICES_START, self._UNICODE_REPL_START)
         s = s.replace(self._CHOICES_END, self._UNICODE_REPL_END)
+        s = s.replace(" ", "␣")
         return s
 
     def _format_action(self, action):
@@ -116,7 +118,7 @@ class LazyHelpFormatter(HelpFormatter):
                 c.replace(self._CHOICE_SEP, self._UNICODE_REPL_SEP) for c in choice_strs
             ]
             # combine all the choices
-            choice_list_fmt = "{" + self._CHOICE_SEP.join(choice_strs) + "} "
+            choice_list_fmt = "{" + f" {self._CHOICE_SEP} ".join(choice_strs) + "} "
         else:
             choice_list_fmt = ""
 
@@ -154,7 +156,7 @@ class LazyHelpFormatter(HelpFormatter):
             width=self._HELP_WIDTH,
             subsequent_indent=indent,
             break_on_hyphens=False,
-            break_long_words=False,
+            break_long_words=True,
         )
 
         # add colors to 'hext' inside the formatted text
@@ -167,7 +169,9 @@ class LazyHelpFormatter(HelpFormatter):
                 def_match = def_match.group(0)
                 def_match_colored = def_match.replace(self._COLOR_METAVAR("\b\b"), "")
                 def_match_colored = self._COLOR_DEFAULT(def_match_colored)
-                fmt_hext_colored = fmt_hext.replace(def_match, def_match_colored)
+                fmt_hext_colored = re.sub(
+                    self._PATTERN_DEFAULT, def_match_colored, fmt_hext
+                )
             else:
                 fmt_hext_colored = fmt_hext
 

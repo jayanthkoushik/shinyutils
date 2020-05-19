@@ -50,7 +50,22 @@ shiny_arg_parser.add_argument(
 shiny_arg_parser.add_argument(
     "--bad-choices",
     type=str,
-    choices=["a/b", "[]", "()", "[hello]", "{}", "{0", "0}", "(}", "{]", "{{)(}}]][["],
+    choices=[
+        "a/b",
+        "[]",
+        "()",
+        "[hello]",
+        "{}",
+        "{0",
+        "0}",
+        "(}",
+        "{]",
+        "{{)(}}]][[",
+        '"',
+        "a b",
+        "  ",
+        "'ab'",
+    ],
 )
 shiny_arg_parser.add_argument("--long-help", type=int, help="help " * 25)
 
