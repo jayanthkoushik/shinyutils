@@ -2,8 +2,13 @@
 
 import json
 import logging
+from argparse import _ArgumentGroup, Action, ArgumentParser
+from typing import Optional, Union
 
 from pkg_resources import resource_filename
+
+from shinyutils import shiny_arg_parser
+from shinyutils.argp import KeyValuePairsType
 
 __all__ = ["MatWrap"]
 
@@ -69,6 +74,12 @@ class MatWrap:
             cls._mpl.rcParams.update(rc)
         cls._sns.set(context, style, rc=rc)
 
+        cls._args = rc_extra.copy()
+        cls._args["context"] = context
+        cls._args["style"] = style
+        cls._args["font"] = font
+        cls._args["latex_pkgs"] = latex_pkgs
+
     def __new__(cls):
         raise NotImplementedError(
             "MatWrap does not provide instances. Use the class methods."
@@ -115,5 +126,64 @@ class MatWrap:
         fig.set_size_inches(*size)
         fig.tight_layout(pad=0, w_pad=0, h_pad=0)
 
+    @staticmethod
+    def add_parser_config_args(
+        base_parser: Union[ArgumentParser, _ArgumentGroup],
+        group_title: Optional[str] = "plotting options",
+    ) -> Union[ArgumentParser, _ArgumentGroup]:
+        """Add arguments to a base parser to configure plotting."""
+
+        class _ConfMatwrap(Action):
+            def __call__(self, parser, namespace, values, option_string=None):
+                _args = MatWrap._args
+                assert option_string.startswith("--plotting-")
+                option_name = option_string.split("--plotting-")[1].replace("-", "_")
+                if option_name == "rc_extra":
+                    MatWrap.configure(**_args, **values)
+                else:
+                    assert option_name in _args
+                    _args[option_name] = values
+                    MatWrap.configure(**_args)
+
+        if group_title is not None:
+            base_parser = base_parser.add_argument_group(group_title)
+
+        base_parser.add_argument(
+            "--plotting-context",
+            type=str,
+            choices=["paper", "notebook", "talk", "poster"],
+            default="paper",
+            action=_ConfMatwrap,
+        )
+        base_parser.add_argument(
+            "--plotting-style",
+            type=str,
+            choices=["white", "dark", "whitegrid", "darkgrid", "ticks"],
+            default="ticks",
+            action=_ConfMatwrap,
+        )
+        base_parser.add_argument(
+            "--plotting-font",
+            type=str,
+            default="Latin Modern Roman",
+            action=_ConfMatwrap,
+        )
+        base_parser.add_argument(
+            "--plotting-latex-pkgs",
+            type=str,
+            nargs="+",
+            default=[],
+            action=_ConfMatwrap,
+        )
+        base_parser.add_argument(
+            "--plotting-rc-extra",
+            type=KeyValuePairsType(),
+            default=dict(),
+            action=_ConfMatwrap,
+        )
+
+        return base_parser
+
 
 MatWrap.configure()
+MatWrap.add_parser_config_args(shiny_arg_parser)
