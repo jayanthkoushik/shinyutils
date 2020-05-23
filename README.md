@@ -36,19 +36,22 @@ cmd1_parser = sub_parsers.add_parser("cmd1", formatter_class=LazyHelpFormatter)
 ```
 
 #### `CommaSeparatedInts`
-`ArgumentParser` type representing a comma separated list of ints (example `1,2,3,4`).
-```python
-arg_parser.add_argument("--csi", type=CommaSeparatedInts())
-```
+`ArgumentParser` type representing a list of `int` values. Accepts a string of comma separated values, e.g., `'1,2,3'`.
+
+#### `InputFileType`
+`FileType` restricted to input files, (with `'-'` for `stdin`). Returns a `file` object.
 
 #### `OutputFileType`
-`ArgumentParser` type representing an output file. The file's base directory is created if needed. The returned value is a file object.
+`FileType` restricted to output files (with `'-'` for `stdout`). The file's parent directories are created if needed. Returns a `file` object.
+
+#### `InputDirectoryType`
+`ArgumentParser` type representing a directory. Returns a `Path` object.
 
 #### `OutputDirectoryType`
-`ArgumentParser` type representing an output directory. The directory is created if it doesn't exist.
+`ArgumentParser` type representing an output directory. The directory is created if it doesn't exist. Returns a `Path` object.
 
 #### `ClassType`
-`ArgumentParser` type representing sub-classes of a given base class. The returned value is a class.
+`ArgumentParser` type representing sub-classes of a given base class. The returned value is a `class`.
 ```python
 class Base:
     pass
@@ -62,23 +65,27 @@ class B(Base):
 arg_parser.add_argument("--cls", type=ClassType(Base), default=A)
 ```
 
+#### `KeyValuePairsType`
+`ArgumentParser` type representing mappings. Accepts inputs of the form `str=val,[...]` where val is `int/float/str`. Returns a `dict`.
+
 #### `shiny_arg_parser`
-`ArgumentParser` object with LazyHelpFormatter, and logging argument.
+`ArgumentParser` object with `LazyHelpFormatter`, and arguments from sub-modules.
 
 ### `logng`
 Utilities for logging.
 #### `build_log_argp`
 Creates an argument group with logging arguments.
-```
+```python
 >>> arg_parser = ArgumentParser()
->>> build_log_argp(arg_parser)
+>>> _ = build_log_argp(arg_parser)  # returns the parser
 >>> arg_parser.print_help()
-usage: test.py [-h] [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
+usage: -c [-h] [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
 
 optional arguments:
   -h, --help            show this help message and exit
   --log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
 ```
+This function is called on `shiny_arg_parser` when `shinyutils` is imported.
 
 #### `conf_logging`
 Configures global logging using arguments returned by `ArgumentParser.parse_args`. `log_level` can be over-ridden with the keyword argument. Colors (enabled by default if `rich` is installed) can be toggled.
@@ -115,4 +122,28 @@ Use `mw.configure` to configure plots. Arguments (defaults in bold) are:
 * `font`: any font available to fontspec (default __Latin Modern Roman__)
 * `latex_pkgs`: additional latex packages to be included before defaults
 * `**rc_extra`: matplotlib rc parameters to override defaults
+`mw.configure()` is called when `shinyutils.matwrap` is imported.
+
+#### `add_parser_config_args`
+Adds matwrap config options to an argument parser.
+```python
+>>> arg_parser = ArgumentParser()
+>>> _ = mw.add_parser_config_args(arg_parser, group_title="plotting options")  # returns the parser group
+>>> arg_parser.print_help()
+usage: -c [-h] [--plotting-context {paper,notebook,talk,poster}]
+          [--plotting-style {white,dark,whitegrid,darkgrid,ticks}]
+          [--plotting-font PLOTTING_FONT]
+          [--plotting-latex-pkgs PLOTTING_LATEX_PKGS [PLOTTING_LATEX_PKGS ...]]
+          [--plotting-rc-extra PLOTTING_RC_EXTRA]
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+plotting options:
+  --plotting-context {paper,notebook,talk,poster}
+  --plotting-style {white,dark,whitegrid,darkgrid,ticks}
+  --plotting-font PLOTTING_FONT
+  --plotting-latex-pkgs PLOTTING_LATEX_PKGS [PLOTTING_LATEX_PKGS ...]
+  --plotting-rc-extra PLOTTING_RC_EXTRA
 ```
+`group_title` is optional, and if omitted, matwrap options will not be put in a separate group. When `shinyutils.matwrap` is imported, this function is called on `shiny_arg_parser`.
