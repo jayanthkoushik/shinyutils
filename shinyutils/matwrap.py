@@ -11,7 +11,7 @@ from pkg_resources import resource_filename
 from shinyutils import shiny_arg_parser
 from shinyutils.argp import KeyValuePairsType
 
-__all__ = ["MatWrap"]
+__all__ = ["MatWrap", "Plot"]
 
 
 class MatWrap:
