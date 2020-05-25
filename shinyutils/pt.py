@@ -34,9 +34,10 @@ import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.optim import Adam
-from torch.optim.lr_scheduler import _LRScheduler, StepLR
+from torch.optim.lr_scheduler import _LRScheduler
 from torch.optim.optimizer import Optimizer  # pylint: disable=no-name-in-module
 from torch.utils.data import DataLoader, Dataset, TensorDataset
+from tqdm import trange
 
 from shinyutils import shiny_arg_parser
 from shinyutils.argp import (
@@ -96,9 +97,9 @@ class PTOpt:
         self.optimizer.zero_grad()
 
     def step(self) -> None:
+        self.optimizer.step()
         if self.lr_sched is not None:
             self.lr_sched.step()
-        self.optimizer.step()
 
     @classmethod
     def from_args(
@@ -126,8 +127,6 @@ class PTOpt:
         default_optim_cls: Optional[Type[Optimizer]] = Adam,
         default_optim_params: Optional[Mapping[str, Any]] = None,
         add_lr_decay: bool = True,
-        default_lr_sched_cls: Optional[Type[_LRScheduler]] = StepLR,
-        default_lr_sched_params: Optional[Mapping[str, Any]] = None,
     ) -> Union[ArgumentParser, _ArgumentGroup]:
         """Add options to the base parser for pytorch optimizer and lr scheduling."""
         if arg_prefix:
@@ -157,16 +156,12 @@ class PTOpt:
         base_parser.add_argument(
             f"--{arg_prefix}lr-sched-cls",
             type=ClassType(_LRScheduler),
-            required=default_lr_sched_cls is None,
-            default=default_lr_sched_cls,
+            choices=get_subclasses(_LRScheduler),
+            default=None,
         )
 
-        if default_lr_sched_params is None:
-            default_lr_sched_params = dict()
         base_parser.add_argument(
-            f"--{arg_prefix}lr-sched-params",
-            type=KeyValuePairsType(),
-            default=default_lr_sched_params,
+            f"--{arg_prefix}lr-sched-params", type=KeyValuePairsType(), default=dict(),
         )
 
         return base_parser
@@ -369,25 +364,31 @@ class NNTrainer:
         opt: PTOpt,
         loss_fn: Callable[[torch.Tensor, torch.Tensor], torch.Tensor],
         iters: int,
+        pbar_desc: str = "Training",
     ):
         if self._dataset is None:
             raise RuntimeError("dataset not set: call set_dataset before train")
         bat_iter = iter(self._data_loader)
 
-        for _ in range(iters):
-            try:
-                x_bat, y_bat = next(bat_iter)
-            except StopIteration:
-                bat_iter = iter(self._data_loader)
-                x_bat, y_bat = next(bat_iter)
-            x_bat, y_bat = x_bat.to(self._device), y_bat.to(self._device)
+        logging.info(f"moving model to {self._device}")
+        model = model.to(self._device)
 
-            yhat_bat = model(x_bat)
-            loss = loss_fn(yhat_bat, y_bat)
+        with trange(iters, desc=pbar_desc) as pbar:
+            for _ in pbar:
+                try:
+                    x_bat, y_bat = next(bat_iter)
+                except StopIteration:
+                    bat_iter = iter(self._data_loader)
+                    x_bat, y_bat = next(bat_iter)
+                x_bat, y_bat = x_bat.to(self._device), y_bat.to(self._device)
 
-            opt.zero_grad()
-            loss.backward()
-            opt.step()
+                yhat_bat = model(x_bat)
+                loss = loss_fn(yhat_bat, y_bat)
+                pbar.set_postfix(loss=float(loss))
+
+                opt.zero_grad()
+                loss.backward()
+                opt.step()
 
 
 class SetTBWriterAction(Action):

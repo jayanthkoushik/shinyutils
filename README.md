@@ -185,8 +185,6 @@ opt.step()
         default_optim_cls=Adam,
         default_optim_params=None,  # if None, default is an empty dict
         add_lr_decay=True,
-        default_lr_sched_cls=StepLR,
-        default_lr_sched_params=None,
     )
 >>> arg_parser.print_help()
 options:
@@ -197,7 +195,9 @@ pt test:
                                           Adamax / ASGD / SGD / Rprop / RMSprop / LBFGS}
                                           default: Adam)
   --test-optim-params str=val[,...]     (default: {})
-  --test-lr-sched-cls cls               (default: StepLR)
+  --test-lr-sched-cls cls               ({LambdaLR / MultiplicativeLR / StepLR / MultiStepLR /
+                                        ExponentialLR / CosineAnnealingLR / CyclicLR /
+                                        CosineAnnealingWarmRestarts / OneCycleLR} optional)
   --test-lr-sched-params str=val[,...]  (default: {})
 >>> args = arg_parser.parse_args(...)
 >>> opt = PTOpt.from_args(weights, args, arg_prefix="test")
