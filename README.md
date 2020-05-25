@@ -100,7 +100,7 @@ When imported, `shinyutils` calls `conf_logging` without any arguments.
 ### `matwrap`
 Wrapper around `matplotlib` and `seaborn`.
 
-#### Usage
+#### `MatWrap`
 ```python
 from shinyutils.matwrap import MatWrap as mw  # do not import `matplotlib`, `seaborn`
 
@@ -115,7 +115,6 @@ mw.plt()  # returns `matplotlib.pyplot` module
 mw.sns()  # returns `seaborn` module
 ```
 
-#### Configuration
 Use `mw.configure` to configure plots. Arguments (defaults in bold) are:
 * `context`: seaborn context (__paper__/poster/talk/notebook)
 * `style`: seaborn style (white/whitegrid/dark/darkgrid/__ticks__)
@@ -124,8 +123,7 @@ Use `mw.configure` to configure plots. Arguments (defaults in bold) are:
 * `**rc_extra`: matplotlib rc parameters to override defaults
 `mw.configure()` is called when `shinyutils.matwrap` is imported.
 
-#### `add_parser_config_args`
-Adds matwrap config options to an argument parser.
+Use `add_parser_config_args` to add matwrap config options to an argument parser.
 ```python
 >>> arg_parser = ArgumentParser()
 >>> _ = mw.add_parser_config_args(arg_parser, group_title="plotting options")  # returns the parser group
@@ -147,3 +145,13 @@ plotting options:
   --plotting-rc-extra PLOTTING_RC_EXTRA
 ```
 `group_title` is optional, and if omitted, matwrap options will not be put in a separate group. When `shinyutils.matwrap` is imported, this function is called on `shiny_arg_parser`.
+
+#### Plot
+`Plot` is a wrapper around a single matplotlib plot, designed to be used as a context manager.
+```python
+from shinyutils.matwrap import Plot
+
+with Plot(save_file, title, sizexy, labelxy, logxy) as ax:
+  ...
+```
+Only the `save_file` argument is mandatory. When entering the context, `Plot` returns the plot axes, and when leaving, the plot is saved to the provided path.

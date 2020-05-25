@@ -3,7 +3,8 @@
 import json
 import logging
 from argparse import _ArgumentGroup, Action, ArgumentParser
-from typing import Optional, Union
+from contextlib import AbstractContextManager
+from typing import Optional, Tuple, Union
 
 from pkg_resources import resource_filename
 
@@ -183,6 +184,51 @@ class MatWrap:
         )
 
         return base_parser
+
+
+class Plot(AbstractContextManager):
+    """Wrapper around a single matplotlib plot."""
+
+    def __init__(
+        self,
+        save_file: str,
+        title: Optional[str] = None,
+        sizexy: Optional[Tuple[int, int]] = None,
+        labelxy: Tuple[Optional[str], Optional[str]] = (None, None),
+        logxy: Tuple[bool, bool] = (False, False),
+    ) -> None:
+        self.save_file = save_file
+        self.title = title
+        self.sizexy = sizexy
+        self.labelxy = labelxy
+
+        self.fig = MatWrap.plt().figure()
+        self.ax = self.fig.add_subplot(111)
+
+        if logxy[0] is True:
+            self.ax.set_xscale("log", nonposx="clip")
+        if logxy[1] is True:
+            self.ax.set_yscale("log", nonposy="clip")
+
+    def __enter__(self):
+        return self.ax
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if exc_type is not None:
+            return
+
+        if self.title is not None:
+            self.ax.set_title(self.title)
+
+        if self.labelxy[0] is not None:
+            self.ax.set_xlabel(self.labelxy[0])
+        if self.labelxy[1] is not None:
+            self.ax.set_ylabel(self.labelxy[1])
+
+        if self.sizexy is not None:
+            self.fig.set_size_inches(*self.sizexy)
+
+        self.fig.savefig(self.save_file)
 
 
 MatWrap.configure()
