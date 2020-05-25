@@ -11,6 +11,12 @@ include_trailing_comma = true
 combine_as_imports = true
 force_alphabetical_sort_within_sections = true
 
+[tool.pylint.MASTER]
+extension-pkg-whitelist = "torch"
+
+[tool.pylint.TYPECHECK]
+generated-members = "torch.*"
+
 [tool.pylint.FORMAT]
 max-line-length = "88"
 
@@ -28,7 +34,8 @@ disable = """
     protected-access,
     wrong-import-position,
     logging-format-interpolation,
-    logging-fstring-interpolation
+    logging-fstring-interpolation,
+    arguments-differ
 """
 
 [tool.poetry]
@@ -60,10 +67,14 @@ crayons = { version = "*", optional = true }
 rich = { version = "^1.0", optional = true }
 matplotlib = { version = "^3.2", optional = true }
 seaborn = { version = "^0.10", optional = true }
+torch = { version = "~1.5.0", optional = true }
+torchvision = { version = "*", optional = true }
+tensorboard = {extras = ["python"], version = "^2.2.1", optional = true}
 
 [tool.poetry.extras]
 color = ["crayons", "rich"]
 plotting = ["matplotlib", "seaborn"]
+pytorch = ["torch", "torchvision", "tensorboard"]
 
 [tool.poetry.dev-dependencies]
 bump2version = "^1.0"

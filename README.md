@@ -155,3 +155,146 @@ with Plot(save_file, title, sizexy, labelxy, logxy) as ax:
   ...
 ```
 Only the `save_file` argument is mandatory. When entering the context, `Plot` returns the plot axes, and when leaving, the plot is saved to the provided path.
+
+### `pt`
+Utilities for pytorch.
+
+#### `PTOpt`
+Wrapper around pytorch optimizer and learning rate scheduler.
+```python
+from shinyutils.pt import PTOpt
+opt = PTOpt(
+        weights,  # iterable of parameters to update
+        optim_cls,  # subclass of torch.optim.Optimizer
+        optim_params,  # arguments to initialize optim_cls
+        lr_sched_cls,  # subclass of torch.optim.lr_scheduler._LRScheduler
+        lr_sched_params,
+)
+...
+opt.zero_grad()
+loss.backward()
+opt.step()
+```
+`lr_sched_` arguments are optional, and control the learning rate schedule. The class can also be used with argument parsers.
+```python
+>>> arg_parser = ArgumentParser(formatter_class=LazyHelpFormatter)
+>>> PTOpt.add_parser_args(
+        arg_parser,
+        arg_prefix="test",  # all options will be prefixed with "test-"
+        group_title="pt test",  # if None, separate group will not be created
+        default_optim_cls=Adam,
+        default_optim_params=None,  # if None, default is an empty dict
+        add_lr_decay=True,
+        default_lr_sched_cls=StepLR,
+        default_lr_sched_params=None,
+    )
+>>> arg_parser.print_help()
+options:
+  -h, --help                            show this help message and exit (optional)
+
+pt test:
+  --test-optim-cls cls                  ({Adadelta / Adagrad / Adam / AdamW / SparseAdam /
+                                          Adamax / ASGD / SGD / Rprop / RMSprop / LBFGS}
+                                          default: Adam)
+  --test-optim-params str=val[,...]     (default: {})
+  --test-lr-sched-cls cls               (default: StepLR)
+  --test-lr-sched-params str=val[,...]  (default: {})
+>>> args = arg_parser.parse_args(...)
+>>> opt = PTOpt.from_args(weights, args, arg_prefix="test")
+```
+`PTOpt` can also add help options to argument parsers to display signatures for optimizer and learning rate schedule classes.
+```python
+>>> arg_parser = ArgumentParser()
+>>> PTOpt.add_help(arg_parser)
+>>> arg_parser.print_help()
+usage: -c [-h] [--explain-optimizer EXPLAIN_OPTIMIZER]
+          [--explain-lr-sched EXPLAIN_LR_SCHED]
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+pytorch help:
+  --explain-optimizer EXPLAIN_OPTIMIZER
+                        describe arguments of a torch optimizer
+  --explain-lr-sched EXPLAIN_LR_SCHED
+                        describe arguments of a torch lr scheduler
+
+>>> arg_parser.parse_args(["--explain-optimizer", "Adam"])
+Adam(params, lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False)
+...
+```
+The help options are added to `shiny_arg_parser` when `shinyutils.pt` is imported.
+
+#### `FCNet`
+`FCNet` is a template class for fully connected networks.
+```python
+from shinyutils.pt import FCNet
+net = FCNet(
+        in_dim,  # input dimension
+        out_dim,  # output dimension
+        hidden_sizes,  # list of hidden layer sizes
+        hidden_act,  # hidden layer activations (default relu)
+        out_act,  # output layer activation (default None)
+)
+```
+Like `PTOpt`, this class also supports construction through command line arguments.
+```python
+>>> arg_parser = ArgumentParser(formatter_class=LazyHelpFormatter)
+>>> FCNet.add_parser_args(
+        arg_parser,
+        arg_prefix="test",
+        group_title="fcnet",
+        default_indim=None,  # None means the option is mandatory
+        default_outdim=1,
+        default_hidden_sizes=None,
+        default_hidden_act=F.relu,
+        default_out_act=None,  # here, None means no output activation
+)
+>>> arg_parser.print_help()
+options:
+  -h, --help                           show this help message and exit (optional)
+
+fcnet:
+  --test-fcnet-indim int               (required)
+  --test-fcnet-outdim int              (default: 1)
+  --test-fcnet-hidden-sizes int,[...]  (required)
+  --test-fcnet-hidden-act func         (default: relu)
+  --test-fcnet-out-act func            (optional)
+>>> args = arg_parser.parse_args(...)
+>>> net = FCNet.from_args(args, arg_prefix="test")
+```
+
+#### `NNTrainer`
+This class trains a model on a dataset, and accepts multiple dataset "formats".
+```python
+from shinyutils.pt import *
+nn_trainer = NNTrainer(
+    batch_size,  # only mandatory argument
+    data_load_workers,  # default 0
+    shuffle,  # default True
+    pin_memory,  # default True
+    drop_last,  # default True
+    device,  # default cuda if available else cpu
+)
+nn_trainer.set_dataset(
+    dataset,  # can be a torch Dataset, a tuple of torch Tensors, or a tuple of numpy arrays
+)
+model = FCNet(...)
+opt = PTOpt(...)
+loss_fn = torch.nn.functional.mse_loss
+nn_trainer.train(model, opt, loss_fn, iters)
+```
+
+#### `SetTBWriterAction`
+`argparse` action to create a tensorboard summary writer. The writer is stored in the `tb_writer` attribute of the argument namespace; this can be overridden by setting `SetTBWriterAction.attr`. The usage is shown below with the tensorboard option that is added to `shiny_arg_parser` on importing the module.
+```python
+shiny_arg_parser.add_argument(
+    "--tb-dir",
+    type=OutputDirectoryType(),
+    help="tensorboard log directory",
+    default=None,
+    action=SetTBWriterAction,
+)
+shiny_arg_parser.set_defaults(**{SetTBWriterAction.attr: Mock(SummaryWriter)})
+```
+`shiny_arg_parser.tb_writer` will contain a `SummaryWriter` like object. If no log directory is provided through the command line, this object will be a dummy. So tensorboard functions can be called on the writer without extra checks.
