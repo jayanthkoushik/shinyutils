@@ -229,6 +229,7 @@ class Plot(AbstractContextManager):
             self.fig.set_size_inches(*self.sizexy)
 
         self.fig.savefig(self.save_file)
+        MatWrap.plt().close(self.fig)
 
 
 MatWrap.configure()
