@@ -48,6 +48,7 @@ class MatWrap:
         if latex_pkgs is not None:
             for pkg in reversed(latex_pkgs):
                 rc["pgf.preamble"].insert(0, rf"\usepackage{{{pkg}}}")
+        rc["pgf.preamble"] = "\n".join(rc["pgf.preamble"])
         rc.update(rc_extra)
 
         if cls._mpl is None:
