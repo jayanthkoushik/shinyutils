@@ -76,7 +76,6 @@ tqdm = { version = "^4.46.0", optional = true }
 color = ["crayons", "rich"]
 plotting = ["matplotlib", "seaborn"]
 pytorch = ["torch", "torchvision", "tensorboard", "tqdm"]
-all = ["crayons", "rich", "matplotlib", "seaborn", "torch", "torchvision", "tensorboard", "tqdm"]
 
 [tool.poetry.dev-dependencies]
 bump2version = "^1.0"
