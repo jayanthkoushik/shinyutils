@@ -9,7 +9,6 @@ Install with `pip`. Additional features can be enabled with the `[<feature>]` sy
 pip install shinyutils  # basic install
 pip install "shinyutils[color]"  # install with color support
 pip install "shinyutils[color,plotting]"  # install with color and plotting support
-pip install "shinyutils[all]"  # install with all optional features
 ```
 
 ## Components
