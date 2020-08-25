@@ -67,7 +67,7 @@ crayons = { version = "*", optional = true }
 rich = { version = "*", optional = true }
 matplotlib = { version = "^3.3", optional = true }
 seaborn = { version = "^0.10", optional = true }
-torch = { version = "~1.5.0", optional = true }
+torch = { version = "^1.5.0", optional = true }
 torchvision = { version = "*", optional = true }
 tensorboard = { extras = ["python"], version = "^2.2.1", optional = true }
 tqdm = { version = "^4.46.0", optional = true }
