@@ -44,7 +44,7 @@ class LazyHelpFormatter(HelpFormatter):
     _UNICODE_REPL_START = "\ufffe"  # placeholder for choice list start
     _UNICODE_REPL_END = "\uffff"  # -"- end
     _PATTERN_HEXT = re.compile(r"\(.*?\)$", re.DOTALL)
-    _PATTERN_DEFAULT = re.compile(r"(?<=default:).+?(?=\))", re.DOTALL)
+    _PATTERN_DEFAULT = re.compile(r"(?<=default:).+(?=\))", re.DOTALL)
     _PATTERN_KEYWORD = re.compile(r"default|optional|required")
     _PATTERN_CHOICE = re.compile(
         fr"(?<=\({_CHOICES_START}|{_CHOICE_SEP} |  )"
@@ -97,6 +97,7 @@ class LazyHelpFormatter(HelpFormatter):
         s = s.replace(self._CHOICES_START, self._UNICODE_REPL_START)
         s = s.replace(self._CHOICES_END, self._UNICODE_REPL_END)
         s = s.replace(" ", "␣")
+        s = s.replace("\n", r"\\n")
         return s
 
     def _format_action(self, action):
