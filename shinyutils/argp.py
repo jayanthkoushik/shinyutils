@@ -111,7 +111,7 @@ class LazyHelpFormatter(HelpFormatter):
             slist = [
                 s.replace(self._LIST_SEP, self._UNICODE_REPL_LISTSEP) for s in slist
             ]
-            return f" {self._LIST_SEP} ".join(slist)
+            return f"{self._LIST_SEP} ".join(slist)
         return self._cstr(d)
 
     def _format_action(self, action):
@@ -185,6 +185,8 @@ class LazyHelpFormatter(HelpFormatter):
                 if isinstance(action.default, (list, tuple)):
                     # color individual items in the sequence then join
                     def_match_pieces = def_match_colored.split(f"{self._LIST_SEP}")
+                    if def_match_pieces[0].startswith(" "):
+                        def_match_pieces[0] = def_match_pieces[0][1:]
                     def_match_pieces_colored = list(
                         map(self._COLOR_DEFAULT, def_match_pieces)
                     )
@@ -195,9 +197,9 @@ class LazyHelpFormatter(HelpFormatter):
                         self._UNICODE_REPL_LISTSEP, self._LIST_SEP
                     )
                     if isinstance(action.default, list):
-                        def_match_colored = " [" + def_match_colored + " ]"
+                        def_match_colored = " [" + def_match_colored + "]"
                     else:
-                        def_match_colored = " (" + def_match_colored + " )"
+                        def_match_colored = " (" + def_match_colored + ")"
                 else:
                     def_match_colored = self._COLOR_DEFAULT(def_match_colored)
                 fmt_hext_colored = re.sub(
