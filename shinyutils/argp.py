@@ -43,6 +43,8 @@ class LazyHelpFormatter(HelpFormatter):
     _CHOICES_END = "}"
     _UNICODE_REPL_START = "\ufffe"  # placeholder for choice list start
     _UNICODE_REPL_END = "\uffff"  # -"- end
+    _LIST_SEP = ","
+    _UNICODE_REPL_LISTSEP = "\ufffd"  # placeholder for list separator
     _PATTERN_HEXT = re.compile(r"\(.*?\)$", re.DOTALL)
     _PATTERN_DEFAULT = re.compile(r"(?<=default:).+(?=\))", re.DOTALL)
     _PATTERN_CHOICE = re.compile(
@@ -95,10 +97,22 @@ class LazyHelpFormatter(HelpFormatter):
             s = str(c)
         s = s.replace(self._CHOICES_START, self._UNICODE_REPL_START)
         s = s.replace(self._CHOICES_END, self._UNICODE_REPL_END)
+        s = s.replace(self._CHOICE_SEP, self._UNICODE_REPL_SEP)
         s = s.replace(" ", "␣")
         s = s.replace("\n", "␤")
         s = s.replace("\r", "␍")
         return s
+
+    def _dstr(self, d):
+        # pylint: disable=no-self-use
+        # convert default value to string
+        if isinstance(d, (list, tuple)):
+            slist = [self._dstr(di) for di in d]
+            slist = [
+                s.replace(self._LIST_SEP, self._UNICODE_REPL_LISTSEP) for s in slist
+            ]
+            return f" {self._LIST_SEP} ".join(slist)
+        return self._cstr(d)
 
     def _format_action(self, action):
         if action.nargs == 0 and action.option_strings:
@@ -113,13 +127,12 @@ class LazyHelpFormatter(HelpFormatter):
 
         # create formatted choice list
         if action.choices:
-            choice_strs = list(map(self._cstr, action.choices))
-            # replace separators in choices with placeholders to restore later
-            choice_strs = [
-                c.replace(self._CHOICE_SEP, self._UNICODE_REPL_SEP) for c in choice_strs
-            ]
-            # combine all the choices
-            choice_list_fmt = "{" + f" {self._CHOICE_SEP} ".join(choice_strs) + "} "
+            choice_strs = f" {self._CHOICE_SEP} ".join(
+                list(map(self._cstr, action.choices))
+            )
+            choice_list_fmt = (
+                self._CHOICES_START + choice_strs + self._CHOICES_END + " "
+            )
         else:
             choice_list_fmt = ""
 
@@ -134,7 +147,7 @@ class LazyHelpFormatter(HelpFormatter):
         elif action.default is None or action.default == SUPPRESS:
             hext = f"({choice_list_fmt}optional)"
         else:
-            hext = f"({choice_list_fmt}default: {self._cstr(action.default)})"
+            hext = f"({choice_list_fmt}default: {self._dstr(action.default)})"
 
         # combine 'base_fmt' with 'help_' and 'hext'
         fmt = base_fmt.strip("\n")
@@ -169,19 +182,42 @@ class LazyHelpFormatter(HelpFormatter):
             if def_match:
                 def_match = def_match.group(0)
                 def_match_colored = def_match.replace(self._COLOR_METAVAR("\b\b"), "")
-                def_match_colored = self._COLOR_DEFAULT(def_match_colored)
+                if isinstance(action.default, (list, tuple)):
+                    # color individual items in the sequence then join
+                    def_match_pieces = def_match_colored.split(f"{self._LIST_SEP}")
+                    def_match_pieces_colored = list(
+                        map(self._COLOR_DEFAULT, def_match_pieces)
+                    )
+                    def_match_colored = f"{self._LIST_SEP}".join(
+                        def_match_pieces_colored
+                    )
+                    def_match_colored = def_match_colored.replace(
+                        self._UNICODE_REPL_LISTSEP, self._LIST_SEP
+                    )
+                    if isinstance(action.default, list):
+                        def_match_colored = " [" + def_match_colored + " ]"
+                    else:
+                        def_match_colored = " (" + def_match_colored + " )"
+                else:
+                    def_match_colored = self._COLOR_DEFAULT(def_match_colored)
                 fmt_hext_colored = re.sub(
                     self._PATTERN_DEFAULT, def_match_colored, fmt_hext
                 )
-                fmt_hext_colored = re.sub("default", self._COLOR_KEYWORD, fmt_hext_colored, count=1)
+                fmt_hext_colored = re.sub(
+                    "default", self._COLOR_KEYWORD, fmt_hext_colored, count=1
+                )
             else:
                 fmt_hext_colored = fmt_hext
 
             # color keywords
             if action.required:
-                fmt_hext_colored = self._COLOR_KEYWORD("required").join(fmt_hext_colored.rsplit("required", 1))
+                fmt_hext_colored = self._COLOR_KEYWORD("required").join(
+                    fmt_hext_colored.rsplit("required", 1)
+                )
             elif action.default is None or action.default == SUPPRESS:
-                fmt_hext_colored = self._COLOR_KEYWORD("optional").join(fmt_hext_colored.rsplit("optional", 1))
+                fmt_hext_colored = self._COLOR_KEYWORD("optional").join(
+                    fmt_hext_colored.rsplit("optional", 1)
+                )
 
             # color choices
             fmt_hext_colored = re.sub(
