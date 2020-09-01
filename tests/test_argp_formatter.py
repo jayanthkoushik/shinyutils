@@ -52,8 +52,9 @@ shiny_arg_parser.add_argument(
     type=str,
     choices=[
         "a/b",
-        "[]",
-        "()",
+        "a / b",
+        " [ ] ",
+        " ( ) ",
         "[hello]",
         "{}",
         "{0",
@@ -65,8 +66,59 @@ shiny_arg_parser.add_argument(
         "a b",
         "  ",
         "'ab'",
+        "a,b",
+        "str",
+        "int",
+        "default",
+        "optional",
+        "required",
     ],
 )
 shiny_arg_parser.add_argument("--long-help", type=int, help="help " * 25)
+shiny_arg_parser.add_argument("--long-help-single-word", type=int, help="help" * 25)
+
+shiny_arg_parser.add_argument(
+    "--keywords-in-default", type=str, default="str int default optional required"
+)
+shiny_arg_parser.add_argument("--newline-in-default", type=str, default="a\nb")
+shiny_arg_parser.add_argument(
+    "--list-default", type=str, nargs="*", default=["a", "b", "c"]
+)
+shiny_arg_parser.add_argument(
+    "--tuple-default", type=str, nargs="*", default=("a", "b", "c")
+)
+shiny_arg_parser.add_argument(
+    "--bad-list-default",
+    type=str,
+    nargs="*",
+    default=[
+        "a/b",
+        "a / b",
+        " [ ] ",
+        " ( ) ",
+        "[hello]",
+        "{}",
+        "{0",
+        "0}",
+        "(}",
+        "{]",
+        "{{)(}}]][[",
+        '"',
+        "a b",
+        "  ",
+        "'ab'",
+        "a,b",
+        "str",
+        "int",
+        "default",
+        "optional",
+        "required",
+    ],
+)
+shiny_arg_parser.add_argument(
+    "--long-default",
+    type=str,
+    default=(" default " * 10 + "\n" + "default" * 10 + "\n" + "default " * 10),
+)
 
 shiny_arg_parser.print_help()
