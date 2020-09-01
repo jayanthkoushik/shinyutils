@@ -329,7 +329,9 @@ def comma_separated_ints(string: str) -> List[int]:
     try:
         return list(map(int, string.split(",")))
     except:
-        raise ArgumentTypeError(f"`{string}` is not a comma separated list of ints")
+        raise ArgumentTypeError(
+            f"`{string}` is not a comma separated list of ints"
+        ) from None
 
 
 class CommaSeparatedInts:
@@ -340,7 +342,9 @@ class CommaSeparatedInts:
         try:
             return list(map(int, string.split(",")))
         except:
-            raise ArgumentTypeError(f"`{string}` is not a comma separated list of ints")
+            raise ArgumentTypeError(
+                f"`{string}` is not a comma separated list of ints"
+            ) from None
 
 
 class InputFileType(FileType):
@@ -385,7 +389,7 @@ class OutputFileType(FileType):
             try:
                 os.makedirs(file_dir)
             except Exception as e:
-                raise ArgumentTypeError(f"could not create {file_dir}: {e}")
+                raise ArgumentTypeError(f"could not create {file_dir}") from e
             logging.info(f"created {file_dir}")
         return super().__call__(string)
 
@@ -412,7 +416,7 @@ class OutputDirectoryType:
             try:
                 os.makedirs(string)
             except Exception as e:
-                raise ArgumentTypeError(f"cound not create {string}: {e}")
+                raise ArgumentTypeError(f"cound not create {string}") from e
             logging.info(f"created {string}")
         elif not os.path.isdir(string):
             raise ArgumentTypeError(f"{string} is a file: expected directory")
@@ -436,7 +440,7 @@ class ClassType(Generic[T]):
             choices = [f"'{c}'" for c in get_subclass_names(self.cls)]
             raise ArgumentTypeError(
                 f"invalid choice: '{string}' " f"(choose from {', '.join(choices)})"
-            )
+            ) from None
 
 
 class KeyValuePairsType:
@@ -459,5 +463,5 @@ class KeyValuePairsType:
                         pass
                 out[k] = pv
         except Exception as e:
-            raise ArgumentTypeError(e)
+            raise ArgumentTypeError() from e
         return out

@@ -161,7 +161,9 @@ class PTOpt:
         )
 
         base_parser.add_argument(
-            f"--{arg_prefix}lr-sched-params", type=KeyValuePairsType(), default=dict(),
+            f"--{arg_prefix}lr-sched-params",
+            type=KeyValuePairsType(),
+            default=dict(),
         )
 
         return base_parser
@@ -266,7 +268,9 @@ class FCNet(nn.Module):
                 try:
                     return getattr(F, string)
                 except AttributeError:
-                    raise ArgumentTypeError(f"invalid activation function: {string}")
+                    raise ArgumentTypeError(
+                        f"invalid activation function: {string}"
+                    ) from None
 
         if arg_prefix:
             arg_prefix += "-"

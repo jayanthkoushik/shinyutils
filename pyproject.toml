@@ -35,7 +35,8 @@ disable = """
     wrong-import-position,
     logging-format-interpolation,
     logging-fstring-interpolation,
-    arguments-differ
+    arguments-differ,
+    abstract-method,
 """
 
 [tool.poetry]
