@@ -45,7 +45,6 @@ class LazyHelpFormatter(HelpFormatter):
     _UNICODE_REPL_END = "\uffff"  # -"- end
     _PATTERN_HEXT = re.compile(r"\(.*?\)$", re.DOTALL)
     _PATTERN_DEFAULT = re.compile(r"(?<=default:).+(?=\))", re.DOTALL)
-    _PATTERN_KEYWORD = re.compile(r"default|optional|required")
     _PATTERN_CHOICE = re.compile(
         fr"(?<=\({_CHOICES_START}|{_CHOICE_SEP} |  )"
         + fr"[^{_CHOICES_START}{_CHOICE_SEP}{_CHOICES_END}]+?"
@@ -97,7 +96,8 @@ class LazyHelpFormatter(HelpFormatter):
         s = s.replace(self._CHOICES_START, self._UNICODE_REPL_START)
         s = s.replace(self._CHOICES_END, self._UNICODE_REPL_END)
         s = s.replace(" ", "␣")
-        s = s.replace("\n", r"\\n")
+        s = s.replace("\n", "␤")
+        s = s.replace("\r", "␍")
         return s
 
     def _format_action(self, action):
@@ -173,13 +173,15 @@ class LazyHelpFormatter(HelpFormatter):
                 fmt_hext_colored = re.sub(
                     self._PATTERN_DEFAULT, def_match_colored, fmt_hext
                 )
+                fmt_hext_colored = re.sub("default", self._COLOR_KEYWORD, fmt_hext_colored, count=1)
             else:
                 fmt_hext_colored = fmt_hext
 
             # color keywords
-            fmt_hext_colored = re.sub(
-                self._PATTERN_KEYWORD, self._COLOR_KEYWORD, fmt_hext_colored
-            )
+            if action.required:
+                fmt_hext_colored = self._COLOR_KEYWORD("required").join(fmt_hext_colored.rsplit("required", 1))
+            elif action.default is None or action.default == SUPPRESS:
+                fmt_hext_colored = self._COLOR_KEYWORD("optional").join(fmt_hext_colored.rsplit("optional", 1))
 
             # color choices
             fmt_hext_colored = re.sub(
