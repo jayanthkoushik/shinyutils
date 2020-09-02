@@ -1,7 +1,6 @@
-__version__ = "4.2.0"
-
 import argparse as _argparse
 
+from shinyutils._version import __version__
 from shinyutils.argp import *
 from shinyutils.logng import *
 

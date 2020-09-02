@@ -79,7 +79,6 @@ plotting = ["matplotlib", "seaborn"]
 pytorch = ["torch", "torchvision", "tensorboard", "tqdm"]
 
 [tool.poetry.dev-dependencies]
-bump2version = "^1.0"
 black = { version = ">=19.3b0", allow-prereleases = true }
 pylint = "^2.3"
 pre-commit = "^2.0"
