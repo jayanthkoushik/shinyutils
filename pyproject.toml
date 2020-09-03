@@ -41,7 +41,7 @@ disable = """
 
 [tool.poetry]
 name = "shinyutils"
-version = "4.2.0"
+version = "5.0.0"
 description = "Personal collection of common utilities"
 authors = ["Jayanth Koushik <jnkoushik@gmail.com>"]
 license = "MIT"
