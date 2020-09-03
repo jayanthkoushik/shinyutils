@@ -51,6 +51,7 @@ packages = [
     { include = "shinyutils" },
     { include = "tests", format = "sdist" },
 ]
+include = ["CHANGELOG.md"]
 
 classifiers = [
     "Development Status :: 4 - Beta",
