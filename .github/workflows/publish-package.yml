@@ -21,10 +21,9 @@ jobs:
     - name: Build dist
       run: $HOME/.poetry/bin/poetry build
     - name: Publish to pypi
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        user: jayanth_koushik
-        password: ${{ secrets.PYPI_PASSWORD }}
+      run: $HOME/.poetry/bin/poetry publish -u jayanth_koushik -p $PYPI_PASSWORD
+      env:
+        PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
     - name: Add wheel to release
       uses: svenstaro/upload-release-action@master
       with:
