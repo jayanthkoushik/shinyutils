@@ -25,3 +25,10 @@ jobs:
       with:
         user: jayanth_koushik
         password: ${{ secrets.PYPI_PASSWORD }}
+    - name: Add wheel to release
+      uses: svenstaro/upload-release-action@master
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: dist/*.whl
+        tag: ${{ github.ref }}
+        file_glob: true
