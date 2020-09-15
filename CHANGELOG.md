@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.0.2](https://github.com/jayanthkoushik/shinyutils/compare/v5.0.1...v5.0.2) (2020-09-15)
+
+
+### Bug Fixes
+
+* **build:** add dataclasses dependency for 3.6 ([35575e3](https://github.com/jayanthkoushik/shinyutils/commit/35575e3be57b9488277f48fe6f591892cb99ad07))
+
 ### [5.0.1](https://github.com/jayanthkoushik/shinyutils/compare/v5.0.0...v5.0.1) (2020-09-03)
 
 
