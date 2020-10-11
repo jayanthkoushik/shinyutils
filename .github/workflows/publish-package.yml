@@ -1,4 +1,4 @@
-name: Publish package to pypi
+name: Publish package to pypi and add wheel to GitHub release
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
     - 'v*'
 
 jobs:
-  main:
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -17,10 +17,16 @@ jobs:
       run: curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
     - name: Build dist
       run: $HOME/.poetry/bin/poetry build
+  pypi-upload:
+    needs: build
+    steps:
     - name: Publish to pypi
       run: $HOME/.poetry/bin/poetry publish -u jayanth_koushik -p $PYPI_PASSWORD
       env:
         PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+  gh-release-upload:
+    needs: build
+    steps:
     - name: Add wheel to release
       uses: svenstaro/upload-release-action@master
       with:
