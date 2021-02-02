@@ -60,6 +60,7 @@ class MatWrap:
                 raise e
 
             cls._mpl = matplotlib
+            cls._mpl_default_rc = cls._mpl.rcParams.copy()
             cls._mpl.rcParams.update(rc)
 
             import matplotlib.pyplot
@@ -73,8 +74,14 @@ class MatWrap:
             cls._plt = matplotlib.pyplot
             cls._sns = seaborn
         else:
+            cls._mpl.rcParams = cls._mpl_default_rc.copy()
             cls._mpl.rcParams.update(rc)
-        cls._sns.set(context, style, rc=rc)
+
+        if "font.size" in rc:
+            font_scale = rc["font.size"] / cls._mpl_default_rc["font.size"]
+        else:
+            font_scale = 1
+        cls._sns.set(context, style, font_scale=font_scale, rc=rc)
 
         cls._args = rc_extra.copy()
         cls._args["context"] = context
