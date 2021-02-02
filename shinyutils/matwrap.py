@@ -81,7 +81,7 @@ class MatWrap:
             font_scale = rc["font.size"] / cls._mpl_default_rc["font.size"]
         else:
             font_scale = 1
-        cls._sns.set(context, style, font_scale=font_scale, rc=rc)
+        cls._sns.set(context, style, cls.palette(), font_scale=font_scale, rc=rc)
 
         cls._args = rc_extra.copy()
         cls._args["context"] = context
