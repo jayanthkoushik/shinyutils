@@ -336,11 +336,11 @@ class NNTrainer:
         ...
 
     @overload
-    def set_dataset(self, value: Tuple[torch.Tensor, ...]) -> None:
+    def set_dataset(self, value: Tuple[torch.Tensor, ...]) -> None:  # type: ignore
         ...
 
     @overload
-    def set_dataset(self, value: Tuple[np.ndarray, ...]) -> None:
+    def set_dataset(self, value: Tuple[np.ndarray, ...]) -> None:  # type: ignore
         ...
 
     def set_dataset(self, value):
