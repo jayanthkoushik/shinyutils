@@ -1,4 +1,5 @@
 """matwrap.py: wrapper around matplotlib."""
+# pylint: disable=undefined-all-variable
 
 import json
 import logging
@@ -11,7 +12,15 @@ from pkg_resources import resource_filename
 from shinyutils import shiny_arg_parser
 from shinyutils.argp import KeyValuePairsType
 
-__all__ = ["MatWrap", "Plot"]
+_WRAPPED_NAMES = ["mpl", "plt", "sns"]
+__all__ = ["MatWrap", "Plot"] + _WRAPPED_NAMES
+
+
+def __getattr__(name):
+    if name in _WRAPPED_NAMES:
+        attr = getattr(MatWrap, name)
+        return attr.__func__(MatWrap)
+    raise AttributeError
 
 
 class MatWrap:
