@@ -2,7 +2,7 @@
 # pylint: disable=undefined-all-variable
 
 import json
-import logging
+import warnings
 from argparse import _ArgumentGroup, Action, ArgumentParser
 from contextlib import AbstractContextManager
 from typing import Optional, Tuple, Union
@@ -137,8 +137,9 @@ class MatWrap:
 
     @staticmethod
     def set_size_tight(fig, size):
-        logging.warning(
-            "constrained_layout is enabled by default: don't use tight_layout"
+        warnings.warn(
+            "constrained_layout is enabled by default: don't use tight_layout",
+            FutureWarning,
         )
         fig.set_size_inches(*size)
         fig.tight_layout(pad=0, w_pad=0, h_pad=0)

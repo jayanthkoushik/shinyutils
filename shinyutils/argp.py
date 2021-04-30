@@ -6,6 +6,7 @@ import re
 import shutil
 import sys
 import textwrap
+import warnings
 from argparse import (
     ArgumentParser,
     ArgumentTypeError,
@@ -27,11 +28,9 @@ except ImportError as e:
 else:
     HAS_CRAYONS = True
 
-
 __all__ = [
     "shiny_arg_parser",
     "LazyHelpFormatter",
-    "comma_separated_ints",
     "CommaSeparatedInts",
     "InputFileType",
     "OutputFileType",
@@ -40,6 +39,16 @@ __all__ = [
     "ClassType",
     "KeyValuePairsType",
 ]
+
+
+def __getattr__(name):
+    if name == "comma_separated_ints":
+        warnings.warn(
+            "comma_separated_ints is deprecated: use CommaSeparatedInts instead",
+            FutureWarning,
+        )
+        return _comma_separated_ints
+    raise AttributeError
 
 
 class LazyHelpFormatter(HelpFormatter):
@@ -333,8 +342,7 @@ class LazyHelpFormatter(HelpFormatter):
         super().start_section(heading)
 
 
-def comma_separated_ints(string: str) -> List[int]:
-    logging.warning("comma_separated_ints is deprecated and will be removed")
+def _comma_separated_ints(string: str) -> List[int]:
     try:
         return list(map(int, string.split(",")))
     except:
