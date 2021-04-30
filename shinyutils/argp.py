@@ -6,7 +6,13 @@ import re
 import shutil
 import sys
 import textwrap
-from argparse import ArgumentTypeError, FileType, HelpFormatter, SUPPRESS
+from argparse import (
+    ArgumentParser,
+    ArgumentTypeError,
+    FileType,
+    HelpFormatter,
+    SUPPRESS,
+)
 from pathlib import Path
 from typing import Any, Dict, Generic, IO, List, Optional, Type, TypeVar, Union
 from unittest.mock import patch
@@ -23,6 +29,7 @@ else:
 
 
 __all__ = [
+    "shiny_arg_parser",
     "LazyHelpFormatter",
     "comma_separated_ints",
     "CommaSeparatedInts",
@@ -467,3 +474,6 @@ class KeyValuePairsType:
         except Exception as e:
             raise ArgumentTypeError() from e
         return out
+
+
+shiny_arg_parser = ArgumentParser(formatter_class=LazyHelpFormatter)

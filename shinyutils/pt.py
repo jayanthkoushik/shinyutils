@@ -39,12 +39,12 @@ from torch.optim.optimizer import Optimizer  # pylint: disable=no-name-in-module
 from torch.utils.data import DataLoader, Dataset, TensorDataset
 from tqdm import trange
 
-from shinyutils import shiny_arg_parser
 from shinyutils.argp import (
     ClassType,
     CommaSeparatedInts,
     KeyValuePairsType,
     OutputDirectoryType,
+    shiny_arg_parser,
 )
 from shinyutils.subcls import get_subclasses
 

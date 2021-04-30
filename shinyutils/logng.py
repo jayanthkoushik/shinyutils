@@ -4,6 +4,8 @@ import argparse
 import logging
 from typing import Optional
 
+from shinyutils.argp import shiny_arg_parser
+
 try:
     from rich.logging import RichHandler
 except ImportError as e:
@@ -11,6 +13,7 @@ except ImportError as e:
     RICH_IMPORT_ERROR = e
 else:
     HAS_RICH = True
+
 
 __all__ = ["build_log_argp", "conf_logging"]
 
@@ -85,3 +88,7 @@ def conf_logging(
 
     if inform_about_color:
         logging.info("for logging color support install shinyutils[color]")
+
+
+conf_logging()
+build_log_argp(shiny_arg_parser)

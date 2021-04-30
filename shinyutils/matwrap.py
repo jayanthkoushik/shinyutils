@@ -9,8 +9,7 @@ from typing import Optional, Tuple, Union
 
 from pkg_resources import resource_filename
 
-from shinyutils import shiny_arg_parser
-from shinyutils.argp import KeyValuePairsType
+from shinyutils.argp import KeyValuePairsType, shiny_arg_parser
 
 _WRAPPED_NAMES = ["mpl", "plt", "sns"]
 __all__ = ["MatWrap", "Plot"] + _WRAPPED_NAMES
