@@ -4,7 +4,7 @@ import argparse
 import logging
 from typing import Optional
 
-from shinyutils.argp import shiny_arg_parser
+from shinyutils._argp import shiny_arg_parser
 
 try:
     from rich.logging import RichHandler

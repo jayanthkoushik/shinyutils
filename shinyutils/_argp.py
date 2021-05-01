@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Any, Dict, Generic, IO, List, Optional, Type, TypeVar, Union
 from unittest.mock import patch
 
-from shinyutils.subcls import get_subclass_from_name, get_subclass_names
+from shinyutils._subcls import get_subclass_from_name, get_subclass_names
 
 try:
     import crayons

@@ -39,14 +39,14 @@ from torch.optim.optimizer import Optimizer  # pylint: disable=no-name-in-module
 from torch.utils.data import DataLoader, Dataset, TensorDataset
 from tqdm import trange
 
-from shinyutils.argp import (
+from shinyutils._argp import (
     ClassType,
     CommaSeparatedInts,
     KeyValuePairsType,
     OutputDirectoryType,
     shiny_arg_parser,
 )
-from shinyutils.subcls import get_subclasses
+from shinyutils._subcls import get_subclasses
 
 try:
     from torch.utils.tensorboard import SummaryWriter
