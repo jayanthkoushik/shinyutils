@@ -61,7 +61,6 @@ readme = "README.md"
 repository = "https://github.com/jayanthkoushik/shinyutils"
 packages = [
     { include = "shinyutils" },
-    { include = "tests", format = "sdist" },
 ]
 include = ["CHANGELOG.md"]
 
