@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.0.0](https://github.com/jayanthkoushik/shinyutils/compare/v6.0.0...v7.0.0) (2021-08-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove LazyHelpFormatter since it is now a separate package
+* prefix "private" submodule names with '_'
+* improve deprecation handling
+
+### Features
+
+* allow direct access to modules wrapped by MatWrap ([c1a1191](https://github.com/jayanthkoushik/shinyutils/commit/c1a11910f0a36f1adf50d5d89b1cd9d54f558ca2))
+
+
+* improve deprecation handling ([913539a](https://github.com/jayanthkoushik/shinyutils/commit/913539ad1efb704a84da6bb243909eccc06c87fa))
+* prefix "private" submodule names with '_' ([b75979a](https://github.com/jayanthkoushik/shinyutils/commit/b75979a7383303f2c0ba8cdfff25218bd528b3b2))
+* remove LazyHelpFormatter since it is now a separate package ([208a388](https://github.com/jayanthkoushik/shinyutils/commit/208a388c96c6f9ad82b448b74ebf5e365a16095c))
+
 ## [6.0.0](https://github.com/jayanthkoushik/shinyutils/compare/v5.0.2...v6.0.0) (2021-02-02)
 
 
