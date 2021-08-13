@@ -4,7 +4,7 @@ Various utilities for common tasks. :sparkles: :sparkles: :sparkles:
 ## Setup
 Install with `pip`. Additional features can be enabled with the `[<feature>]` syntax shown below. Available optional features are:
 
-* `color`: color support for logging and argument parsing
+* `color`: color support for logging
 
 * `plotting`: support for `matplotlib` and `seaborn`
 
@@ -29,17 +29,6 @@ Utility functions for dealing with subclasses.
 
 ### `argp`
 Utilities for argument parsing.
-
-#### `LazyHelpFormatter`
-`HelpFormatter` with sane defaults, and colors (courtesy of `crayons`)! To use, simply pass `formatter_class=LazyHelpFormatter` when creating `ArgumentParser` instances.
-
-```python
-arg_parser = ArgumentParser(formatter_class=LazyHelpFormatter)
-sub_parsers = arg_parser.add_subparsers(dest="cmd")
-sub_parsers.required = True
-# `formatter_class` needs to be set for sub parsers as well.
-cmd1_parser = sub_parsers.add_parser("cmd1", formatter_class=LazyHelpFormatter)
-```
 
 #### `CommaSeparatedInts`
 `ArgumentParser` type representing a list of `int` values. Accepts a string of comma separated values, e.g., `'1,2,3'`.
@@ -75,9 +64,6 @@ arg_parser.add_argument("--cls", type=ClassType(Base), default=A)
 #### `KeyValuePairsType`
 `ArgumentParser` type representing mappings. Accepts inputs of the form `str=val,[...]` where val is `int/float/str`. Returns a `dict`.
 
-#### `shiny_arg_parser`
-`ArgumentParser` object with `LazyHelpFormatter`, and arguments from sub-modules.
-
 ### `logng`
 Utilities for logging.
 
@@ -94,8 +80,6 @@ optional arguments:
   -h, --help            show this help message and exit
   --log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
 ```
-
-This function is called on `shiny_arg_parser` when `shinyutils` is imported.
 
 #### `conf_logging`
 Configures global logging using arguments returned by `ArgumentParser.parse_args`. `log_level` can be over-ridden with the keyword argument. Colors (enabled by default if `rich` is installed) can be toggled.
@@ -139,6 +123,7 @@ Use `mw.configure` to configure plots. Arguments (defaults in bold) are:
 * `latex_pkgs`: additional latex packages to be included before defaults
 
 * `**rc_extra`: matplotlib rc parameters to override defaults
+
 `mw.configure()` is called when `shinyutils.matwrap` is imported.
 
 Use `add_parser_config_args` to add matwrap config options to an argument parser.
@@ -164,7 +149,7 @@ plotting options:
   --plotting-rc-extra PLOTTING_RC_EXTRA
 ```
 
-`group_title` is optional, and if omitted, matwrap options will not be put in a separate group. When `shinyutils.matwrap` is imported, this function is called on `shiny_arg_parser`.
+`group_title` is optional, and if omitted, matwrap options will not be put in a separate group.
 
 #### Plot
 `Plot` is a wrapper around a single matplotlib plot, designed to be used as a context manager.
@@ -251,8 +236,6 @@ Adam(params, lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=Fa
 ...
 ```
 
-The help options are added to `shiny_arg_parser` when `shinyutils.pt` is imported.
-
 #### `FCNet`
 `FCNet` is a template class for fully connected networks.
 
@@ -318,17 +301,17 @@ nn_trainer.train(model, opt, loss_fn, iters)
 ```
 
 #### `SetTBWriterAction`
-`argparse` action to create a tensorboard summary writer. The writer is stored in the `tb_writer` attribute of the argument namespace; this can be overridden by setting `SetTBWriterAction.attr`. The usage is shown below with the tensorboard option that is added to `shiny_arg_parser` on importing the module.
+`argparse` action to create a tensorboard summary writer. The writer is stored in the `tb_writer` attribute of the argument namespace; this can be overridden by setting `SetTBWriterAction.attr`. The usage is shown below.
 
 ```python
-shiny_arg_parser.add_argument(
+parser.add_argument(
     "--tb-dir",
     type=OutputDirectoryType(),
     help="tensorboard log directory",
     default=None,
     action=SetTBWriterAction,
 )
-shiny_arg_parser.set_defaults(**{SetTBWriterAction.attr: Mock(SummaryWriter)})
+parser.set_defaults(**{SetTBWriterAction.attr: Mock(SummaryWriter)})
 ```
 
-`shiny_arg_parser.tb_writer` will contain a `SummaryWriter` like object. If no log directory is provided through the command line, this object will be a dummy. So tensorboard functions can be called on the writer without extra checks.
+`parser.tb_writer` will contain a `SummaryWriter` like object. If no log directory is provided through the command line, this object will be a dummy. So tensorboard functions can be called on the writer without extra checks.

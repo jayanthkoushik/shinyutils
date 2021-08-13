@@ -39,13 +39,7 @@ from torch.optim.optimizer import Optimizer  # pylint: disable=no-name-in-module
 from torch.utils.data import DataLoader, Dataset, TensorDataset
 from tqdm import trange
 
-from shinyutils._argp import (
-    ClassType,
-    CommaSeparatedInts,
-    KeyValuePairsType,
-    OutputDirectoryType,
-    shiny_arg_parser,
-)
+from shinyutils._argp import ClassType, CommaSeparatedInts, KeyValuePairsType
 from shinyutils._subcls import get_subclasses
 
 try:
@@ -422,14 +416,12 @@ def _better_lr_sched_repr(lr_sched: _LRScheduler):
 
 setattr(_LRScheduler, "__repr__", _better_lr_sched_repr)
 
-PTOpt.add_help(shiny_arg_parser)
-
-if ENABLE_TB:
-    shiny_arg_parser.add_argument(
-        "--tb-dir",
-        type=OutputDirectoryType(),
-        help="tensorboard log directory",
-        default=None,
-        action=SetTBWriterAction,
-    )
-    shiny_arg_parser.set_defaults(**{SetTBWriterAction.attr: Mock(SummaryWriter)})
+# if ENABLE_TB:
+#     shiny_arg_parser.add_argument(
+#         "--tb-dir",
+#         type=OutputDirectoryType(),
+#         help="tensorboard log directory",
+#         default=None,
+#         action=SetTBWriterAction,
+#     )
+#     shiny_arg_parser.set_defaults(**{SetTBWriterAction.attr: Mock(SummaryWriter)})

@@ -9,7 +9,7 @@ from typing import Optional, Tuple, Union
 
 from pkg_resources import resource_filename
 
-from shinyutils._argp import KeyValuePairsType, shiny_arg_parser
+from shinyutils._argp import KeyValuePairsType
 
 _WRAPPED_NAMES = ["mpl", "plt", "sns"]
 __all__ = ["MatWrap", "Plot"] + _WRAPPED_NAMES
@@ -251,4 +251,3 @@ class Plot(AbstractContextManager):
 
 
 MatWrap.configure()
-MatWrap.add_parser_config_args(shiny_arg_parser)

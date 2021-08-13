@@ -4,8 +4,6 @@ import argparse
 import logging
 from typing import Optional
 
-from shinyutils._argp import shiny_arg_parser
-
 try:
     from rich.logging import RichHandler
 except ImportError as e:
@@ -91,4 +89,3 @@ def conf_logging(
 
 
 conf_logging()
-build_log_argp(shiny_arg_parser)
