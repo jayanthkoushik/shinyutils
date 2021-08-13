@@ -6,7 +6,6 @@ import re
 import shutil
 import sys
 import textwrap
-import warnings
 from argparse import (
     ArgumentParser,
     ArgumentTypeError,
@@ -39,16 +38,6 @@ __all__ = [
     "ClassType",
     "KeyValuePairsType",
 ]
-
-
-def __getattr__(name):
-    if name == "comma_separated_ints":
-        warnings.warn(
-            "comma_separated_ints is deprecated: use CommaSeparatedInts instead",
-            FutureWarning,
-        )
-        return _comma_separated_ints
-    raise AttributeError
 
 
 class LazyHelpFormatter(HelpFormatter):
@@ -340,15 +329,6 @@ class LazyHelpFormatter(HelpFormatter):
         elif heading == "optional arguments":
             heading = "options"
         super().start_section(heading)
-
-
-def _comma_separated_ints(string: str) -> List[int]:
-    try:
-        return list(map(int, string.split(",")))
-    except:
-        raise ArgumentTypeError(
-            f"`{string}` is not a comma separated list of ints"
-        ) from None
 
 
 class CommaSeparatedInts:
