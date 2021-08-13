@@ -41,7 +41,8 @@ class MatWrap:
         latex_pkgs=None,
         **rc_extra,
     ):
-        """
+        """Configure matplotlib and seaborn.
+
         Arguments:
             context: seaborn context (paper/notebook/poster).
             style: seaborn style (whitegrid, darkgrid, etc.)

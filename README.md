@@ -3,8 +3,11 @@ Various utilities for common tasks. :sparkles: :sparkles: :sparkles:
 
 ## Setup
 Install with `pip`. Additional features can be enabled with the `[<feature>]` syntax shown below. Available optional features are:
+
 * `color`: color support for logging and argument parsing
+
 * `plotting`: support for `matplotlib` and `seaborn`
+
 ```bash
 pip install shinyutils  # basic install
 pip install "shinyutils[color]"  # install with color support
@@ -17,8 +20,11 @@ pip install "shinyutils[color,plotting]"  # install with color and plotting supp
 Utility functions for dealing with subclasses.
 
 #### Functions
+
 * __`get_subclasses(cls)`__: returns a list of all the subclasses of `cls`.
+
 * __`get_subclass_names(cls)`__: returns a list of names of all subclasses of `cls`.
+
 * __`get_subclass_from_name(base_cls, cls_name)`__: return the subclass of `base_cls` named `cls_name`.
 
 ### `argp`
@@ -26,6 +32,7 @@ Utilities for argument parsing.
 
 #### `LazyHelpFormatter`
 `HelpFormatter` with sane defaults, and colors (courtesy of `crayons`)! To use, simply pass `formatter_class=LazyHelpFormatter` when creating `ArgumentParser` instances.
+
 ```python
 arg_parser = ArgumentParser(formatter_class=LazyHelpFormatter)
 sub_parsers = arg_parser.add_subparsers(dest="cmd")
@@ -51,6 +58,7 @@ cmd1_parser = sub_parsers.add_parser("cmd1", formatter_class=LazyHelpFormatter)
 
 #### `ClassType`
 `ArgumentParser` type representing sub-classes of a given base class. The returned value is a `class`.
+
 ```python
 class Base:
     pass
@@ -72,8 +80,10 @@ arg_parser.add_argument("--cls", type=ClassType(Base), default=A)
 
 ### `logng`
 Utilities for logging.
+
 #### `build_log_argp`
 Creates an argument group with logging arguments.
+
 ```python
 >>> arg_parser = ArgumentParser()
 >>> _ = build_log_argp(arg_parser)  # returns the parser
@@ -84,22 +94,26 @@ optional arguments:
   -h, --help            show this help message and exit
   --log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
 ```
+
 This function is called on `shiny_arg_parser` when `shinyutils` is imported.
 
 #### `conf_logging`
 Configures global logging using arguments returned by `ArgumentParser.parse_args`. `log_level` can be over-ridden with the keyword argument. Colors (enabled by default if `rich` is installed) can be toggled.
+
 ```python
 args = arg_parser.parse_args()
 conf_logging(args)
 conf_logging(args, log_level="INFO")  # override `log_level`
 conf_logging(use_colors=False)  # disable colors
 ```
+
 When imported, `shinyutils` calls `conf_logging` without any arguments.
 
 ### `matwrap`
 Wrapper around `matplotlib` and `seaborn`.
 
 #### `MatWrap`
+
 ```python
 from shinyutils.matwrap import MatWrap as mw  # do not import `matplotlib`, `seaborn`
 
@@ -115,14 +129,20 @@ mw.sns()  # returns `seaborn` module
 ```
 
 Use `mw.configure` to configure plots. Arguments (defaults in bold) are:
+
 * `context`: seaborn context (__paper__/poster/talk/notebook)
+
 * `style`: seaborn style (white/whitegrid/dark/darkgrid/__ticks__)
+
 * `font`: any font available to fontspec (default __Latin Modern Roman__)
+
 * `latex_pkgs`: additional latex packages to be included before defaults
+
 * `**rc_extra`: matplotlib rc parameters to override defaults
 `mw.configure()` is called when `shinyutils.matwrap` is imported.
 
 Use `add_parser_config_args` to add matwrap config options to an argument parser.
+
 ```python
 >>> arg_parser = ArgumentParser()
 >>> _ = mw.add_parser_config_args(arg_parser, group_title="plotting options")  # returns the parser group
@@ -143,16 +163,19 @@ plotting options:
   --plotting-latex-pkgs PLOTTING_LATEX_PKGS [PLOTTING_LATEX_PKGS ...]
   --plotting-rc-extra PLOTTING_RC_EXTRA
 ```
+
 `group_title` is optional, and if omitted, matwrap options will not be put in a separate group. When `shinyutils.matwrap` is imported, this function is called on `shiny_arg_parser`.
 
 #### Plot
 `Plot` is a wrapper around a single matplotlib plot, designed to be used as a context manager.
+
 ```python
 from shinyutils.matwrap import Plot
 
 with Plot(save_file, title, sizexy, labelxy, logxy) as ax:
   ...
 ```
+
 Only the `save_file` argument is mandatory. When entering the context, `Plot` returns the plot axes, and when leaving, the plot is saved to the provided path.
 
 ### `pt`
@@ -160,6 +183,7 @@ Utilities for pytorch.
 
 #### `PTOpt`
 Wrapper around pytorch optimizer and learning rate scheduler.
+
 ```python
 from shinyutils.pt import PTOpt
 opt = PTOpt(
@@ -174,7 +198,9 @@ opt.zero_grad()
 loss.backward()
 opt.step()
 ```
+
 `lr_sched_` arguments are optional, and control the learning rate schedule. The class can also be used with argument parsers.
+
 ```python
 >>> arg_parser = ArgumentParser(formatter_class=LazyHelpFormatter)
 >>> PTOpt.add_parser_args(
@@ -201,7 +227,9 @@ pt test:
 >>> args = arg_parser.parse_args(...)
 >>> opt = PTOpt.from_args(weights, args, arg_prefix="test")
 ```
+
 `PTOpt` can also add help options to argument parsers to display signatures for optimizer and learning rate schedule classes.
+
 ```python
 >>> arg_parser = ArgumentParser()
 >>> PTOpt.add_help(arg_parser)
@@ -222,10 +250,12 @@ pytorch help:
 Adam(params, lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False)
 ...
 ```
+
 The help options are added to `shiny_arg_parser` when `shinyutils.pt` is imported.
 
 #### `FCNet`
 `FCNet` is a template class for fully connected networks.
+
 ```python
 from shinyutils.pt import FCNet
 net = FCNet(
@@ -236,7 +266,9 @@ net = FCNet(
         out_act,  # output layer activation (default None)
 )
 ```
+
 Like `PTOpt`, this class also supports construction through command line arguments.
+
 ```python
 >>> arg_parser = ArgumentParser(formatter_class=LazyHelpFormatter)
 >>> FCNet.add_parser_args(
@@ -265,6 +297,7 @@ fcnet:
 
 #### `NNTrainer`
 This class trains a model on a dataset, and accepts multiple dataset "formats".
+
 ```python
 from shinyutils.pt import *
 nn_trainer = NNTrainer(
@@ -286,6 +319,7 @@ nn_trainer.train(model, opt, loss_fn, iters)
 
 #### `SetTBWriterAction`
 `argparse` action to create a tensorboard summary writer. The writer is stored in the `tb_writer` attribute of the argument namespace; this can be overridden by setting `SetTBWriterAction.attr`. The usage is shown below with the tensorboard option that is added to `shiny_arg_parser` on importing the module.
+
 ```python
 shiny_arg_parser.add_argument(
     "--tb-dir",
@@ -296,4 +330,5 @@ shiny_arg_parser.add_argument(
 )
 shiny_arg_parser.set_defaults(**{SetTBWriterAction.attr: Mock(SummaryWriter)})
 ```
+
 `shiny_arg_parser.tb_writer` will contain a `SummaryWriter` like object. If no log directory is provided through the command line, this object will be a dummy. So tensorboard functions can be called on the writer without extra checks.

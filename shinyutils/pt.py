@@ -31,8 +31,8 @@ from unittest.mock import Mock
 
 # pylint: disable=ungrouped-imports
 import numpy as np
-import torch.nn as nn
 import torch.nn.functional as F
+from torch import nn
 from torch.optim import Adam
 from torch.optim.lr_scheduler import _LRScheduler
 from torch.optim.optimizer import Optimizer  # pylint: disable=no-name-in-module
@@ -68,7 +68,6 @@ __all__ = ["DEFAULT_DEVICE", "PTOpt", "FCNet", "NNTrainer", "SetTBWriterAction"]
 
 
 class PTOpt:
-
     """Wrapper around pytorch optimizer and learning rate scheduler."""
 
     def __init__(
@@ -198,7 +197,6 @@ class PTOpt:
 
 
 class FCNet(nn.Module):
-
     """Template for a fully connected network."""
 
     _ActType = Callable[[torch.Tensor], torch.Tensor]
@@ -374,7 +372,7 @@ class NNTrainer:
             raise RuntimeError("dataset not set: call set_dataset before train")
         bat_iter = iter(self._data_loader)
 
-        logging.info(f"moving model to {self._device}")
+        logging.info("moving model to %s", self._device)
         model = model.to(self._device)
 
         with trange(iters, desc=pbar_desc) as pbar:
@@ -409,7 +407,7 @@ class SetTBWriterAction(Action):
 
 
 def _better_lr_sched_repr(lr_sched: _LRScheduler):
-    """Replacement for default __repr__ in _LRScheduler."""
+    """Replace default __repr__ in _LRScheduler."""
     return (
         lr_sched.__class__.__name__
         + "(\n    "

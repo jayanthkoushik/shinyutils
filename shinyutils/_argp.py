@@ -22,8 +22,8 @@ from shinyutils._subcls import get_subclass_from_name, get_subclass_names
 
 try:
     import crayons
-except ImportError as e:
-    CRAYONS_IMPORT_ERROR = e
+except ImportError as _crayons_import_error:
+    CRAYONS_IMPORT_ERROR = _crayons_import_error
     HAS_CRAYONS = False
 else:
     HAS_CRAYONS = True
@@ -402,12 +402,12 @@ class OutputFileType(FileType):
     def __call__(self, string: str) -> IO:
         file_dir = os.path.dirname(string)
         if file_dir and not os.path.exists(file_dir):
-            logging.warning(f"no directory for {string}: trying to create")
+            logging.warning("no directory for %s: trying to create", string)
             try:
                 os.makedirs(file_dir)
             except Exception as e:
                 raise ArgumentTypeError(f"could not create {file_dir}") from e
-            logging.info(f"created {file_dir}")
+            logging.info("created %s", file_dir)
         return super().__call__(string)
 
 
@@ -429,12 +429,12 @@ class OutputDirectoryType:
 
     def __call__(self, string: str) -> Path:
         if not os.path.exists(string):
-            logging.warning(f"{string} not found: trying to create")
+            logging.warning("%s not found: trying to create", string)
             try:
                 os.makedirs(string)
             except Exception as e:
-                raise ArgumentTypeError(f"cound not create {string}") from e
-            logging.info(f"created {string}")
+                raise ArgumentTypeError("cound not create %s" % string) from e
+            logging.info("created %s", string)
         elif not os.path.isdir(string):
             raise ArgumentTypeError(f"{string} is a file: expected directory")
         return Path(string)
