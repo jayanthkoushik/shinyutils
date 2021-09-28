@@ -1,17 +1,15 @@
-"""matwrap.py: wrapper around matplotlib."""
-# pylint: disable=undefined-all-variable
+"""Utilities for matplotlib and seaborn."""
 
 import json
 import warnings
 from argparse import _ArgumentGroup, Action, ArgumentParser
 from contextlib import AbstractContextManager
-from typing import Optional, Tuple, Union
+from typing import Any, List, Mapping, Optional, Tuple, Union
 
+from corgy.types import KeyValueType
 from pkg_resources import resource_filename
 
-from shinyutils._argp import KeyValuePairsType
-
-_WRAPPED_NAMES = ["mpl", "plt", "sns"]
+_WRAPPED_NAMES = ["mpl", "plt", "sns"]  # pylint: disable=undefined-all-variable
 __all__ = ["MatWrap", "Plot"] + _WRAPPED_NAMES
 
 
@@ -23,32 +21,52 @@ def __getattr__(name):
 
 
 class MatWrap:
+    """Wrapper for `matplotlib`, `matplotlib.pyplot`, and `seaborn`.
+
+    Usage::
+
+        # Do not import `matplotlib` or `seaborn`.
+        from shinyutils.matwrap import MatWrap as mw
+        # Call before importing any packages that import matplotlib.
+        mw.configure()
+
+        fig = mw.plt().figure()
+        ax = fig.add_subplot(111)  # `ax` can be used normally now
+
+        # Use class methods in `MatWrap` to access `matplotlib`/`seaborn` functions.
+        mw.mpl()  # returns `matplotlib` module
+        mw.plt()  # returns `matplotlib.pyplot` module
+        mw.sns()  # returns `seaborn` module
+    """
 
     _rc_defaults_path = resource_filename("shinyutils", "data/mplcfg.json")
-    with open(_rc_defaults_path, "r") as f:
+    with open(_rc_defaults_path, "r", encoding="utf-8") as f:
         _rc_defaults = json.load(f)
 
     _mpl = None
     _plt = None
     _sns = None
 
+    _args: Mapping[str, Any]
+    _mpl_default_rc: Mapping[str, Any]
+
     @classmethod
     def configure(
         cls,
-        context="paper",
-        style="ticks",
-        font="Latin Modern Roman",
-        latex_pkgs=None,
+        context: str = "paper",
+        style: str = "ticks",
+        font: str = "Latin Modern Roman",
+        latex_pkgs: Optional[List[str]] = None,
         **rc_extra,
     ):
         """Configure matplotlib and seaborn.
 
-        Arguments:
-            context: seaborn context (paper/notebook/poster).
-            style: seaborn style (whitegrid, darkgrid, etc.)
-            font: latex font (passed directly to fontspec).
-            latex_pkgs: list of packages to load in pgf preamble.
-            rc_extra: matplotlib params (will overwrite defaults).
+        Args:
+            context: Seaborn context ([`paper`]/`poster`/`notebook`).
+            style: Seaborn style (`darkgrid`/`whitegrid`/`dark`/`white`/[`ticks`]).
+            font: Font, passed directly to fontspec (default: `Latin Modern Roman`).
+            latex_pkgs: List of packages to load in latex pgf preamble.
+            rc_extra: Matplotlib params (will overwrite defaults).
         """
         rc = MatWrap._rc_defaults.copy()
         rc["pgf.preamble"] = [r"\usepackage{fontspec}"]
@@ -110,21 +128,28 @@ class MatWrap:
 
     @classmethod
     def mpl(cls):
+        """`matplotlib` module."""
         cls._ensure_conf()
+        assert cls._mpl is not None
         return cls._mpl
 
     @classmethod
     def plt(cls):
+        """`matplotlib.pyplot` module."""
         cls._ensure_conf()
+        assert cls._plt is not None
         return cls._plt
 
     @classmethod
     def sns(cls):
+        """`seaborn` module."""
         cls._ensure_conf()
+        assert cls._sns is not None
         return cls._sns
 
     @classmethod
-    def palette(cls):
+    def palette(cls) -> List[str]:
+        """Color-blindness friendly palette of 8 colors in hex."""
         return [
             "#e41a1c",
             "#6a3d9a",
@@ -137,7 +162,13 @@ class MatWrap:
         ]
 
     @staticmethod
-    def set_size_tight(fig, size):
+    def set_size_tight(fig, size: Tuple[int, int]):
+        """Set the size of a matplotlib figure.
+
+        Args:
+            fig: Matplotlib `Figure` instance.
+            size: Tuple (width, height) in inches.
+        """
         warnings.warn(
             "constrained_layout is enabled by default: don't use tight_layout",
             FutureWarning,
@@ -150,7 +181,34 @@ class MatWrap:
         base_parser: Union[ArgumentParser, _ArgumentGroup],
         group_title: Optional[str] = "plotting options",
     ) -> Union[ArgumentParser, _ArgumentGroup]:
-        """Add arguments to a base parser to configure plotting."""
+        """Add arguments for configuring plotting to a parser.
+
+        Args:
+            base_parser: Argument parser or group to add arguments to.
+            group_title: Title to use for added options. If `None`, arguments will be
+                added to the base parser. Otherwise, options will be added to a group
+                with the given title. A new group will be created if `base_parser` is
+                not a group.
+
+        Example::
+
+            >>> arg_parser = ArgumentParser(
+                    add_help=False, formatter_class=corgy.CorgyHelpFormatter
+                )
+            >>> MatWrap.add_parser_config_args(arg_parser)
+            >>> arg_parser.print_help()
+            plotting options:
+              --plotting-context str
+                  ({'paper'/'notebook'/'talk'/'poster'} default: 'paper')
+              --plotting-style str
+                  ({'white'/'dark'/'whitegrid'/'darkgrid'/'ticks'} default: 'ticks')
+              --plotting-font str
+                  (default: 'Latin Modern Roman')
+              --plotting-latex-pkgs [str [str ...]]
+                  (default: [])
+              --plotting-rc-extra [key=val [key=val ...]]
+                  (default: [])
+        """
 
         class _ConfMatwrap(Action):
             def __call__(self, parser, namespace, values, option_string=None):
@@ -158,7 +216,16 @@ class MatWrap:
                 assert option_string.startswith("--plotting-")
                 option_name = option_string.split("--plotting-")[1].replace("-", "_")
                 if option_name == "rc_extra":
-                    MatWrap.configure(**_args, **values)
+                    _d = {}
+                    for k, v in values:
+                        try:
+                            _d[k] = int(v)
+                        except ValueError:
+                            try:
+                                _d[k] = float(v)
+                            except ValueError:
+                                _d[k] = v
+                    MatWrap.configure(**_args, **dict(values))
                 else:
                     assert option_name in _args
                     _args[option_name] = values
@@ -190,14 +257,15 @@ class MatWrap:
         base_parser.add_argument(
             "--plotting-latex-pkgs",
             type=str,
-            nargs="+",
+            nargs="*",
             default=[],
             action=_ConfMatwrap,
         )
         base_parser.add_argument(
             "--plotting-rc-extra",
-            type=KeyValuePairsType(),
-            default=dict(),
+            type=KeyValueType(),
+            nargs="*",
+            default=[],
             action=_ConfMatwrap,
         )
 
@@ -205,16 +273,38 @@ class MatWrap:
 
 
 class Plot(AbstractContextManager):
-    """Wrapper around a single matplotlib plot."""
+    """Wrapper around a single matplotlib plot.
+
+    This class is a context manager that returns a matplotlib `axis` instance when
+    entering the context. The plot is closed, and optionally, saved to a file when
+    exiting the context.
+
+    Args:
+        save_file: Path to save plot to. If `None` (the default), the plot is not
+            saved.
+        title: Optional title for plot.
+        sizexy: Size tuple (width, height) in inches. If `None` (the default), the
+            plot size will be determined automatically by matplotlib.
+        labelxy: Tuple of labels for the x and y axes respectively. If either value is
+            `None` (the default), the corresponding axis will not be labeled.
+        logxy: Tuple of booleans indicating whether to use a log scale for the x and y
+            axis respectively (default: `(False, False)`).
+
+    Usage::
+
+        with Plot() as ax:
+            # Use `ax` to plot stuff.
+            ...
+    """
 
     def __init__(
         self,
-        save_file: str,
+        save_file: Optional[str] = None,
         title: Optional[str] = None,
         sizexy: Optional[Tuple[int, int]] = None,
         labelxy: Tuple[Optional[str], Optional[str]] = (None, None),
         logxy: Tuple[bool, bool] = (False, False),
-    ) -> None:
+    ):
         self.save_file = save_file
         self.title = title
         self.sizexy = sizexy

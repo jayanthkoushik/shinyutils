@@ -30,6 +30,13 @@ repos:
   - id: commitlint
     name: lint commit message
     language: system
-    entry: "commitlint -x=@commitlint/config-conventional -e"
+    entry: "npx commitlint -x=@commitlint/config-conventional -e"
     always_run: true
     stages: [commit-msg]
+  - id: docs
+    name: build docs with sphinx
+    language: system
+    files: ".*\\.py|docs/make\\.sh"
+    exclude: "tests/.*\\.py"
+    entry: poetry run docs/make.sh
+    pass_filenames: false

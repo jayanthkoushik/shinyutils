@@ -1,4 +1,8 @@
-"""logng.py: utilities for logging."""
+"""Utilities for logging.
+
+`conf_logging` is called upon importing this module, which sets the log level to
+`INFO`, and enables colored logging if `rich` is installed.
+"""
 
 import argparse
 import logging
@@ -17,7 +21,22 @@ __all__ = ["build_log_argp", "conf_logging"]
 
 
 def build_log_argp(base_parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
-    """Add an argument for logging to the base_parser."""
+    """Add a `--log-level` parser argument to set the log level.
+
+    Args:
+        base_parser: `ArgumentParser` instance to add the argument to. The same instance
+            is returned from the function.
+
+    Example::
+
+        >>> arg_parser = ArgumentParser(
+                add_help=False, formatter_class=corgy.CorgyHelpFormatter
+        )
+        >>> build_log_argp(arg_parser)
+        >>> arg_parser.print_help()
+        options:
+          --log-level str  ({'DEBUG'/'INFO'/'WARNING'/'ERROR'/'CRITICAL'} optional)
+    """
 
     class _SetLogLevel(argparse.Action):
         def __call__(self, parser, namespace, values, option_string=None):
@@ -33,21 +52,14 @@ def build_log_argp(base_parser: argparse.ArgumentParser) -> argparse.ArgumentPar
     return base_parser
 
 
-def conf_logging(
-    args: Optional[argparse.Namespace] = None,
-    log_level: Optional[str] = None,
-    use_colors: Optional[bool] = None,
-) -> None:
-    """Configure logging using args from `build_log_argp`."""
-    if log_level is None:
-        if (
-            args is not None
-            and hasattr(args, "log_level")
-            and args.log_level is not None
-        ):
-            log_level = args.log_level
-        else:
-            log_level = "INFO"
+def conf_logging(log_level: str = "INFO", use_colors: Optional[bool] = None):
+    """Configure the root logging handler.
+
+    Args:
+        log_level: A string log level (`DEBUG`/[`INFO`]/`WARNING`/`ERROR`/`CRITICAL`).
+        use_colors: Whether to use colors from `rich.logging`. Default is to use
+            colors if `rich` is installed.
+    """
     log_level_i = getattr(logging, log_level, logging.INFO)
     logging.root.setLevel(log_level_i)
 
