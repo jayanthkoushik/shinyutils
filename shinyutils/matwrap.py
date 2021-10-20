@@ -336,7 +336,8 @@ class Plot(AbstractContextManager):
         if self.sizexy is not None:
             self.fig.set_size_inches(*self.sizexy)
 
-        self.fig.savefig(self.save_file)
+        if self.save_file is not None:
+            self.fig.savefig(self.save_file)
         MatWrap.plt().close(self.fig)
 
 
