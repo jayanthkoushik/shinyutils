@@ -554,17 +554,17 @@ modes are supported.
 
 Usage:
 
-> # synchronous mode
-> with SH() as sh:
+```python
+# synchronous mode
+with SH() as sh:
+    sh("x=1")
+    print(sh("echo $x"))
 
-> > sh(“x=1”)
-> > print(sh(“echo $x”))
-
-> # asynchronous mode
-> async with SH() as sh:
-
-> > await sh(“x=1”)
-> > print(await sh(“echo $x”))
+# asynchronous mode
+async with SH() as sh:
+    await sh("x=1")
+    print(await sh("echo $x"))
+```
 
 **NOTE**: The class uses a custom prompt string to identify the end of a command. So,
 do not run any commands that change the prompt. Similarly, background jobs are

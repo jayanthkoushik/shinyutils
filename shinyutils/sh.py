@@ -18,7 +18,7 @@ class SH:
         loop: Optional event loop to use. If not provided, the default event loop is
             used instead.
 
-    Usage:
+    Usage::
 
         # synchronous mode
         with SH() as sh:
