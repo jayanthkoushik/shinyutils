@@ -304,9 +304,9 @@ options:
   --optim-params [key=val [key=val ...]]
       (default: [])
   --lr-sched-cls cls
-      ({'LambdaLR'/'MultiplicativeLR'/'StepLR'/'MultiStepLR'/'Exponentia
-      lLR'/'CosineAnnealingLR'/'CyclicLR'/'CosineAnnealingWarmRestarts'/
-      'OneCycleLR'/'SWALR'} optional)
+      ({'LambdaLR'/'MultiplicativeLR'/'StepLR'/'MultiStepLR'/
+      'ExponentialLR'/'CosineAnnealingLR'/'CyclicLR'/
+      'CosineAnnealingWarmRestarts'/'OneCycleLR'/'SWALR'} optional)
   --lr-sched-params [key=val [key=val ...]]
       (default: [])
 ```
