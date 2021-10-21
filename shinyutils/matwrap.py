@@ -83,8 +83,9 @@ class MatWrap:
             try:
                 import matplotlib
             except ImportError as e:
-                e.msg += ": install shinyutils[plotting] to use MatWrap"
-                raise e
+                raise ImportError(
+                    f"{e}: install shinyutils[plotting] to use MatWrap"
+                ) from None
 
             cls._mpl = matplotlib
             cls._mpl_default_rc = cls._mpl.rcParams.copy()
@@ -95,8 +96,9 @@ class MatWrap:
             try:
                 import seaborn
             except ImportError as e:
-                e.msg += ": install shinyutils[plotting] to use MatWrap"
-                raise e
+                raise ImportError(
+                    f"{e}: install shinyutils[plotting] to use MatWrap"
+                ) from None
 
             cls._plt = matplotlib.pyplot
             cls._sns = seaborn
