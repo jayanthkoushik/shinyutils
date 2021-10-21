@@ -41,7 +41,7 @@ Configure the root logging handler.
 
 * **Parameters**
 
-    
+
     * **log_level** – A string log level (`DEBUG`/[`INFO`]/`WARNING`/`ERROR`/`CRITICAL`).
 
 
@@ -81,7 +81,7 @@ Configure matplotlib and seaborn.
 
 * **Parameters**
 
-    
+
     * **context** – Seaborn context ([`paper`]/`poster`/`notebook`).
 
 
@@ -120,7 +120,7 @@ Set the size of a matplotlib figure.
 
 * **Parameters**
 
-    
+
     * **fig** – Matplotlib `Figure` instance.
 
 
@@ -134,7 +134,7 @@ Add arguments for configuring plotting to a parser.
 
 * **Parameters**
 
-    
+
     * **base_parser** – Argument parser or group to add arguments to.
 
 
@@ -176,7 +176,7 @@ exiting the context.
 
 * **Parameters**
 
-    
+
     * **save_file** – Path to save plot to. If `None` (the default), the plot is not
     saved.
 
@@ -215,7 +215,7 @@ Wrapper around pytorch optimizer and learning rate scheduler.
 
 * **Parameters**
 
-    
+
     * **weights** – Iterable of `Tensor` weights to optimize.
 
 
@@ -246,7 +246,7 @@ Create `PTOpt` instance from a namespace of arguments.
 
 * **Parameters**
 
-    
+
     * **weights** – Iterable of `torch.Tensor` weights to optimize.
 
 
@@ -264,7 +264,7 @@ Add options to the base parser for pytorch optimizer and lr scheduling.
 
 * **Parameters**
 
-    
+
     * **base_parser** – Argument parser or group to add arguments to.
 
 
@@ -318,7 +318,7 @@ Add parser arguments for help on PyTorch optimizers and lr schedulers.
 
 * **Parameters**
 
-    
+
     * **base_parser** – `ArgumentParser` or `ArgumentGroup` to add options to.
 
 
@@ -352,7 +352,7 @@ Template for a fully connected network.
 
 * **Parameters**
 
-    
+
     * **in_dim** – Number of input features.
 
 
@@ -379,7 +379,7 @@ Create `FCNet` instance from a namespace of arguments.
 
 * **Parameters**
 
-    
+
     * **args** – Namespace of arguments, with names as added by `add_parser_args`.
 
 
@@ -393,7 +393,7 @@ Add options to a parser for building a `FCNet` object.
 
 * **Parameters**
 
-    
+
     * **base_parser** – `ArgumentParser` or `ArgumentGroup` to add options to.
 
 
@@ -449,7 +449,7 @@ Helper class for training a model on a dataset.
 
 * **Parameters**
 
-    
+
     * **batch_size** – Batch size for training.
 
 
@@ -490,7 +490,7 @@ Train a model.
 
 * **Parameters**
 
-    
+
     * **model** – Model (`nn.Module` instance) to train.
 
 
@@ -543,7 +543,7 @@ modes are supported.
 
 * **Parameters**
 
-    
+
     * **shell** – The shell command to execute, as a sequence of strings. This must start
     an interactive shell, and defaults to `sh -i`.
 
