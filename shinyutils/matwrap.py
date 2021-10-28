@@ -57,6 +57,7 @@ class MatWrap:
         style: str = "ticks",
         font: str = "Latin Modern Roman",
         latex_pkgs: Optional[List[str]] = None,
+        backend: Optional[str] = None,
         **rc_extra,
     ):
         """Configure matplotlib and seaborn.
@@ -66,6 +67,7 @@ class MatWrap:
             style: Seaborn style (`darkgrid`/`whitegrid`/`dark`/`white`/[`ticks`]).
             font: Font, passed directly to fontspec (default: `Latin Modern Roman`).
             latex_pkgs: List of packages to load in latex pgf preamble.
+            backend: Matplotlib backend to override default (pgf).
             rc_extra: Matplotlib params (will overwrite defaults).
         """
         rc = MatWrap._rc_defaults.copy()
@@ -76,6 +78,8 @@ class MatWrap:
             for pkg in reversed(latex_pkgs):
                 rc["pgf.preamble"].insert(0, rf"\usepackage{{{pkg}}}")
         rc["pgf.preamble"] = "\n".join(rc["pgf.preamble"])
+        if backend is not None:
+            rc["backend"] = backend
         rc.update(rc_extra)
 
         if cls._mpl is None:

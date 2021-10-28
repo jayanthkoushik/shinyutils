@@ -75,7 +75,7 @@ mw.sns()  # returns `seaborn` module
 ```
 
 
-#### _classmethod_ configure(context: str = 'paper', style: str = 'ticks', font: str = 'Latin Modern Roman', latex_pkgs: Optional[List[str]] = None, \*\*rc_extra)
+#### _classmethod_ configure(context: str = 'paper', style: str = 'ticks', font: str = 'Latin Modern Roman', latex_pkgs: Optional[List[str]] = None, backend: Optional[str] = None, \*\*rc_extra)
 Configure matplotlib and seaborn.
 
 
@@ -92,6 +92,9 @@ Configure matplotlib and seaborn.
 
 
     * **latex_pkgs** – List of packages to load in latex pgf preamble.
+
+
+    * **backend** – Matplotlib backend to override default (pgf).
 
 
     * **rc_extra** – Matplotlib params (will overwrite defaults).
