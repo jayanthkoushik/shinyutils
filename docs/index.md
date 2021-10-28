@@ -111,7 +111,7 @@ Configure matplotlib and seaborn.
 
 
 #### _classmethod_ palette()
-Color-blindness friendly palette of 8 colors in hex.
+Color universal design palette.
 
 
 #### _static_ set_size_tight(fig, size: Tuple[int, int])

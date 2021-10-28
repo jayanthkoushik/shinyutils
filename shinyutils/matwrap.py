@@ -151,16 +151,16 @@ class MatWrap:
 
     @classmethod
     def palette(cls) -> List[str]:
-        """Color-blindness friendly palette of 8 colors in hex."""
+        """Color universal design palette."""
         return [
-            "#e41a1c",
-            "#6a3d9a",
+            "#000000",
+            "#e69f00",
+            "#56b4e9",
+            "#009e73",
+            "#f0e442",
+            "#0072b2",
             "#d55e00",
-            "#34495e",
-            "#377eb8",
-            "#4daf4a",
-            "#95a5a6",
-            "#222222",
+            "#cc79a7",
         ]
 
     @staticmethod
