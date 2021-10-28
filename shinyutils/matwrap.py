@@ -37,6 +37,12 @@ class MatWrap:
         mw.mpl()  # returns `matplotlib` module
         mw.plt()  # returns `matplotlib.pyplot` module
         mw.sns()  # returns `seaborn` module
+
+        # You can also import the module names from `matwrap`
+        from shinyutils.matwrap import mpl, plt, sns
+
+        fig = plt.figure()
+        ...
     """
 
     _rc_defaults_path = resource_filename("shinyutils", "data/mplcfg.json")
