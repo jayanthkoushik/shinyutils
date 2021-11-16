@@ -4,6 +4,7 @@ import json
 import warnings
 from argparse import _ArgumentGroup, Action, ArgumentParser
 from contextlib import AbstractContextManager
+from itertools import cycle, islice
 from types import ModuleType
 from typing import Any, List, Mapping, Optional, Tuple, Union
 
@@ -165,9 +166,9 @@ class MatWrap:
         return cls._sns
 
     @classmethod
-    def palette(cls) -> List[str]:
+    def palette(cls, n=8) -> List[str]:
         """Color universal design palette."""
-        return [
+        _base_palette = [
             "#000000",
             "#e69f00",
             "#56b4e9",
@@ -177,6 +178,10 @@ class MatWrap:
             "#d55e00",
             "#cc79a7",
         ]
+        if n <= len(_base_palette):
+            return _base_palette[:n]
+
+        return list(islice(cycle(_base_palette), n))
 
     @staticmethod
     def set_size_tight(fig, size: Tuple[int, int]):
