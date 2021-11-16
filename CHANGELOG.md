@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [9.2.1](https://github.com/jayanthkoushik/shinyutils/compare/v9.2.0...v9.2.1) (2021-11-16)
+
+
+### Bug Fixes
+
+* update corgy to 2.0.1 ([b577e3b](https://github.com/jayanthkoushik/shinyutils/commit/b577e3b6adb00bd21aea5496dd62575909c727b7))
+
 ## [9.2.0](https://github.com/jayanthkoushik/shinyutils/compare/v9.1.0...v9.2.0) (2021-11-16)
 
 
