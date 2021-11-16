@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.2.0](https://github.com/jayanthkoushik/shinyutils/compare/v9.1.0...v9.2.0) (2021-11-16)
+
+
+### Features
+
+* allow specifying palette size in matwrap ([b53e72b](https://github.com/jayanthkoushik/shinyutils/commit/b53e72bfed3b54cf80783f8e02042c6a4bfa9ca0))
+
+
+### Bug Fixes
+
+* update corgy to 2.0 for SubClassType update ([7a9e5b7](https://github.com/jayanthkoushik/shinyutils/commit/7a9e5b7b33253fc29db49d6cdf703543f258cbf1))
+
 ## [9.1.0](https://github.com/jayanthkoushik/shinyutils/compare/v9.0.0...v9.1.0) (2021-10-28)
 
 
