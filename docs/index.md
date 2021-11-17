@@ -493,7 +493,7 @@ Set the training data.
 
 
 
-#### train(model: torch.nn.modules.module.Module, opt: shinyutils.pt.PTOpt, loss_fn: Callable[[torch.Tensor, torch.Tensor], torch.Tensor], iters: int, pbar_desc: str = 'Training')
+#### train(model: torch.nn.modules.module.Module, opt: shinyutils.pt.PTOpt, loss_fn: Callable[[torch.Tensor, torch.Tensor], torch.Tensor], iters: int, pbar_desc: str = 'Training', post_iter_hook: Optional[Callable[[int, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor], None]] = None)
 Train a model.
 
 
@@ -513,6 +513,11 @@ Train a model.
 
 
     * **pbar_desc** – Description for progress bar (default: `Training`).
+
+
+    * **post_iter_hook** – Optional callback function to call after each iteration.
+    The function will be called with arguments
+    `(iteration, x_batch, y_batch, loss)`.
 
 
 

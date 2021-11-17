@@ -514,6 +514,11 @@ class NNTrainer:
         loss_fn: Callable[[torch.Tensor, torch.Tensor], torch.Tensor],
         iters: int,
         pbar_desc: str = "Training",
+        post_iter_hook: Optional[
+            Callable[
+                [int, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor], None
+            ]
+        ] = None,
     ):
         """Train a model.
 
@@ -523,6 +528,9 @@ class NNTrainer:
             loss_fn: Loss function mapping input tensors to a loss tensor.
             iters: Number of iterations to train for.
             pbar_desc: Description for progress bar (default: `Training`).
+            post_iter_hook: Optional callback function to call after each iteration.
+                The function will be called with arguments
+                `(iteration, x_batch, y_batch, loss)`.
         """
         if self._dataset is None:
             raise RuntimeError("dataset not set: call set_dataset before train")
@@ -532,7 +540,7 @@ class NNTrainer:
         model = model.to(self._device)
 
         with trange(iters, desc=pbar_desc) as pbar:
-            for _ in pbar:
+            for _iter in pbar:
                 try:
                     x_bat, y_bat = next(bat_iter)
                 except StopIteration:
@@ -547,6 +555,9 @@ class NNTrainer:
                 opt.zero_grad()
                 loss.backward()
                 opt.step()
+
+                if post_iter_hook is not None:
+                    post_iter_hook(_iter, x_bat, y_bat, yhat_bat, loss)
 
 
 class SetTBWriterAction(Action):
