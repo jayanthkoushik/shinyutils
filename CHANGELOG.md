@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.3.0](https://github.com/jayanthkoushik/shinyutils/compare/v9.2.1...v9.3.0) (2021-11-17)
+
+
+### Features
+
+* allow passing callback function to NNTrainer ([270a20b](https://github.com/jayanthkoushik/shinyutils/commit/270a20b093dff6b0e73e119513ca7f4143a948c4))
+
 ### [9.2.1](https://github.com/jayanthkoushik/shinyutils/compare/v9.2.0...v9.2.1) (2021-11-16)
 
 
