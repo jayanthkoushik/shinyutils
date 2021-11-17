@@ -517,7 +517,7 @@ Train a model.
 
     * **post_iter_hook** – Optional callback function to call after each iteration.
     The function will be called with arguments
-    `(iteration, x_batch, y_batch, loss)`.
+    `(iteration, x_batch, y_batch, yhat_batch, loss)`.
 
 
 
