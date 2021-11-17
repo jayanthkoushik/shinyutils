@@ -48,6 +48,7 @@ def build_log_argp(base_parser: argparse.ArgumentParser) -> argparse.ArgumentPar
         type=str,
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         action=_SetLogLevel,
+        help="set the log level",
     )
     return base_parser
 

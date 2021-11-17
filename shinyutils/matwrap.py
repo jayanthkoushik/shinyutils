@@ -262,6 +262,7 @@ class MatWrap:
             choices=["paper", "notebook", "talk", "poster"],
             default="paper",
             action=_ConfMatwrap,
+            help="seaborn plotting context",
         )
         base_parser.add_argument(
             "--plotting-style",
@@ -269,12 +270,14 @@ class MatWrap:
             choices=["white", "dark", "whitegrid", "darkgrid", "ticks"],
             default="ticks",
             action=_ConfMatwrap,
+            help="seaborn plotting style",
         )
         base_parser.add_argument(
             "--plotting-font",
             type=str,
             default="Latin Modern Roman",
             action=_ConfMatwrap,
+            help="font for plots",
         )
         base_parser.add_argument(
             "--plotting-latex-pkgs",
@@ -282,6 +285,7 @@ class MatWrap:
             nargs="*",
             default=[],
             action=_ConfMatwrap,
+            help="additional latex packages to import for plotting",
         )
         base_parser.add_argument(
             "--plotting-rc-extra",
@@ -289,6 +293,7 @@ class MatWrap:
             nargs="*",
             default=[],
             action=_ConfMatwrap,
+            help="additional rc parameters for matplotlib",
         )
 
         return base_parser

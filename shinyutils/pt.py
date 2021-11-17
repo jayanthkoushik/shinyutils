@@ -197,6 +197,7 @@ class PTOpt:
             choices=list(opt_sub_cls_type.choices()),
             required=default_optim_cls is None,
             default=default_optim_cls,
+            help="optimizer class",
         )
 
         if default_optim_params is None:
@@ -206,6 +207,7 @@ class PTOpt:
             type=KeyValueType(),
             nargs="*",
             default=list(default_optim_params.items()),
+            help="arguments for the optimizer",
         )
 
         if not add_lr_decay:
@@ -217,10 +219,15 @@ class PTOpt:
             type=lr_sched_sub_cls_type,
             choices=list(lr_sched_sub_cls_type.choices()),
             default=None,
+            help="learning rate scheduler class",
         )
 
         base_parser.add_argument(
-            f"--{arg_prefix}lr-sched-params", type=KeyValueType(), nargs="*", default=[]
+            f"--{arg_prefix}lr-sched-params",
+            type=KeyValueType(),
+            nargs="*",
+            default=[],
+            help="arguments for the learning rate scheduler",
         )
 
         return base_parser
@@ -411,12 +418,14 @@ class FCNet(nn.Module):
             type=int,
             required=default_indim is None,
             default=default_indim,
+            help="input dimension for network",
         )
         base_parser.add_argument(
             f"--{arg_prefix}fcnet-outdim",
             type=int,
             required=default_outdim is None,
             default=default_outdim,
+            help="output dimension for network",
         )
         base_parser.add_argument(
             f"--{arg_prefix}fcnet-hidden-sizes",
@@ -424,18 +433,21 @@ class FCNet(nn.Module):
             nargs="+",
             required=default_hidden_sizes is None,
             default=default_hidden_sizes,
+            help="dimensions of hidden layers",
         )
         base_parser.add_argument(
             f"--{arg_prefix}fcnet-hidden-act",
             type=_Act(),
             required=default_hidden_act is None,
             default=default_hidden_act,
+            help="activation function for hidden layers",
         )
         base_parser.add_argument(
             f"--{arg_prefix}fcnet-out-act",
             type=_Act(),
             required=False,
             default=default_out_act,
+            help="activation function for output layer",
         )
 
 
