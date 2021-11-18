@@ -35,7 +35,7 @@ options:
 ```
 
 
-### shinyutils.logng.conf_logging(log_level: str = 'INFO', use_colors: Optional[bool] = None)
+### shinyutils.logng.conf_logging(\*, log_level: str = 'INFO', use_colors: Optional[bool] = None)
 Configure the root logging handler.
 
 
@@ -48,6 +48,8 @@ Configure the root logging handler.
     * **use_colors** – Whether to use colors from `rich.logging`. Default is to use
     colors if `rich` is installed.
 
+
+Note that this function only accepts keyword arguments.
 
 ## shinyutils.matwrap module
 

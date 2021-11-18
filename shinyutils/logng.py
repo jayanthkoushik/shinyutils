@@ -53,13 +53,15 @@ def build_log_argp(base_parser: argparse.ArgumentParser) -> argparse.ArgumentPar
     return base_parser
 
 
-def conf_logging(log_level: str = "INFO", use_colors: Optional[bool] = None):
+def conf_logging(*, log_level: str = "INFO", use_colors: Optional[bool] = None):
     """Configure the root logging handler.
 
     Args:
         log_level: A string log level (`DEBUG`/[`INFO`]/`WARNING`/`ERROR`/`CRITICAL`).
         use_colors: Whether to use colors from `rich.logging`. Default is to use
             colors if `rich` is installed.
+
+    Note that this function only accepts keyword arguments.
     """
     log_level_i = getattr(logging, log_level, logging.INFO)
     logging.root.setLevel(log_level_i)
