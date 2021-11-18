@@ -3,8 +3,7 @@
 try:
     import torch
 except ImportError as e:
-    e.msg += ": install shinyutils[pytorch]"  # type: ignore
-    raise e
+    raise ImportError(f"{e}: shinyutils.pt needs pytorch") from None
 
 import inspect
 import logging
@@ -27,7 +26,6 @@ from typing import (
     Type,
     Union,
 )
-from unittest.mock import Mock
 
 import numpy as np
 import torch.nn.functional as F
@@ -37,16 +35,21 @@ from torch.optim import Adam
 from torch.optim.lr_scheduler import _LRScheduler
 from torch.optim.optimizer import Optimizer
 from torch.utils.data import DataLoader, Dataset, TensorDataset
-from tqdm import trange
+
+try:
+    from tqdm import trange
+except ImportError:
+    logging.info("progress bar disabled: could not import tqdm")
+
+    def trange(n, *args, **kwrags):
+        return range(n)
+
 
 try:
     from torch.utils.tensorboard import SummaryWriter
 except ImportError:
     ENABLE_TB = False
-    logging.info(
-        "tensorboard logging disabled: could not import SummaryWriter: "
-        "install tensorboard[python] or shinyutils[pytorch]"
-    )
+    logging.info("tensorboard logging disabled: could not import tensorboard")
 else:
     ENABLE_TB = True
 
@@ -593,11 +596,8 @@ class SetTBWriterAction(Action):
 
     attr = "tb_writer"
 
-    def __call__(self, parser, namespace, values, option_strings=None):
-        if values is None:
-            values = Mock(SummaryWriter)
-        else:
-            values = SummaryWriter(values)
+    def __call__(self, parser, namespace, values, option_string=None):
+        values = SummaryWriter(values)
         setattr(namespace, SetTBWriterAction.attr, values)
 
 
