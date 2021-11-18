@@ -11,8 +11,8 @@ from typing import Any, List, Mapping, Optional, Tuple, Union
 from corgy.types import KeyValueType
 from pkg_resources import resource_filename
 
-_WRAPPED_NAMES = ["mpl", "plt", "sns"]
-__all__ = ["MatWrap", "Plot"] + _WRAPPED_NAMES
+_WRAPPED_NAMES = ("mpl", "plt", "sns")
+__all__ = ("MatWrap", "Plot") + _WRAPPED_NAMES
 
 mpl: ModuleType
 plt: ModuleType

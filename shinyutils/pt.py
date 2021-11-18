@@ -58,7 +58,7 @@ DEFAULT_DEVICE = (
 )
 
 
-__all__ = ["DEFAULT_DEVICE", "PTOpt", "FCNet", "NNTrainer", "SetTBWriterAction"]
+__all__ = ("DEFAULT_DEVICE", "PTOpt", "FCNet", "NNTrainer", "SetTBWriterAction")
 
 
 class PTOpt:

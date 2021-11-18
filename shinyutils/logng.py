@@ -17,7 +17,7 @@ else:
     HAS_RICH = True
 
 
-__all__ = ["build_log_argp", "conf_logging"]
+__all__ = ("build_log_argp", "conf_logging")
 
 
 def build_log_argp(base_parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
