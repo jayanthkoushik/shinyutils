@@ -73,9 +73,7 @@ def conf_logging(log_level: str = "INFO", use_colors: Optional[bool] = None):
 
     elif use_colors is True:
         if not HAS_RICH:
-            raise ImportError(
-                f"{RICH_IMPORT_ERROR}: disable colors or install shinyutils[color]"
-            )
+            raise ImportError(f"{RICH_IMPORT_ERROR}: disable colors or install `rich`")
 
     # Remove existing root handlers
     for handler in logging.root.handlers:
@@ -98,7 +96,7 @@ def conf_logging(log_level: str = "INFO", use_colors: Optional[bool] = None):
     logging.root.addHandler(root_handler)
 
     if inform_about_color:
-        logging.info("for logging color support install shinyutils[color]")
+        logging.info("for logging color support install `rich`")
 
 
 conf_logging()
