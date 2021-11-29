@@ -6,9 +6,8 @@ from typing import Literal, Optional
 
 try:
     from rich.logging import RichHandler
-except ImportError as e:
+except ImportError:
     HAS_RICH = False
-    RICH_IMPORT_ERROR = e
 else:
     HAS_RICH = True
 
@@ -60,12 +59,10 @@ def conf_logging(
 
     if use_colors is None:
         use_colors = HAS_RICH
-        if not HAS_RICH:
-            inform_about_color = True
-
     elif use_colors is True:
         if not HAS_RICH:
-            raise ImportError(f"{RICH_IMPORT_ERROR}: disable colors or install `rich`")
+            raise ImportError("cannot enable colored logging: could not import `rich`")
+    inform_about_color = not HAS_RICH
 
     # Remove existing root handlers
     for handler in logging.root.handlers:
