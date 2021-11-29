@@ -8,25 +8,48 @@ Collection of personal utilities.
 
 Utilities for logging.
 
-`conf_logging` is called upon importing this module, which sets the log level to
-`INFO`, and enables colored logging if `rich` is installed.
 
+### shinyutils.logng.conf_logging(log_level: Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'] = 'INFO', use_colors: Optional[bool] = None, arg_parser: Optional[argparse.ArgumentParser] = None, arg_name: str = '--log-level', arg_help: str = 'set the log level')
+Set up logging.
 
-### shinyutils.logng.conf_logging(\*, log_level: str = 'INFO', use_colors: Optional[bool] = None)
-Configure the root logging handler.
+This function configures the root logger, and optionally, adds an argument to an
+`ArgumentParser` instance for setting the log level from the command line.
 
 
 * **Parameters**
 
 
-    * **log_level** – A string log level (`DEBUG`/[`INFO`]/`WARNING`/`ERROR`/`CRITICAL`).
+    * **log_level** – A string log level (`DEBUG`/`INFO`/`WARNING`/`ERROR`/`CRITICAL`).
+    The default is `INFO`.
 
 
     * **use_colors** – Whether to use colors from `rich.logging`. Default is to use
     colors if `rich` is installed.
 
 
-Note that this function only accepts keyword arguments.
+    * **arg_parser** – An `ArgumentParser` instance to add a log level argument to. If
+    `None` (the default), no argument is added. The added argument will update
+    the log level when parsed from the command line.
+
+
+    * **arg_name** – The name of the argument added to `arg_parser`. The default is
+    `--log-level`.
+
+
+    * **arg_help** – The help string for the argument added to `arg_parser`. The default
+    is “set the log level”.
+
+
+Usage:
+
+```python
+conf_logging("DEBUG")
+conf_logging("INFO", use_colors=False)  # force no colors
+
+parser = ArgumentParser()
+conf_logging(log_level="DEBUG", arg_parser=parser)  # add argument to parser
+parser.parse_args(["--log-level", "INFO"])  # update log level to INFO
+```
 
 ## shinyutils.matwrap module
 
