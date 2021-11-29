@@ -12,29 +12,6 @@ Utilities for logging.
 `INFO`, and enables colored logging if `rich` is installed.
 
 
-### shinyutils.logng.build_log_argp(base_parser: argparse.ArgumentParser)
-Add a `--log-level` parser argument to set the log level.
-
-
-* **Parameters**
-
-    **base_parser** – `ArgumentParser` instance to add the argument to. The same instance
-    is returned from the function.
-
-
-Example:
-
-```python
->>> arg_parser = ArgumentParser(
-        add_help=False, formatter_class=corgy.CorgyHelpFormatter
-)
->>> build_log_argp(arg_parser)
->>> arg_parser.print_help()
-options:
-  --log-level str  ({'DEBUG'/'INFO'/'WARNING'/'ERROR'/'CRITICAL'} optional)
-```
-
-
 ### shinyutils.logng.conf_logging(\*, log_level: str = 'INFO', use_colors: Optional[bool] = None)
 Configure the root logging handler.
 

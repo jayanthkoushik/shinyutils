@@ -17,40 +17,13 @@ else:
     HAS_RICH = True
 
 
-__all__ = ("build_log_argp", "conf_logging")
+__all__ = ("conf_logging",)
 
 
-def build_log_argp(base_parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
-    """Add a `--log-level` parser argument to set the log level.
-
-    Args:
-        base_parser: `ArgumentParser` instance to add the argument to. The same instance
-            is returned from the function.
-
-    Example::
-
-        >>> arg_parser = ArgumentParser(
-                add_help=False, formatter_class=corgy.CorgyHelpFormatter
-        )
-        >>> build_log_argp(arg_parser)
-        >>> arg_parser.print_help()
-        options:
-          --log-level str  ({'DEBUG'/'INFO'/'WARNING'/'ERROR'/'CRITICAL'} optional)
-    """
-
-    class _SetLogLevel(argparse.Action):
-        def __call__(self, parser, namespace, values, option_string=None):
-            conf_logging(log_level=values)
-            setattr(namespace, self.dest, values)
-
-    base_parser.add_argument(
-        "--log-level",
-        type=str,
-        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-        action=_SetLogLevel,
-        help="set the log level",
-    )
-    return base_parser
+class _SetLogLevel(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        conf_logging(log_level=values)
+        setattr(namespace, self.dest, values)
 
 
 def conf_logging(*, log_level: str = "INFO", use_colors: Optional[bool] = None):
