@@ -5,7 +5,7 @@ from argparse import _ArgumentGroup, Action, ArgumentParser
 from contextlib import AbstractContextManager
 from itertools import cycle, islice
 from types import ModuleType
-from typing import Any, List, Mapping, Optional, Tuple, Union
+from typing import Any, Literal, Optional, Union
 
 from corgy.types import KeyValueType
 
@@ -76,16 +76,15 @@ class MatWrap:
     _plt = None
     _sns = None
 
-    _args: Mapping[str, Any]
-    _mpl_default_rc: Mapping[str, Any]
+    _mpl_default_rc: dict[str, Any]
 
     @classmethod
     def configure(
         cls,
-        context: str = "paper",
-        style: str = "ticks",
+        context: Literal["paper", "poster", "notebook"] = "paper",
+        style: Literal["darkgrid", "whitegrid", "dark", "white", "ticks"] = "ticks",
         font: str = "Latin Modern Roman",
-        latex_pkgs: Optional[List[str]] = None,
+        latex_pkgs: Optional[list[str]] = None,
         backend: Optional[str] = None,
         **rc_extra,
     ):
@@ -141,12 +140,6 @@ class MatWrap:
             font_scale = 1
         cls._sns.set(context, style, cls.palette(), font_scale=font_scale, rc=rc)
 
-        cls._args = rc_extra.copy()
-        cls._args["context"] = context
-        cls._args["style"] = style
-        cls._args["font"] = font
-        cls._args["latex_pkgs"] = latex_pkgs
-
     def __new__(cls):
         raise NotImplementedError(
             "MatWrap does not provide instances. Use the class methods."
@@ -179,7 +172,7 @@ class MatWrap:
         return cls._sns
 
     @classmethod
-    def palette(cls, n=8) -> List[str]:
+    def palette(cls, n=8) -> list[str]:
         """Color universal design palette."""
         _base_palette = [
             "#000000",
@@ -197,7 +190,7 @@ class MatWrap:
         return list(islice(cycle(_base_palette), n))
 
     @staticmethod
-    def set_size_tight(fig, size: Tuple[int, int]):
+    def set_size_tight(fig, size: tuple[int, int]):
         """Set the size of a matplotlib figure.
 
         Args:
@@ -341,9 +334,9 @@ class Plot(AbstractContextManager):
         self,
         save_file: Optional[str] = None,
         title: Optional[str] = None,
-        sizexy: Optional[Tuple[int, int]] = None,
-        labelxy: Tuple[Optional[str], Optional[str]] = (None, None),
-        logxy: Tuple[bool, bool] = (False, False),
+        sizexy: Optional[tuple[int, int]] = None,
+        labelxy: tuple[Optional[str], Optional[str]] = (None, None),
+        logxy: tuple[bool, bool] = (False, False),
     ):
         self.save_file = save_file
         self.title = title

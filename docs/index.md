@@ -83,7 +83,7 @@ fig = plt.figure()
 ```
 
 
-#### _classmethod_ configure(context: str = 'paper', style: str = 'ticks', font: str = 'Latin Modern Roman', latex_pkgs: Optional[List[str]] = None, backend: Optional[str] = None, \*\*rc_extra)
+#### _classmethod_ configure(context: Literal['paper', 'poster', 'notebook'] = 'paper', style: Literal['darkgrid', 'whitegrid', 'dark', 'white', 'ticks'] = 'ticks', font: str = 'Latin Modern Roman', latex_pkgs: Optional[list[str]] = None, backend: Optional[str] = None, \*\*rc_extra)
 Configure matplotlib and seaborn.
 
 
@@ -125,7 +125,7 @@ Configure matplotlib and seaborn.
 Color universal design palette.
 
 
-#### _static_ set_size_tight(fig, size: Tuple[int, int])
+#### _static_ set_size_tight(fig, size: tuple[int, int])
 Set the size of a matplotlib figure.
 
 
@@ -177,7 +177,7 @@ plotting options:
 ```
 
 
-### _class_ shinyutils.matwrap.Plot(save_file: Optional[str] = None, title: Optional[str] = None, sizexy: Optional[Tuple[int, int]] = None, labelxy: Tuple[Optional[str], Optional[str]] = (None, None), logxy: Tuple[bool, bool] = (False, False))
+### _class_ shinyutils.matwrap.Plot(save_file: Optional[str] = None, title: Optional[str] = None, sizexy: Optional[tuple[int, int]] = None, labelxy: tuple[typing.Optional[str], typing.Optional[str]] = (None, None), logxy: tuple[bool, bool] = (False, False))
 Wrapper around a single matplotlib plot.
 
 This class is a context manager that returns a matplotlib `axis` instance when
