@@ -217,27 +217,38 @@ with Plot() as ax:
 Utilities for pytorch.
 
 
-### _class_ shinyutils.pt.PTOpt(weights: Iterable[torch.Tensor], optim_cls: Type[torch.optim.optimizer.Optimizer], optim_params: Mapping[str, Any], lr_sched_cls: Optional[Type[torch.optim.lr_scheduler._LRScheduler]] = None, lr_sched_params: Optional[Mapping[str, Any]] = None)
-Wrapper around pytorch optimizer and learning rate scheduler.
+### _class_ shinyutils.pt.PTOpt(\*\*kwargs)
+Wrapper around PyTorch optimizer and learning rate scheduler.
+
+Usage:
+
+```python
+>>> opt = PTOpt(Adam, {"lr": 0.001})
+>>> net = nn.Module(...)  # some network
+>>> opt.set_weights(net.parameters())
+>>> opt.zero_grad()
+>>> opt.step()
+```
 
 
-* **Parameters**
+#### _property_ optim_cls(_: SubClassType(Optimizer_ )
+optimizer class
 
 
-    * **weights** – Iterable of `Tensor` weights to optimize.
+#### _property_ optim_params(_: Sequence[KeyValueType(str, _t_param)_ )
+arguments for the optimizer
 
 
-    * **optim_cls** – `Optimizer` class to use.
+#### _property_ lr_sched_cls(_: Optional[SubClassType(_LRScheduler)_ )
+learning rate scheduler class
 
 
-    * **optim_params** – Mapping of parameters to pass to `optim_cls`.
+#### _property_ lr_sched_params(_: Sequence[KeyValueType(str, _t_param)_ )
+arguments for the learning rate scheduler
 
 
-    * **lr_sched_cls** – `LRScheduler` class to use for scheduling the learning rate.
-
-
-    * **lr_sched_params** – Mapping of parameters to pass to `lr_sched_cls`.
-
+#### set_weights(weights: Iterable[torch.Tensor])
+Set weights of underlying optimizer.
 
 
 #### zero_grad()
@@ -245,96 +256,11 @@ Call `zero_grad` on underlying optimizer.
 
 
 #### step()
-Call `step` on underlying optimizer and lr scheduler (if present).
+Call `step` on underlying optimizer, and lr scheduler (if present).
 
 
-#### _classmethod_ from_args(weights: Iterable[torch.Tensor], args: argparse.Namespace, arg_prefix: str = '')
-Create `PTOpt` instance from a namespace of arguments.
-
-
-* **Parameters**
-
-
-    * **weights** – Iterable of `torch.Tensor` weights to optimize.
-
-
-    * **args** – Namespace of arguments (argument names are as added by
-    `add_parser_args`).
-
-
-    * **arg_prefix** – Prefix for argument names (default: `""`).
-
-
-
-#### _static_ add_parser_args(base_parser: Union[argparse.ArgumentParser, argparse._ArgumentGroup], arg_prefix: str = '', group_title: Optional[str] = None, default_optim_cls: Optional[Type[torch.optim.optimizer.Optimizer]] = <class 'torch.optim.adam.Adam'>, default_optim_params: Optional[Mapping[str, Any]] = None, add_lr_decay: bool = True)
-Add options to the base parser for pytorch optimizer and lr scheduling.
-
-
-* **Parameters**
-
-
-    * **base_parser** – Argument parser or group to add arguments to.
-
-
-    * **arg_prefix** – Prefix for argument names (default: empty string).
-
-
-    * **group_title** – Title to use for added options. If `None`, arguments will be
-    added to the base parser. Otherwise, options will be added to a group
-    with the given title. A new group will be created if `base_parser` is
-    not a group.
-
-
-    * **default_optim_cls** – Default `Optimizer` class (default: `Adam`).
-
-
-    * **default_optim_params** – Default set of parameters to pass to the optimizer
-    (default: `None`).
-
-
-    * **add_lr_decay** – Whether to add options for lr decay (default: `True`).
-
-
-Example:
-
-```python
->>> arg_parser = ArgumentParser(
-        add_help=False, formatter_class=corgy.CorgyHelpFormatter
-)
->>> PTOpt.add_parser_args(arg_parser)
->>> arg_parser.print_help()
-options:
-  --optim-cls cls
-      ({'Adadelta'/'Adagrad'/'Adam'/'AdamW'/'SparseAdam'/'Adamax'/'ASGD'
-      /'SGD'/'Rprop'/'RMSprop'/'LBFGS'/'Adam'/'AdamW'/'SGD'/'RMSprop'/'R
-      prop'/'ASGD'/'Adamax'/'Adadelta'} default: <class
-      'torch.optim.adam.Adam'>)
-  --optim-params [key=val [key=val ...]]
-      (default: [])
-  --lr-sched-cls cls
-      ({'LambdaLR'/'MultiplicativeLR'/'StepLR'/'MultiStepLR'/
-      'ExponentialLR'/'CosineAnnealingLR'/'CyclicLR'/
-      'CosineAnnealingWarmRestarts'/'OneCycleLR'/'SWALR'} optional)
-  --lr-sched-params [key=val [key=val ...]]
-      (default: [])
-```
-
-
-#### _static_ add_help(base_parser: Union[argparse.ArgumentParser, argparse._ArgumentGroup], group_title: Optional[str] = 'pytorch help')
+#### _static_ add_help_args_to_parser(base_parser: Union[argparse.ArgumentParser, argparse._ArgumentGroup], group_title: Optional[str] = 'pytorch help')
 Add parser arguments for help on PyTorch optimizers and lr schedulers.
-
-
-* **Parameters**
-
-
-    * **base_parser** – `ArgumentParser` or `ArgumentGroup` to add options to.
-
-
-    * **group_title** – Title for the group of options (default: `pytorch help`).
-    If `group_title` is `None`, the options are added to the base parser,
-    otherwise they are added to a group (a new one is created if
-    `base_parser` is not a group).
-
 
 Example:
 
@@ -354,134 +280,81 @@ Adamax(params, lr=0.002, betas=(0.9, 0.999), eps=1e-08, weight_decay=0)
 ```
 
 
-### _class_ shinyutils.pt.FCNet(in_dim: int, out_dim: int, hidden_sizes: List[int], hidden_act: Callable[[torch.Tensor], torch.Tensor] = <function relu>, out_act: Optional[Callable[[torch.Tensor], torch.Tensor]] = None)
-Template for a fully connected network.
+### _class_ shinyutils.pt.FCNet(\*args, \*\*kwargs)
+Fully connected network.
 
 
-* **Parameters**
+#### _property_ in_dim(_: in_ )
+number of input features
 
 
-    * **in_dim** – Number of input features.
+#### _property_ out_dim(_: in_ )
+number of output features
 
 
-    * **out_dim** – Number of output features.
+#### _property_ hidden_dims(_: Sequence[int_ )
+hidden layer dimensions
 
 
-    * **hidden_sizes** – List of hidden layer sizes.
+#### _property_ hidden_act(_: Callable[[...], torch.Tensor_ )
+activation function for hidden layers
 
 
-    * **hidden_act** – Activation function for hidden layers (default: `relu`).
-
-
-    * **out_act** – Activation function for output layer (default: `None`).
-
+#### _property_ out_act(_: Optional[Callable[[...], torch.Tensor]_ )
+activation function for output layer
 
 
 #### forward(x: torch.Tensor)
-Propagate input tensor through the network.
-
-
-#### _classmethod_ from_args(args: argparse.Namespace, arg_prefix: str = '')
-Create `FCNet` instance from a namespace of arguments.
+Forward a tensor through the network, and return the result.
 
 
 * **Parameters**
 
-
-    * **args** – Namespace of arguments, with names as added by `add_parser_args`.
-
-
-    * **arg_prefix** – Prefix for argument names (default: `""`).
+    **x** – Input tensor of shape `(batch_size, in_dim)`.
 
 
 
-#### _static_ add_parser_args(base_parser: Union[argparse.ArgumentParser, argparse._ArgumentGroup], arg_prefix: str = '', group_title: Optional[str] = None, default_indim: Optional[int] = None, default_outdim: Optional[int] = None, default_hidden_sizes: Optional[int] = None, default_hidden_act: Optional[Callable[[torch.Tensor], torch.Tensor]] = <function relu>, default_out_act: Optional[Callable[[torch.Tensor], torch.Tensor]] = None)
-Add options to a parser for building a `FCNet` object.
-
-
-* **Parameters**
-
-
-    * **base_parser** – `ArgumentParser` or `ArgumentGroup` to add options to.
-
-
-    * **arg_prefix** – Prefix for argument names (default: `""`).
-
-
-    * **group_title** – Title for the group of options If `None` (the default),
-    the options are added to the base parser. Otherwise they are added
-    to a group with the given title (a new one is created if `base_parser`
-    is not a group).
-
-
-    * **default_indim** – Default value for `indim` (default: `None`).
-
-
-    * **default_outdim** – Default value for `outdim` (default: `None`).
-
-
-    * **default_hidden_sizes** – Default value for `hidden_sizes` (default: `None`).
-
-
-    * **default_hidden_act** – Default value for hidden activation (default: `relu`).
-
-
-    * **default_out_act** – Default value for output activation (default: `None`).
-
-
-Example:
-
-```python
->>> arg_parser = ArgumentParser(
-        add_help=False, formatter_class=corgy.CorgyHelpFormatter)
-)
->>> FCNet.add_parser_args(arg_parser)
->>> arg_parser.print_help()
-options:
-  --fcnet-indim int
-      (required)
-  --fcnet-outdim int
-      (required)
-  --fcnet-hidden-sizes int [int ...]
-      (required)
-  --fcnet-hidden-act func
-      (default: <function relu at 0x7faf08f86830>)
-  --fcnet-out-act func
-      (optional)
-```
-
-
-### _class_ shinyutils.pt.NNTrainer(batch_size: int, data_load_workers: int = 0, shuffle: bool = True, pin_memory: bool = True, drop_last: bool = True, device: torch.device = device(type='cpu'))
+### _class_ shinyutils.pt.NNTrainer(\*\*args)
 Helper class for training a model on a dataset.
 
 
-* **Parameters**
+#### _property_ train_iters(_: in_ )
+number of training iterations
 
 
-    * **batch_size** – Batch size for training.
+#### _property_ ptopt(_: shinyutils.pt.PTOp_ )
+optimizer
 
 
-    * **data_load_workers** – Number of workers for loading data (default: `0`).
+#### _property_ batch_size(_: in_ )
+batch size for training
 
 
-    * **shuffle** – Whether to shuffle the data (default: `True`).
+#### _property_ data_load_workers(_: in_ )
+number of workers for loading data
 
 
-    * **pin_memory** – When to pin data to CUDA memory (default: `True`).
+#### _property_ shuffle(_: boo_ )
+whether to shuffle the dataset
 
 
-    * **drop_last** – Whether to drop the last incomplete batch (default: `True`).
+#### _property_ pin_memory(_: boo_ )
+whether to pin data to CUDA memory
 
 
-    * **device** – Device to use for training (default: `cuda` if available, else `cpu`).
+#### _property_ drop_last(_: boo_ )
+whether to drop the last incomplete batch
 
+
+#### _property_ pbar_desc(_: st_ )
+description for training progress bar
 
 
 #### set_dataset(value: torch.utils.data.dataset.Dataset)
 
 #### set_dataset(value: Tuple[torch.Tensor, ...])
 
-#### set_dataset(value: Tuple[numpy.ndarray, ...])
+#### set_dataset(value: Tuple['np.ndarray', ...])
 Set the training data.
 
 
@@ -492,7 +365,7 @@ Set the training data.
 
 
 
-#### train(model: torch.nn.modules.module.Module, opt: shinyutils.pt.PTOpt, loss_fn: Callable[[torch.Tensor, torch.Tensor], torch.Tensor], iters: int, pbar_desc: str = 'Training', post_iter_hook: Optional[Callable[[int, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor], None]] = None)
+#### train(model: torch.nn.modules.module.Module, loss_fn: Callable[[torch.Tensor, torch.Tensor], torch.Tensor], post_iter_hook: Optional[Callable[[int, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor], None]] = None)
 Train a model.
 
 
@@ -502,16 +375,7 @@ Train a model.
     * **model** – Model (`nn.Module` instance) to train.
 
 
-    * **opt** – `PTOpt` instance to use for optimizing.
-
-
     * **loss_fn** – Loss function mapping input tensors to a loss tensor.
-
-
-    * **iters** – Number of iterations to train for.
-
-
-    * **pbar_desc** – Description for progress bar (default: `Training`).
 
 
     * **post_iter_hook** – Optional callback function to call after each iteration.
@@ -520,25 +384,27 @@ Train a model.
 
 
 
-### _class_ shinyutils.pt.SetTBWriterAction(option_strings, dest, nargs=None, const=None, default=None, type=None, choices=None, required=False, help=None, metavar=None)
-`argparse.Action` to set the `tb_writer` attribute.
+### _class_ shinyutils.pt.TBLogs(path: Optional[str] = None)
+TensorBoard logs type.
 
-The attribute (configurable via `SetTBWriterAction.attr`) is set to a
-`SummaryWriter`, or a `Mock` of the class (if called without any value).
+
+* **Parameters**
+
+    **path** – Path to log directory. If `None` (default), a mock instance is
+    returned.
+
 
 Usage:
 
 ```python
-arg_parser = ArgumentParser()
-arg_parser.add_argument(
-    "--tb-dir",
-    type=str,
-    action=SetTBWriterAction,
-)
-arg_parser.set_defaults(tb_writer=Mock(SummaryWriter))
-args = arg_parser.parse_args(["--tb-dir", "tmp/tb"])
-args.tb_writer  # `SummaryWriter` instance
+tb_logs = TBLogs("tmp/tb")
+tb_logs.writer  # `SummaryWriter` instance
+TBLogs.mock  # mock instance
 ```
+
+
+#### _class property_ mock()
+Mock instace that no-ops for every call.
 
 ## shinyutils.sh module
 
