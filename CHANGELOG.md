@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.0.0](https://github.com/jayanthkoushik/shinyutils/compare/v9.3.0...v10.0.0) (2021-11-29)
+
+
+### ⚠ BREAKING CHANGES
+
+* update `corgy` to version 2.4
+* refactor `pt` to work better with `Corgy`
+* make `MatWrap.mpl/plt/sns` properties
+* replace `MatWrap.add_plotting_args` with `PlottingArgs` class
+* disalbe auto calling `conf_logging` and add parse arguments for it
+* remove logng.build_log_argp
+* make arguments to conf_logging keyword only
+* rename 'color' dependency group to 'colors'
+* remove plotting and pytorch dependency groups
+* increase minimum Python version to 3.9
+
+### Features
+
+* add helps for argparse arguments ([a2ccde1](https://github.com/jayanthkoushik/shinyutils/commit/a2ccde1d1569dc918f11de40f3e624b12329a413))
+* make `MatWrap.mpl/plt/sns` properties ([bae2f78](https://github.com/jayanthkoushik/shinyutils/commit/bae2f78c3f5b53fd2119041bade4f07f7f76a5df))
+* make arguments to conf_logging keyword only ([3b194d6](https://github.com/jayanthkoushik/shinyutils/commit/3b194d60982af83890c6161b24f6accb37dbb68e))
+* refactor `pt` to work better with `Corgy` ([869be1c](https://github.com/jayanthkoushik/shinyutils/commit/869be1cf41d23766c56ddbb842a1ca83fa767ee4))
+* replace `MatWrap.add_plotting_args` with `PlottingArgs` class ([3974414](https://github.com/jayanthkoushik/shinyutils/commit/397441490c559b094982e317d5394c52b64ce18e))
+
+
+* disalbe auto calling `conf_logging` and add parse arguments for it ([aaaecbf](https://github.com/jayanthkoushik/shinyutils/commit/aaaecbf5fda9a133b2c405d2f5107971332f8a34))
+* remove logng.build_log_argp ([94ea6b9](https://github.com/jayanthkoushik/shinyutils/commit/94ea6b974dde5f94f50ea1090956a152349bce32))
+
+
+### build
+
+* increase minimum Python version to 3.9 ([3e16baf](https://github.com/jayanthkoushik/shinyutils/commit/3e16baf41a5b7098f3fd8af714a98a85699c4e66))
+* remove plotting and pytorch dependency groups ([729e781](https://github.com/jayanthkoushik/shinyutils/commit/729e781163ab5346d144b449ee4013de79dc6469))
+* rename 'color' dependency group to 'colors' ([5d83afe](https://github.com/jayanthkoushik/shinyutils/commit/5d83afe2cc4e7e1668906262856aadc9627b99a4))
+* update `corgy` to version 2.4 ([d67b369](https://github.com/jayanthkoushik/shinyutils/commit/d67b369d5dc74c0d701f4b668cd415c8e640a9db))
+
 ## [9.3.0](https://github.com/jayanthkoushik/shinyutils/compare/v9.2.1...v9.3.0) (2021-11-17)
 
 
