@@ -14,7 +14,7 @@ jobs:
         fetch-depth: 0
     - uses: actions/setup-python@master
       with:
-        python-version: 3.7
+        python-version: '3.9'
     - uses: actions/setup-node@master
     - name: Run conventional-github-releaser
       run: npx conventional-github-releaser -p angular
