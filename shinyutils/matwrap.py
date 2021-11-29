@@ -1,6 +1,5 @@
 """Utilities for matplotlib and seaborn."""
 
-import json
 import warnings
 from argparse import _ArgumentGroup, Action, ArgumentParser
 from contextlib import AbstractContextManager
@@ -9,7 +8,6 @@ from types import ModuleType
 from typing import Any, List, Mapping, Optional, Tuple, Union
 
 from corgy.types import KeyValueType
-from pkg_resources import resource_filename
 
 _WRAPPED_NAMES = ("mpl", "plt", "sns")
 __all__ = ("MatWrap", "Plot") + _WRAPPED_NAMES
@@ -51,9 +49,28 @@ class MatWrap:
         ...
     """
 
-    _rc_defaults_path = resource_filename("shinyutils", "data/mplcfg.json")
-    with open(_rc_defaults_path, "r", encoding="utf-8") as f:
-        _rc_defaults = json.load(f)
+    _rc_defaults: dict[str, Any] = {
+        "axes.grid": True,
+        "axes.grid.axis": "y",
+        "axes.grid.which": "major",
+        "axes.spines.bottom": False,
+        "axes.spines.left": False,
+        "axes.spines.right": False,
+        "axes.spines.top": False,
+        "backend": "pgf",
+        "figure.constrained_layout.use": True,
+        "legend.fancybox": False,
+        "legend.frameon": False,
+        "pgf.rcfonts": False,
+        "pgf.texsystem": "lualatex",
+        "savefig.format": "pdf",
+        "savefig.transparent": False,
+        "scatter.marker": ".",
+        "text.usetex": False,
+        "xtick.direction": "out",
+        "ytick.direction": "out",
+        "ytick.major.size": 0,
+    }
 
     _mpl = None
     _plt = None
