@@ -9,7 +9,7 @@ Collection of personal utilities.
 Utilities for logging.
 
 
-### shinyutils.logng.conf_logging(log_level: Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'] = 'INFO', use_colors: Optional[bool] = None, arg_parser: Optional[argparse.ArgumentParser] = None, arg_name: str = '--log-level', arg_help: str = 'set the log level')
+### shinyutils.logng.conf_logging(log_level='INFO', use_colors=None, arg_parser=None, arg_name='--log-level', arg_help='set the log level')
 Set up logging.
 
 This function configures the root logger, and optionally, adds an argument to an
@@ -85,7 +85,7 @@ fig = plt.figure()
 ```
 
 
-#### _classmethod_ configure(context: Literal['paper', 'poster', 'notebook'] = 'paper', style: Literal['darkgrid', 'whitegrid', 'dark', 'white', 'ticks'] = 'ticks', font: str = 'Latin Modern Roman', latex_pkgs: Optional[list[str]] = None, backend: Optional[str] = None, \*\*rc_extra)
+#### _classmethod_ configure(context='paper', style='ticks', font='Latin Modern Roman', latex_pkgs=None, backend=None, \*\*rc_extra)
 Configure matplotlib and seaborn.
 
 
@@ -158,23 +158,23 @@ class A(Corgy):
 ```
 
 
-#### _property_ context(_: Literal['paper', 'notebook', 'talk', 'poster'_ )
+#### _property_ context()
 seaborn plotting context
 
 
-#### _property_ style(_: Literal['white', 'dark', 'whitegrid', 'darkgrid', 'ticks'_ )
+#### _property_ style()
 seaborn plotting style
 
 
-#### _property_ font(_: st_ )
+#### _property_ font()
 font for plots
 
 
-#### _property_ backend(_: st_ )
+#### _property_ backend()
 matplotlib backend
 
 
-### _class_ shinyutils.matwrap.Plot(save_file: Optional[str] = None, title: Optional[str] = None, sizexy: Optional[tuple[int, int]] = None, labelxy: tuple[typing.Optional[str], typing.Optional[str]] = (None, None), logxy: tuple[bool, bool] = (False, False))
+### _class_ shinyutils.matwrap.Plot(save_file=None, title=None, sizexy=None, labelxy=(None, None), logxy=(False, False))
 Wrapper around a single matplotlib plot.
 
 This class is a context manager that returns a matplotlib `axis` instance when
@@ -231,23 +231,23 @@ Usage:
 ```
 
 
-#### _property_ optim_cls(_: SubClassType(Optimizer_ )
+#### _property_ optim_cls()
 optimizer class
 
 
-#### _property_ optim_params(_: Sequence[KeyValueType(str, _t_param)_ )
+#### _property_ optim_params()
 arguments for the optimizer
 
 
-#### _property_ lr_sched_cls(_: Optional[SubClassType(_LRScheduler)_ )
+#### _property_ lr_sched_cls()
 learning rate scheduler class
 
 
-#### _property_ lr_sched_params(_: Sequence[KeyValueType(str, _t_param)_ )
+#### _property_ lr_sched_params()
 arguments for the learning rate scheduler
 
 
-#### set_weights(weights: Iterable[torch.Tensor])
+#### set_weights(weights)
 Set weights of underlying optimizer.
 
 
@@ -259,7 +259,7 @@ Call `zero_grad` on underlying optimizer.
 Call `step` on underlying optimizer, and lr scheduler (if present).
 
 
-#### _static_ add_help_args_to_parser(base_parser: Union[argparse.ArgumentParser, argparse._ArgumentGroup], group_title: Optional[str] = 'pytorch help')
+#### _static_ add_help_args_to_parser(base_parser, group_title='pytorch help')
 Add parser arguments for help on PyTorch optimizers and lr schedulers.
 
 Example:
@@ -284,27 +284,27 @@ Adamax(params, lr=0.002, betas=(0.9, 0.999), eps=1e-08, weight_decay=0)
 Fully connected network.
 
 
-#### _property_ in_dim(_: in_ )
+#### _property_ in_dim()
 number of input features
 
 
-#### _property_ out_dim(_: in_ )
+#### _property_ out_dim()
 number of output features
 
 
-#### _property_ hidden_dims(_: Sequence[int_ )
+#### _property_ hidden_dims()
 hidden layer dimensions
 
 
-#### _property_ hidden_act(_: Callable[[...], torch.Tensor_ )
+#### _property_ hidden_act()
 activation function for hidden layers
 
 
-#### _property_ out_act(_: Optional[Callable[[...], torch.Tensor]_ )
+#### _property_ out_act()
 activation function for output layer
 
 
-#### forward(x: torch.Tensor)
+#### forward(x)
 Forward a tensor through the network, and return the result.
 
 
@@ -318,43 +318,39 @@ Forward a tensor through the network, and return the result.
 Helper class for training a model on a dataset.
 
 
-#### _property_ train_iters(_: in_ )
+#### _property_ train_iters()
 number of training iterations
 
 
-#### _property_ ptopt(_: shinyutils.pt.PTOp_ )
+#### _property_ ptopt()
 optimizer
 
 
-#### _property_ batch_size(_: in_ )
+#### _property_ batch_size()
 batch size for training
 
 
-#### _property_ data_load_workers(_: in_ )
+#### _property_ data_load_workers()
 number of workers for loading data
 
 
-#### _property_ shuffle(_: boo_ )
+#### _property_ shuffle()
 whether to shuffle the dataset
 
 
-#### _property_ pin_memory(_: boo_ )
+#### _property_ pin_memory()
 whether to pin data to CUDA memory
 
 
-#### _property_ drop_last(_: boo_ )
+#### _property_ drop_last()
 whether to drop the last incomplete batch
 
 
-#### _property_ pbar_desc(_: st_ )
+#### _property_ pbar_desc()
 description for training progress bar
 
 
-#### set_dataset(value: torch.utils.data.dataset.Dataset)
-
-#### set_dataset(value: Tuple[torch.Tensor, ...])
-
-#### set_dataset(value: Tuple['np.ndarray', ...])
+#### set_dataset(value)
 Set the training data.
 
 
@@ -365,7 +361,7 @@ Set the training data.
 
 
 
-#### train(model: torch.nn.modules.module.Module, loss_fn: Callable[[torch.Tensor, torch.Tensor], torch.Tensor], post_iter_hook: Optional[Callable[[int, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor], None]] = None)
+#### train(model, loss_fn, post_iter_hook=None)
 Train a model.
 
 
@@ -384,7 +380,7 @@ Train a model.
 
 
 
-### _class_ shinyutils.pt.TBLogs(path: Optional[str] = None)
+### _class_ shinyutils.pt.TBLogs(path=None)
 TensorBoard logs type.
 
 
@@ -411,7 +407,7 @@ Mock instace that no-ops for every call.
 Stateful wrapper to execute shell commands.
 
 
-### _class_ shinyutils.sh.SH(shell: Sequence[str] = ('sh', '-i'), loop: Optional[asyncio.events.AbstractEventLoop] = None)
+### _class_ shinyutils.sh.SH(shell=('sh', '-i'), loop=None)
 Wrapper around an interactive shell process.
 
 This class can be used to execute multiple shell commands within a single shell
