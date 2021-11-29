@@ -55,6 +55,8 @@ parser.parse_args(["--log-level", "INFO"])  # update log level to INFO
 
 Utilities for matplotlib and seaborn.
 
+`MatWrap.configure` is called upon importing this module, which enables default config.
+
 
 ### _class_ shinyutils.matwrap.MatWrap()
 Wrapper for `matplotlib`, `matplotlib.pyplot`, and `seaborn`.
@@ -64,7 +66,7 @@ Usage:
 ```python
 # Do not import `matplotlib` or `seaborn`.
 from shinyutils.matwrap import MatWrap as mw
-# Call before importing any packages that import matplotlib.
+# Configure with `mw.configure` (refer to `configure` docs for details).
 mw.configure()
 
 fig = mw.plt().figure()
@@ -123,20 +125,6 @@ Configure matplotlib and seaborn.
 
 #### _classmethod_ palette(n=8)
 Color universal design palette.
-
-
-#### _static_ set_size_tight(fig, size: tuple[int, int])
-Set the size of a matplotlib figure.
-
-
-* **Parameters**
-
-
-    * **fig** – Matplotlib `Figure` instance.
-
-
-    * **size** – Tuple (width, height) in inches.
-
 
 
 ### _class_ shinyutils.matwrap.PlottingArgs(\*\*args)

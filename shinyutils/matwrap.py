@@ -1,6 +1,8 @@
-"""Utilities for matplotlib and seaborn."""
+"""Utilities for matplotlib and seaborn.
 
-import warnings
+`MatWrap.configure` is called upon importing this module, which enables default config.
+"""
+
 from contextlib import AbstractContextManager
 from itertools import cycle, islice
 from types import ModuleType
@@ -30,7 +32,7 @@ class MatWrap:
 
         # Do not import `matplotlib` or `seaborn`.
         from shinyutils.matwrap import MatWrap as mw
-        # Call before importing any packages that import matplotlib.
+        # Configure with `mw.configure` (refer to `configure` docs for details).
         mw.configure()
 
         fig = mw.plt().figure()
@@ -113,8 +115,8 @@ class MatWrap:
             # pylint: disable=import-outside-toplevel
             try:
                 import matplotlib
-            except ImportError as e:
-                raise ImportError(f"{e}: shinyutils.matwrap needs matplotlib") from None
+            except ImportError:
+                raise ImportError("shinyutils.matwrap needs `matplotlib`") from None
 
             cls._mpl = matplotlib
             cls._mpl_default_rc = cls._mpl.rcParams.copy()
@@ -124,8 +126,8 @@ class MatWrap:
 
             try:
                 import seaborn
-            except ImportError as e:
-                raise ImportError(f"{e}: shinyutils.matwrap needs seaborn") from None
+            except ImportError:
+                raise ImportError("shinyutils.matwrap needs `seaborn`") from None
 
             cls._plt = matplotlib.pyplot
             cls._sns = seaborn
@@ -141,7 +143,7 @@ class MatWrap:
 
     def __new__(cls):
         raise NotImplementedError(
-            "MatWrap does not provide instances. Use the class methods."
+            "`MatWrap` does not provide instances. Use the class methods."
         )
 
     @classmethod
@@ -190,21 +192,6 @@ class MatWrap:
             return _base_palette[:n]
 
         return list(islice(cycle(_base_palette), n))
-
-    @staticmethod
-    def set_size_tight(fig, size: tuple[int, int]):
-        """Set the size of a matplotlib figure.
-
-        Args:
-            fig: Matplotlib `Figure` instance.
-            size: Tuple (width, height) in inches.
-        """
-        warnings.warn(
-            "constrained_layout is enabled by default: don't use tight_layout",
-            FutureWarning,
-        )
-        fig.set_size_inches(*size)
-        fig.tight_layout(pad=0, w_pad=0, h_pad=0)
 
 
 class PlottingArgs(Corgy):
