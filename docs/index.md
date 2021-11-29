@@ -139,42 +139,51 @@ Set the size of a matplotlib figure.
 
 
 
-#### _static_ add_parser_config_args(base_parser: Union[argparse.ArgumentParser, argparse._ArgumentGroup], group_title: Optional[str] = 'plotting options')
-Add arguments for configuring plotting to a parser.
+### _class_ shinyutils.matwrap.PlottingArgs(\*\*args)
+Plotting arguments that can be added to `ArgumentParser` instances.
 
-
-* **Parameters**
-
-
-    * **base_parser** – Argument parser or group to add arguments to.
-
-
-    * **group_title** – Title to use for added options. If `None`, arguments will be
-    added to the base parser. Otherwise, options will be added to a group
-    with the given title. A new group will be created if `base_parser` is
-    not a group.
-
-
-Example:
+Usage:
 
 ```python
->>> arg_parser = ArgumentParser(
-        add_help=False, formatter_class=corgy.CorgyHelpFormatter
-    )
->>> MatWrap.add_parser_config_args(arg_parser)
+>>> arg_parser = ArgumentParser(add_help=False, formatter_class=Corgy)
+>>> PlottingArgs.add_to_parser(arg_parser, name_prefix="plotting")
 >>> arg_parser.print_help()
-plotting options:
-  --plotting-context str
-      ({'paper'/'notebook'/'talk'/'poster'} default: 'paper')
-  --plotting-style str
-      ({'white'/'dark'/'whitegrid'/'darkgrid'/'ticks'} default: 'ticks')
-  --plotting-font str
-      (default: 'Latin Modern Roman')
-  --plotting-latex-pkgs [str [str ...]]
-      (default: [])
-  --plotting-rc-extra [key=val [key=val ...]]
-      (default: [])
+options:
+    --plotting-context str
+        seaborn plotting context ({'paper'/'notebook'/'talk'/'poster'}
+        default: 'paper')
+    --plotting-style str
+        seaborn plotting style
+        ({'white'/'dark'/'whitegrid'/'darkgrid'/'ticks'} default: 'ticks')
+    --plotting-font str
+        font for plots (default: 'Latin Modern Roman')
+    --plotting-backend str
+        matplotlib backend (default: 'pgf')
 ```
+
+The class can also be used to create an argument group inside another `Corgy`
+class:
+
+```python
+class A(Corgy):
+    plotting: Annotated[PlottingArgs, "plotting arguments"]
+```
+
+
+#### _property_ context(_: Literal['paper', 'notebook', 'talk', 'poster'_ )
+seaborn plotting context
+
+
+#### _property_ style(_: Literal['white', 'dark', 'whitegrid', 'darkgrid', 'ticks'_ )
+seaborn plotting style
+
+
+#### _property_ font(_: st_ )
+font for plots
+
+
+#### _property_ backend(_: st_ )
+matplotlib backend
 
 
 ### _class_ shinyutils.matwrap.Plot(save_file: Optional[str] = None, title: Optional[str] = None, sizexy: Optional[tuple[int, int]] = None, labelxy: tuple[typing.Optional[str], typing.Optional[str]] = (None, None), logxy: tuple[bool, bool] = (False, False))

@@ -1,16 +1,15 @@
 """Utilities for matplotlib and seaborn."""
 
 import warnings
-from argparse import _ArgumentGroup, Action, ArgumentParser
 from contextlib import AbstractContextManager
 from itertools import cycle, islice
 from types import ModuleType
-from typing import Any, Literal, Optional, Union
+from typing import Annotated, Any, Literal, Optional
 
-from corgy.types import KeyValueType
+from corgy import Corgy
 
 _WRAPPED_NAMES = ("mpl", "plt", "sns")
-__all__ = ("MatWrap", "Plot") + _WRAPPED_NAMES
+__all__ = ("MatWrap", "PlottingArgs", "Plot") + _WRAPPED_NAMES
 
 mpl: ModuleType
 plt: ModuleType
@@ -204,105 +203,43 @@ class MatWrap:
         fig.set_size_inches(*size)
         fig.tight_layout(pad=0, w_pad=0, h_pad=0)
 
-    @staticmethod
-    def add_parser_config_args(
-        base_parser: Union[ArgumentParser, _ArgumentGroup],
-        group_title: Optional[str] = "plotting options",
-    ) -> Union[ArgumentParser, _ArgumentGroup]:
-        """Add arguments for configuring plotting to a parser.
 
-        Args:
-            base_parser: Argument parser or group to add arguments to.
-            group_title: Title to use for added options. If `None`, arguments will be
-                added to the base parser. Otherwise, options will be added to a group
-                with the given title. A new group will be created if `base_parser` is
-                not a group.
+class PlottingArgs(Corgy):
+    """Plotting arguments that can be added to `ArgumentParser` instances.
 
-        Example::
+    Usage::
 
-            >>> arg_parser = ArgumentParser(
-                    add_help=False, formatter_class=corgy.CorgyHelpFormatter
-                )
-            >>> MatWrap.add_parser_config_args(arg_parser)
-            >>> arg_parser.print_help()
-            plotting options:
-              --plotting-context str
-                  ({'paper'/'notebook'/'talk'/'poster'} default: 'paper')
-              --plotting-style str
-                  ({'white'/'dark'/'whitegrid'/'darkgrid'/'ticks'} default: 'ticks')
-              --plotting-font str
-                  (default: 'Latin Modern Roman')
-              --plotting-latex-pkgs [str [str ...]]
-                  (default: [])
-              --plotting-rc-extra [key=val [key=val ...]]
-                  (default: [])
-        """
+        >>> arg_parser = ArgumentParser(add_help=False, formatter_class=Corgy)
+        >>> PlottingArgs.add_to_parser(arg_parser, name_prefix="plotting")
+        >>> arg_parser.print_help()
+        options:
+            --plotting-context str
+                seaborn plotting context ({'paper'/'notebook'/'talk'/'poster'}
+                default: 'paper')
+            --plotting-style str
+                seaborn plotting style
+                ({'white'/'dark'/'whitegrid'/'darkgrid'/'ticks'} default: 'ticks')
+            --plotting-font str
+                font for plots (default: 'Latin Modern Roman')
+            --plotting-backend str
+                matplotlib backend (default: 'pgf')
 
-        class _ConfMatwrap(Action):
-            def __call__(self, parser, namespace, values, option_string=None):
-                _args = MatWrap._args
-                assert option_string.startswith("--plotting-")
-                option_name = option_string.split("--plotting-")[1].replace("-", "_")
-                if option_name == "rc_extra":
-                    _d = {}
-                    for k, v in values:
-                        try:
-                            _d[k] = int(v)
-                        except ValueError:
-                            try:
-                                _d[k] = float(v)
-                            except ValueError:
-                                _d[k] = v
-                    MatWrap.configure(**_args, **dict(values))
-                else:
-                    assert option_name in _args
-                    _args[option_name] = values
-                    MatWrap.configure(**_args)
+    The class can also be used to create an argument group inside another `Corgy`
+    class::
 
-        if group_title is not None:
-            base_parser = base_parser.add_argument_group(group_title)
+        class A(Corgy):
+            plotting: Annotated[PlottingArgs, "plotting arguments"]
+    """
 
-        base_parser.add_argument(
-            "--plotting-context",
-            type=str,
-            choices=["paper", "notebook", "talk", "poster"],
-            default="paper",
-            action=_ConfMatwrap,
-            help="seaborn plotting context",
-        )
-        base_parser.add_argument(
-            "--plotting-style",
-            type=str,
-            choices=["white", "dark", "whitegrid", "darkgrid", "ticks"],
-            default="ticks",
-            action=_ConfMatwrap,
-            help="seaborn plotting style",
-        )
-        base_parser.add_argument(
-            "--plotting-font",
-            type=str,
-            default="Latin Modern Roman",
-            action=_ConfMatwrap,
-            help="font for plots",
-        )
-        base_parser.add_argument(
-            "--plotting-latex-pkgs",
-            type=str,
-            nargs="*",
-            default=[],
-            action=_ConfMatwrap,
-            help="additional latex packages to import for plotting",
-        )
-        base_parser.add_argument(
-            "--plotting-rc-extra",
-            type=KeyValueType(),
-            nargs="*",
-            default=[],
-            action=_ConfMatwrap,
-            help="additional rc parameters for matplotlib",
-        )
-
-        return base_parser
+    context: Annotated[
+        Literal["paper", "notebook", "talk", "poster"], "seaborn plotting context"
+    ] = "paper"
+    style: Annotated[
+        Literal["white", "dark", "whitegrid", "darkgrid", "ticks"],
+        "seaborn plotting style",
+    ] = "ticks"
+    font: Annotated[str, "font for plots"] = "Latin Modern Roman"
+    backend: Annotated[str, "matplotlib backend"] = "pgf"
 
 
 class Plot(AbstractContextManager):
