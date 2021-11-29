@@ -70,10 +70,10 @@ mw.configure()
 fig = mw.plt().figure()
 ax = fig.add_subplot(111)  # `ax` can be used normally now
 
-# Use class methods in `MatWrap` to access `matplotlib`/`seaborn` functions.
-mw.mpl()  # returns `matplotlib` module
-mw.plt()  # returns `matplotlib.pyplot` module
-mw.sns()  # returns `seaborn` module
+# Use class properties in `MatWrap` to access `matplotlib`/`seaborn` functions.
+mw.mpl  # returns `matplotlib` module
+mw.plt  # returns `matplotlib.pyplot` module
+mw.sns  # returns `seaborn` module
 
 # You can also import the module names from `matwrap`
 from shinyutils.matwrap import mpl, plt, sns
@@ -109,15 +109,15 @@ Configure matplotlib and seaborn.
 
 
 
-#### _classmethod_ mpl()
+#### _class property_ mpl()
 `matplotlib` module.
 
 
-#### _classmethod_ plt()
+#### _class property_ plt()
 `matplotlib.pyplot` module.
 
 
-#### _classmethod_ sns()
+#### _class property_ sns()
 `seaborn` module.
 
 
