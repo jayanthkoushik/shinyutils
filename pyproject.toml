@@ -55,7 +55,7 @@ add-ignore = "D100,D101,D102,D103,D104,D105,D106,D107"
 
 [tool.poetry]
 name = "shinyutils"
-version = "10.0.0"
+version = "11.0.0"
 description = "Personal collection of common utilities"
 authors = ["Jayanth Koushik <jnkoushik@gmail.com>"]
 license = "MIT"

@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [11.0.0](https://github.com/jayanthkoushik/shinyutils/compare/v10.0.0...v11.0.0) (2021-12-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* update to `corgy 3.1`
+
+### Features
+
+* add `py.typed` to inform type checkers about annotations ([2451394](https://github.com/jayanthkoushik/shinyutils/commit/245139443c38cac4747598e44dcafe5dd3d6ffa1))
+
+
+### build
+
+* update to `corgy 3.1` ([3a0526f](https://github.com/jayanthkoushik/shinyutils/commit/3a0526f96af9daffe3182d28389efef5ad3cdb51))
+
 ## [10.0.0](https://github.com/jayanthkoushik/shinyutils/compare/v9.3.0...v10.0.0) (2021-11-29)
 
 
