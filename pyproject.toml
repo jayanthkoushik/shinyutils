@@ -77,7 +77,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
-corgy = "^2.4"
+corgy = "^3.1"
 
 rich = { version = "^10.0", optional = true }
 crayons = {version = "^0.4.0", optional = true}

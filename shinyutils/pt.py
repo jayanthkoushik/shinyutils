@@ -23,9 +23,8 @@ from unittest.mock import Mock
 
 import torch.nn.functional as F
 from corgy import Corgy, corgyparser
-from corgy.types import KeyValueType, SubClassType
+from corgy.types import KeyValuePairs, SubClass
 from torch import nn
-from torch.optim import Adam
 from torch.optim.lr_scheduler import _LRScheduler
 from torch.optim.optimizer import Optimizer
 from torch.utils.data import DataLoader, Dataset, TensorDataset
@@ -59,19 +58,6 @@ class PTOpt(Corgy):
         >>> opt.step()
     """
 
-    def _t_param(s: str) -> Union[int, float, str]:  # pylint: disable=no-self-argument
-        try:
-            return int(s)
-        except ValueError:
-            try:
-                return float(s)
-            except ValueError:
-                pass
-        return s
-
-    _OptimizerSubClassType = SubClassType(Optimizer)
-    _LRSchedulerSubClassType = SubClassType(_LRScheduler)
-    _KVType = KeyValueType(str, _t_param)
     __slots__ = (
         "optimizer",
         "lr_scheduler",
@@ -79,42 +65,58 @@ class PTOpt(Corgy):
         "_lr_sched_params_dict",
     )
 
-    _OptimizerSubClassType.__choices__ = [
-        _c
-        for _c in _OptimizerSubClassType.__choices__
-        if _c.__module__ != "torch.optim._multi_tensor"
-    ]
+    class _OptimizerSubClass(SubClass[Optimizer]):
+        @classmethod
+        def _choices(cls):
+            return tuple(
+                _c
+                for _c in super()._choices()
+                if _c.__module__ != "torch.optim._multi_tensor"
+            )
 
-    optim_cls: Annotated[  # type: ignore
-        _OptimizerSubClassType, "optimizer class"
-    ] = Adam
-    optim_params: Annotated[  # type: ignore
-        Sequence[_KVType], "arguments for the optimizer"
-    ] = []
-    lr_sched_cls: Annotated[  # type: ignore
-        Optional[_LRSchedulerSubClassType], "learning rate scheduler class"
+    optim_cls: Annotated[
+        _OptimizerSubClass, "optimizer sub class"
+    ] = _OptimizerSubClass("Adam")
+
+    optim_params: Annotated[
+        KeyValuePairs, "arguments for the optimizer"
+    ] = KeyValuePairs("")
+
+    lr_sched_cls: Annotated[
+        Optional[SubClass[_LRScheduler]], "learning rate scheduler sub class"
     ] = None
-    lr_sched_params: Annotated[  # type: ignore
-        Sequence[_KVType], "arguments for the learning rate scheduler"
-    ] = []
+
+    lr_sched_params: Annotated[
+        KeyValuePairs, "arguments for the learning rate scheduler"
+    ] = KeyValuePairs("")
+
+    @corgyparser("optim_params")
+    @corgyparser("lr_sched_params")
+    @staticmethod
+    def _t_params(s: str) -> KeyValuePairs:
+        dic: KeyValuePairs[str, Union[int, float, str]] = KeyValuePairs(s)
+        for k, v in dic.items():
+            try:
+                v = int(v)
+            except ValueError:
+                try:
+                    v = float(s)
+                except ValueError:
+                    pass
+            dic[k] = v
+        return dic
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.optimizer = None
         self.lr_scheduler = None
-        self._optim_params_dict = dict(self.optim_params)
-        self._lr_sched_params_dict = dict(self.lr_sched_params)
 
     def set_weights(self, weights: Iterable[torch.Tensor]):
         """Set weights of underlying optimizer."""
-        self.optimizer = self.optim_cls(  # type: ignore
-            weights, **self._optim_params_dict
-        )
+        self.optimizer = self.optim_cls(weights, **self.optim_params)
         if self.lr_sched_cls is not None:
-            self.lr_scheduler = (
-                self.lr_sched_cls(  # type: ignore  # pylint: disable=not-callable
-                    self.optimizer, **self._lr_sched_params_dict
-                )
+            self.lr_scheduler = self.lr_sched_cls(  # pylint: disable=not-callable
+                self.optimizer, **self.lr_sched_params
             )
 
     @staticmethod
@@ -134,8 +136,8 @@ class PTOpt(Corgy):
         if self.optimizer is None:
             return super().__repr__()
         r = repr(self.optimizer)
-        if self.lr_scheduler is not None:  # type: ignore
-            r += f"\n{self._better_lr_sched_repr(self.lr_scheduler)}"  # type: ignore
+        if self.lr_scheduler is not None:
+            r += f"\n{self._better_lr_sched_repr(self.lr_scheduler)}"
         return r
 
     def _ensure_initialized(self):
@@ -190,17 +192,17 @@ class PTOpt(Corgy):
 
         base_parser.add_argument(
             "--explain-optimizer",
-            type=PTOpt._OptimizerSubClassType,
+            type=PTOpt._OptimizerSubClass,
             action=_ShowHelp,
             help="describe arguments of a torch optimizer",
-            choices=PTOpt._OptimizerSubClassType.__choices__,
+            choices=PTOpt._OptimizerSubClass._choices(),
         )
         base_parser.add_argument(
             "--explain-lr-sched",
-            type=PTOpt._LRSchedulerSubClassType,
+            type=SubClass[_LRScheduler],
             action=_ShowHelp,
             help="describe arguments of a torch lr scheduler",
-            choices=PTOpt._LRSchedulerSubClassType.__choices__,
+            choices=SubClass[_LRScheduler]._choices(),
         )
 
 

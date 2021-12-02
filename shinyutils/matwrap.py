@@ -270,7 +270,7 @@ class Plot(AbstractContextManager):
         self.sizexy = sizexy
         self.labelxy = labelxy
 
-        self.fig = MatWrap.plt.figure()  # type: ignore # mypy bug
+        self.fig = MatWrap.plt.figure()  # type: ignore
         self.ax = self.fig.add_subplot(111)
 
         if logxy[0] is True:

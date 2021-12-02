@@ -18,7 +18,7 @@ Usage:
 
 
 #### _property_ optim_cls()
-optimizer class
+optimizer sub class
 
 
 #### _property_ optim_params()
@@ -26,7 +26,7 @@ arguments for the optimizer
 
 
 #### _property_ lr_sched_cls()
-learning rate scheduler class
+learning rate scheduler sub class
 
 
 #### _property_ lr_sched_params()
