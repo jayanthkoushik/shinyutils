@@ -20,8 +20,7 @@ sns: ModuleType
 
 def __getattr__(name):
     if name in _WRAPPED_NAMES:
-        attr = getattr(MatWrap, name)
-        return attr.__func__(MatWrap)
+        return getattr(MatWrap, name)
     raise AttributeError
 
 
