@@ -53,6 +53,9 @@ disable = """
 convention = "pep257"
 add-ignore = "D100,D101,D102,D103,D104,D105,D106,D107"
 
+[tool.mypy]
+ignore_missing_imports = true
+
 [tool.poetry]
 name = "shinyutils"
 version = "11.0.0"
