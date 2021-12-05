@@ -6,8 +6,9 @@ except ImportError:
     raise ImportError("shinyutils.pt needs `pytorch`") from None
 
 import inspect
-import logging
-from argparse import _ArgumentGroup, Action, ArgumentParser, ArgumentTypeError
+import json
+import warnings
+from argparse import Action, ArgumentParser, ArgumentTypeError
 from typing import (
     Annotated,
     Callable,
@@ -17,7 +18,6 @@ from typing import (
     Sequence,
     Tuple,
     TYPE_CHECKING,
-    Union,
 )
 from unittest.mock import Mock
 
@@ -32,7 +32,7 @@ from torch.utils.data import DataLoader, Dataset, TensorDataset
 try:
     from tqdm import trange
 except ImportError:
-    logging.info("progress bar disabled: could not import `tqdm`")
+    warnings.warn("progress bar disabled: could not import `tqdm`", RuntimeWarning)
 
     def trange(n, *args, **kwargs):
         return range(n)
@@ -58,12 +58,7 @@ class PTOpt(Corgy):
         >>> opt.step()
     """
 
-    __slots__ = (
-        "optimizer",
-        "lr_scheduler",
-        "_optim_params_dict",
-        "_lr_sched_params_dict",
-    )
+    __slots__ = ("optimizer", "lr_scheduler")
 
     class _OptimizerSubClass(SubClass[Optimizer]):
         @classmethod
@@ -94,15 +89,9 @@ class PTOpt(Corgy):
     @corgyparser("lr_sched_params")
     @staticmethod
     def _t_params(s: str) -> KeyValuePairs:
-        dic: KeyValuePairs[str, Union[int, float, str]] = KeyValuePairs(s)
+        dic = KeyValuePairs[str, str](s)
         for k, v in dic.items():
-            try:
-                v = int(v)
-            except ValueError:
-                try:
-                    v = float(s)
-                except ValueError:
-                    pass
+            v = json.loads(v)
             dic[k] = v
         return dic
 
@@ -158,17 +147,21 @@ class PTOpt(Corgy):
 
     @staticmethod
     def add_help_args_to_parser(
-        base_parser: Union[ArgumentParser, _ArgumentGroup],
-        group_title: Optional[str] = "pytorch help",
+        base_parser: ArgumentParser, group_title: Optional[str] = "pytorch help"
     ):
         """Add parser arguments for help on PyTorch optimizers and lr schedulers.
+
+        Args:
+            base_parser: `ArgumentParser` instance to add arguments to.
+            group_title: Title of a new group to add arguments to. If `None`, arguments
+                are added to the base parser instead. Default is `"pytorch help"`.
 
         Example::
 
             >>> arg_parser = ArgumentParser(
                     add_help=False, formatter_class=corgy.CorgyHelpFormatter
             )
-            >>> PTOpt.add_help(arg_parser)
+            >>> PTOpt.add_help_args_to_parser(arg_parser)
             >>> arg_parser.print_help()
             pytorch help:
               --explain-optimizer cls  describe arguments of a torch optimizer
@@ -177,6 +170,7 @@ class PTOpt(Corgy):
                                        (optional)
             >>> arg_parser.parse_args(["--explain-optimizer", "Adamax"])
             Adamax(params, lr=0.002, betas=(0.9, 0.999), eps=1e-08, weight_decay=0)
+            ...
         """
 
         class _ShowHelp(Action):
@@ -188,26 +182,26 @@ class PTOpt(Corgy):
                 parser.exit()
 
         if group_title is not None:
-            base_parser = base_parser.add_argument_group(group_title)
+            base_parser = base_parser.add_argument_group(group_title)  # type: ignore
 
         base_parser.add_argument(
             "--explain-optimizer",
             type=PTOpt._OptimizerSubClass,
             action=_ShowHelp,
-            help="describe arguments of a torch optimizer",
+            help="describe a pytorch optimizer",
             choices=PTOpt._OptimizerSubClass._choices(),
         )
         base_parser.add_argument(
             "--explain-lr-sched",
             type=SubClass[_LRScheduler],
             action=_ShowHelp,
-            help="describe arguments of a torch lr scheduler",
+            help="describe a pytorch lr scheduler",
             choices=SubClass[_LRScheduler]._choices(),
         )
 
 
 class FCNet(Corgy, nn.Module):
-    """Fully connected network."""
+    """Fully connected PyTorch network."""
 
     _ActType = Callable[..., torch.Tensor]
     _ActType.__metavar__ = "fun"  # type: ignore
@@ -233,9 +227,9 @@ class FCNet(Corgy, nn.Module):
                 f"`torch.nn.functional` has no attribute `{s}`"
             ) from None
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         nn.Module.__init__(self)
-        Corgy.__init__(self, *args, **kwargs)
+        Corgy.__init__(self, **kwargs)
         layer_sizes = [self.in_dim] + self.hidden_dims + [self.out_dim]
         self.layers = nn.ModuleList(
             [nn.Linear(ls, ls_n) for ls, ls_n in zip(layer_sizes, layer_sizes[1:])]
@@ -256,17 +250,17 @@ class FCNet(Corgy, nn.Module):
 
 
 class NNTrainer(Corgy):
-    """Helper class for training a model on a dataset."""
+    """Helper class for training a PyTorch model on a dataset."""
 
     __slots__ = ("_dataset", "_data_loader")
 
     train_iters: Annotated[int, "number of training iterations"]
-    ptopt: Annotated[PTOpt, "optimizer"]
+    ptopt: Annotated[PTOpt, "optimizer and learning rate scheduler"]
     batch_size: Annotated[int, "batch size for training"] = 8
     data_load_workers: Annotated[int, "number of workers for loading data"] = 0
-    shuffle: Annotated[bool, "whether to shuffle the dataset"] = True
-    pin_memory: Annotated[bool, "whether to pin data to CUDA memory"] = True
-    drop_last: Annotated[bool, "whether to drop the last incomplete batch"] = True
+    shuffle_data: Annotated[bool, "whether to shuffle the dataset"] = True
+    pin_cuda: Annotated[bool, "whether to pin data to CUDA memory"] = True
+    drop_last: Annotated[bool, "whether to drop the last incomplete batch"] = False
     pbar_desc: Annotated[str, "description for training progress bar"] = "Training"
 
     @overload
@@ -301,8 +295,8 @@ class NNTrainer(Corgy):
             self._dataset,
             batch_size=self.batch_size,
             num_workers=self.data_load_workers,
-            shuffle=self.shuffle,
-            pin_memory=self.pin_memory,
+            shuffle=self.shuffle_data,
+            pin_memory=self.pin_cuda,
             drop_last=self.drop_last,
         )
 
@@ -329,31 +323,27 @@ class NNTrainer(Corgy):
             raise RuntimeError("dataset not set: call `set_dataset` before `train`")
         bat_iter = iter(self._data_loader)
 
-        logging.info("moving model to %s", DEFAULT_DEVICE)
         model = model.to(DEFAULT_DEVICE)
-
-        logging.info("setting optimizer weights")
         self.ptopt.set_weights(model.parameters())
 
-        with trange(self.train_iters, desc=self.pbar_desc) as pbar:
-            for _iter in pbar:
-                try:
-                    x_bat, y_bat = next(bat_iter)
-                except StopIteration:
-                    bat_iter = iter(self._data_loader)
-                    x_bat, y_bat = next(bat_iter)
-                x_bat, y_bat = x_bat.to(DEFAULT_DEVICE), y_bat.to(DEFAULT_DEVICE)
+        for _iter in (pbar := trange(self.train_iters, desc=self.pbar_desc)):
+            try:
+                x_bat, y_bat = next(bat_iter)
+            except StopIteration:
+                bat_iter = iter(self._data_loader)
+                x_bat, y_bat = next(bat_iter)
+            x_bat, y_bat = x_bat.to(DEFAULT_DEVICE), y_bat.to(DEFAULT_DEVICE)
 
-                yhat_bat = model(x_bat)
-                loss = loss_fn(yhat_bat, y_bat)
-                pbar.set_postfix(loss=float(loss))
+            yhat_bat = model(x_bat)
+            loss = loss_fn(yhat_bat, y_bat)
+            pbar.set_postfix(loss=float(loss))
 
-                self.ptopt.zero_grad()
-                loss.backward()
-                self.ptopt.step()
+            self.ptopt.zero_grad()
+            loss.backward()
+            self.ptopt.step()
 
-                if post_iter_hook is not None:
-                    post_iter_hook(_iter, x_bat, y_bat, yhat_bat, loss)
+            if post_iter_hook is not None:
+                post_iter_hook(_iter, x_bat, y_bat, yhat_bat, loss)
 
 
 class TBLogs:
@@ -371,7 +361,7 @@ class TBLogs:
     """
 
     __metavar__ = "dir"
-    _mock = None
+    _mock: Optional["TBLogs"] = None
 
     def __init__(self, path: Optional[str] = None):
         if path is not None:
@@ -385,7 +375,7 @@ class TBLogs:
 
     @classmethod
     @property
-    def mock(cls):
+    def mock(cls) -> "TBLogs":
         """Mock instace that no-ops for every call."""
         if cls._mock is None:
             cls._mock = cls()
@@ -393,5 +383,5 @@ class TBLogs:
 
     def __repr__(self) -> str:
         if isinstance(self.writer, Mock):
-            return "<TBLogs object with mock writer>"
-        return f"<TBLogs object with writer logging to '{self.writer.log_dir}'>"
+            return "TBLogs.mock"
+        return f"TBLogs({self.writer.log_dir!r})"

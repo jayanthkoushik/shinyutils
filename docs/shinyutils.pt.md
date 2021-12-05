@@ -48,13 +48,24 @@ Call `step` on underlying optimizer, and lr scheduler (if present).
 #### _static_ add_help_args_to_parser(base_parser, group_title='pytorch help')
 Add parser arguments for help on PyTorch optimizers and lr schedulers.
 
+
+* **Parameters**
+
+
+    * **base_parser** – `ArgumentParser` instance to add arguments to.
+
+
+    * **group_title** – Title of a new group to add arguments to. If `None`, arguments
+    are added to the base parser instead. Default is `"pytorch help"`.
+
+
 Example:
 
 ```python
 >>> arg_parser = ArgumentParser(
         add_help=False, formatter_class=corgy.CorgyHelpFormatter
 )
->>> PTOpt.add_help(arg_parser)
+>>> PTOpt.add_help_args_to_parser(arg_parser)
 >>> arg_parser.print_help()
 pytorch help:
   --explain-optimizer cls  describe arguments of a torch optimizer
@@ -63,11 +74,12 @@ pytorch help:
                            (optional)
 >>> arg_parser.parse_args(["--explain-optimizer", "Adamax"])
 Adamax(params, lr=0.002, betas=(0.9, 0.999), eps=1e-08, weight_decay=0)
+...
 ```
 
 
-### _class_ shinyutils.pt.FCNet(\*args, \*\*kwargs)
-Fully connected network.
+### _class_ shinyutils.pt.FCNet(\*\*kwargs)
+Fully connected PyTorch network.
 
 
 #### _property_ in_dim()
@@ -101,7 +113,7 @@ Forward a tensor through the network, and return the result.
 
 
 ### _class_ shinyutils.pt.NNTrainer(\*\*args)
-Helper class for training a model on a dataset.
+Helper class for training a PyTorch model on a dataset.
 
 
 #### _property_ train_iters()
@@ -109,7 +121,7 @@ number of training iterations
 
 
 #### _property_ ptopt()
-optimizer
+optimizer and learning rate scheduler
 
 
 #### _property_ batch_size()
@@ -120,11 +132,11 @@ batch size for training
 number of workers for loading data
 
 
-#### _property_ shuffle()
+#### _property_ shuffle_data()
 whether to shuffle the dataset
 
 
-#### _property_ pin_memory()
+#### _property_ pin_cuda()
 whether to pin data to CUDA memory
 
 
