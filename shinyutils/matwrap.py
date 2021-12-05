@@ -195,6 +195,9 @@ class MatWrap:
 class PlottingArgs(Corgy):
     """Plotting arguments that can be added to `ArgumentParser` instances.
 
+    `MatWrap.configure` is called with the chosen arguments when an instance of this
+    class is created.
+
     Usage::
 
         >>> arg_parser = ArgumentParser(add_help=False, formatter_class=Corgy)
@@ -228,6 +231,12 @@ class PlottingArgs(Corgy):
     ] = "ticks"
     font: Annotated[str, "font for plots"] = "Latin Modern Roman"
     backend: Annotated[str, "matplotlib backend"] = "pgf"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        MatWrap.configure(
+            context=self.context, style=self.style, font=self.font, backend=self.backend
+        )
 
 
 class Plot(AbstractContextManager):

@@ -74,8 +74,11 @@ Configure matplotlib and seaborn.
 Color universal design palette.
 
 
-### _class_ shinyutils.matwrap.PlottingArgs(\*\*args)
+### _class_ shinyutils.matwrap.PlottingArgs(\*\*kwargs)
 Plotting arguments that can be added to `ArgumentParser` instances.
+
+`MatWrap.configure` is called with the chosen arguments when an instance of this
+class is created.
 
 Usage:
 
