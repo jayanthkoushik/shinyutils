@@ -58,7 +58,7 @@ ignore_missing_imports = true
 
 [tool.poetry]
 name = "shinyutils"
-version = "11.0.0"
+version = "12.0.0"
 description = "Personal collection of common utilities"
 authors = ["Jayanth Koushik <jnkoushik@gmail.com>"]
 license = "MIT"

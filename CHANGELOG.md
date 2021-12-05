@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [12.0.0](https://github.com/jayanthkoushik/shinyutils/compare/v11.0.0...v12.0.0) (2021-12-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* update `corgy` to version 4.0
+* simplify `NNTrainer` var names
+* refactor `pt` based on latest `corgy`
+
+### Features
+
+* call `MatWrap.configure` in `PlottingArgs.__init__` ([d7c1628](https://github.com/jayanthkoushik/shinyutils/commit/d7c1628c1c975cb86d455c5607e1163e54b8c728))
+* mark wrapped names in `matwrap` as `Any` so `mypy` doesn't complain ([bf8c586](https://github.com/jayanthkoushik/shinyutils/commit/bf8c5866a7267f098e83c3a86818f6e32dc7956a))
+* refactor `pt` based on latest `corgy` ([d9123e2](https://github.com/jayanthkoushik/shinyutils/commit/d9123e2c034ed323948e71558457449e54b2b74a))
+* simplify `NNTrainer` var names ([7bf49d4](https://github.com/jayanthkoushik/shinyutils/commit/7bf49d4f7120867d0e2dd73c37e1ee76028436ea))
+
+
+### Bug Fixes
+
+* fix wrapped name import from `matwrap` ([ef4faae](https://github.com/jayanthkoushik/shinyutils/commit/ef4faae34bdf4b47ff732911f29ccb3b3b06f16f))
+
+
+### build
+
+* update `corgy` to version 4.0 ([d72b8d7](https://github.com/jayanthkoushik/shinyutils/commit/d72b8d78614dd52c142faaff4f6482d8f02afbf7))
+
 ## [11.0.0](https://github.com/jayanthkoushik/shinyutils/compare/v10.0.0...v11.0.0) (2021-12-02)
 
 
