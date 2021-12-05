@@ -116,7 +116,7 @@ Forward a tensor through the network, and return the result.
 Helper class for training a PyTorch model on a dataset.
 
 
-#### _property_ train_iters()
+#### _property_ iters()
 number of training iterations
 
 
@@ -128,7 +128,7 @@ optimizer and learning rate scheduler
 batch size for training
 
 
-#### _property_ data_load_workers()
+#### _property_ data_workers()
 number of workers for loading data
 
 
@@ -174,7 +174,7 @@ Train a model.
 
     * **post_iter_hook** – Optional callback function to call after each iteration.
     The function will be called with arguments
-    `(iteration, x_batch, y_batch, yhat_batch, loss)`.
+    `(iteration, x_batch, y_batch, yhat_batch, loss, pbar)`.
 
 
 

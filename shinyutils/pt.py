@@ -11,6 +11,7 @@ import warnings
 from argparse import Action, ArgumentParser, ArgumentTypeError
 from typing import (
     Annotated,
+    Any,
     Callable,
     Iterable,
     Optional,
@@ -254,10 +255,10 @@ class NNTrainer(Corgy):
 
     __slots__ = ("_dataset", "_data_loader")
 
-    train_iters: Annotated[int, "number of training iterations"]
+    iters: Annotated[int, "number of training iterations"]
     ptopt: Annotated[PTOpt, "optimizer and learning rate scheduler"]
     batch_size: Annotated[int, "batch size for training"] = 8
-    data_load_workers: Annotated[int, "number of workers for loading data"] = 0
+    data_workers: Annotated[int, "number of workers for loading data"] = 0
     shuffle_data: Annotated[bool, "whether to shuffle the dataset"] = True
     pin_cuda: Annotated[bool, "whether to pin data to CUDA memory"] = True
     drop_last: Annotated[bool, "whether to drop the last incomplete batch"] = False
@@ -294,7 +295,7 @@ class NNTrainer(Corgy):
         self._data_loader = DataLoader(
             self._dataset,
             batch_size=self.batch_size,
-            num_workers=self.data_load_workers,
+            num_workers=self.data_workers,
             shuffle=self.shuffle_data,
             pin_memory=self.pin_cuda,
             drop_last=self.drop_last,
@@ -306,7 +307,7 @@ class NNTrainer(Corgy):
         loss_fn: Callable[[torch.Tensor, torch.Tensor], torch.Tensor],
         post_iter_hook: Optional[
             Callable[
-                [int, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor], None
+                [int, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, Any], None
             ]
         ] = None,
     ):
@@ -317,7 +318,7 @@ class NNTrainer(Corgy):
             loss_fn: Loss function mapping input tensors to a loss tensor.
             post_iter_hook: Optional callback function to call after each iteration.
                 The function will be called with arguments
-                `(iteration, x_batch, y_batch, yhat_batch, loss)`.
+                `(iteration, x_batch, y_batch, yhat_batch, loss, pbar)`.
         """
         if self._dataset is None:
             raise RuntimeError("dataset not set: call `set_dataset` before `train`")
@@ -326,7 +327,7 @@ class NNTrainer(Corgy):
         model = model.to(DEFAULT_DEVICE)
         self.ptopt.set_weights(model.parameters())
 
-        for _iter in (pbar := trange(self.train_iters, desc=self.pbar_desc)):
+        for _iter in (pbar := trange(self.iters, desc=self.pbar_desc)):
             try:
                 x_bat, y_bat = next(bat_iter)
             except StopIteration:
@@ -343,7 +344,7 @@ class NNTrainer(Corgy):
             self.ptopt.step()
 
             if post_iter_hook is not None:
-                post_iter_hook(_iter, x_bat, y_bat, yhat_bat, loss)
+                post_iter_hook(_iter, x_bat, y_bat, yhat_bat, loss, pbar)
 
 
 class TBLogs:
