@@ -5,7 +5,6 @@
 
 from contextlib import AbstractContextManager
 from itertools import cycle, islice
-from types import ModuleType
 from typing import Annotated, Any, Literal, Optional
 
 from corgy import Corgy
@@ -13,9 +12,9 @@ from corgy import Corgy
 _WRAPPED_NAMES = ("mpl", "plt", "sns")
 __all__ = ("MatWrap", "PlottingArgs", "Plot") + _WRAPPED_NAMES
 
-mpl: ModuleType
-plt: ModuleType
-sns: ModuleType
+mpl: Any
+plt: Any
+sns: Any
 
 
 def __getattr__(name):
