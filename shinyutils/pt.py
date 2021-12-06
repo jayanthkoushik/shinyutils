@@ -7,10 +7,10 @@ except ImportError:
 
 import inspect
 import json
+import sys
 import warnings
 from argparse import Action, ArgumentParser, ArgumentTypeError
 from typing import (
-    Annotated,
     Any,
     Callable,
     Iterable,
@@ -29,6 +29,11 @@ from torch import nn
 from torch.optim.lr_scheduler import _LRScheduler
 from torch.optim.optimizer import Optimizer
 from torch.utils.data import DataLoader, Dataset, TensorDataset
+
+if sys.version_info >= (3, 9):
+    from typing import Annotated
+else:
+    from typing_extensions import Annotated
 
 try:
     from tqdm import trange
@@ -334,24 +339,25 @@ class NNTrainer(Corgy):
         model = model.to(DEFAULT_DEVICE)
         self.ptopt.set_weights(model.parameters())
 
-        for _iter in (pbar := trange(self.iters, desc=self.pbar_desc)):
-            try:
-                x_bat, y_bat = next(bat_iter)
-            except StopIteration:
-                bat_iter = iter(self._data_loader)
-                x_bat, y_bat = next(bat_iter)
-            x_bat, y_bat = x_bat.to(DEFAULT_DEVICE), y_bat.to(DEFAULT_DEVICE)
+        with trange(self.iters, desc=self.pbar_desc) as pbar:
+            for _iter in pbar:
+                try:
+                    x_bat, y_bat = next(bat_iter)
+                except StopIteration:
+                    bat_iter = iter(self._data_loader)
+                    x_bat, y_bat = next(bat_iter)
+                x_bat, y_bat = x_bat.to(DEFAULT_DEVICE), y_bat.to(DEFAULT_DEVICE)
 
-            yhat_bat = model(x_bat)
-            loss = loss_fn(yhat_bat, y_bat)
-            pbar.set_postfix(loss=float(loss))
+                yhat_bat = model(x_bat)
+                loss = loss_fn(yhat_bat, y_bat)
+                pbar.set_postfix(loss=float(loss))
 
-            self.ptopt.zero_grad()
-            loss.backward()
-            self.ptopt.step()
+                self.ptopt.zero_grad()
+                loss.backward()
+                self.ptopt.step()
 
-            if post_iter_hook is not None:
-                post_iter_hook(_iter, x_bat, y_bat, yhat_bat, loss, pbar)
+                if post_iter_hook is not None:
+                    post_iter_hook(_iter, x_bat, y_bat, yhat_bat, loss, pbar)
 
 
 class TBLogs:
