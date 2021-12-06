@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [12.1.0](https://github.com/jayanthkoushik/shinyutils/compare/v12.0.0...v12.1.0) (2021-12-06)
+
+
+### Features
+
+* use `corgy 4.1` to support Python 3.7 and 3.8 ([6b367df](https://github.com/jayanthkoushik/shinyutils/commit/6b367df4a49f0f90c45eb340d6ccf10f1688d1b8))
+
+
+### Bug Fixes
+
+* fix mock `trange` implementation ([4b5d4a2](https://github.com/jayanthkoushik/shinyutils/commit/4b5d4a20da5580703ff632bec8968c39410290ac))
+
 ## [12.0.0](https://github.com/jayanthkoushik/shinyutils/compare/v11.0.0...v12.0.0) (2021-12-05)
 
 
