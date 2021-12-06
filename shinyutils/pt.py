@@ -35,8 +35,15 @@ try:
 except ImportError:
     warnings.warn("progress bar disabled: could not import `tqdm`", RuntimeWarning)
 
-    def trange(n, *args, **kwargs):
-        return range(n)
+    class trange:  # type: ignore
+        def __init__(self, n, *args, **kwargs):
+            self._range = range(n)
+
+        def __enter__(self):
+            return self
+
+        def __iter__(self):
+            return iter(self._range)
 
 
 if TYPE_CHECKING:
