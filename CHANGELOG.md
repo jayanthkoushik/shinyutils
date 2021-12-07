@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [12.1.1](https://github.com/jayanthkoushik/shinyutils/compare/v12.1.0...v12.1.1) (2021-12-07)
+
+
+### Bug Fixes
+
+* use Python 3.7 compatible type annotations ([24d033c](https://github.com/jayanthkoushik/shinyutils/commit/24d033c6f579805d8a963066629f9b2ea8ea3d20))
+
 ## [12.1.0](https://github.com/jayanthkoushik/shinyutils/compare/v12.0.0...v12.1.0) (2021-12-06)
 
 
