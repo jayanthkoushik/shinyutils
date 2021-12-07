@@ -11,12 +11,6 @@ include_trailing_comma = true
 combine_as_imports = true
 force_alphabetical_sort_within_sections = true
 
-[tool.pylint.MASTER]
-extension-pkg-whitelist = "torch"
-
-[tool.pylint.TYPECHECK]
-generated-members = "torch.*"
-
 [tool.pylint.FORMAT]
 max-line-length = "88"
 
