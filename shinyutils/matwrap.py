@@ -6,7 +6,7 @@
 import sys
 from contextlib import AbstractContextManager
 from itertools import cycle, islice
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 if sys.version_info >= (3, 9):
     from typing import Annotated, Literal
@@ -59,7 +59,7 @@ class MatWrap:
         ...
     """
 
-    _rc_defaults: dict[str, Any] = {
+    _rc_defaults: Dict[str, Any] = {
         "axes.grid": True,
         "axes.grid.axis": "y",
         "axes.grid.which": "major",
@@ -86,7 +86,7 @@ class MatWrap:
     _plt = None
     _sns = None
 
-    _mpl_default_rc: dict[str, Any]
+    _mpl_default_rc: Dict[str, Any]
 
     @classmethod
     def configure(
@@ -94,7 +94,7 @@ class MatWrap:
         context: Literal["paper", "poster", "notebook"] = "paper",
         style: Literal["darkgrid", "whitegrid", "dark", "white", "ticks"] = "ticks",
         font: str = "Latin Modern Roman",
-        latex_pkgs: Optional[list[str]] = None,
+        latex_pkgs: Optional[List[str]] = None,
         backend: Optional[str] = None,
         **rc_extra,
     ):
@@ -185,7 +185,7 @@ class MatWrap:
         return cls._sns
 
     @classmethod
-    def palette(cls, n=8) -> list[str]:
+    def palette(cls, n=8) -> List[str]:
         """Color universal design palette."""
         _base_palette = [
             "#000000",
@@ -279,9 +279,9 @@ class Plot(AbstractContextManager):
         self,
         save_file: Optional[str] = None,
         title: Optional[str] = None,
-        sizexy: Optional[tuple[int, int]] = None,
-        labelxy: tuple[Optional[str], Optional[str]] = (None, None),
-        logxy: tuple[bool, bool] = (False, False),
+        sizexy: Optional[Tuple[int, int]] = None,
+        labelxy: Tuple[Optional[str], Optional[str]] = (None, None),
+        logxy: Tuple[bool, bool] = (False, False),
     ):
         self.save_file = save_file
         self.title = title
