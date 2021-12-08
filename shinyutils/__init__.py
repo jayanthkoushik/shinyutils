@@ -69,7 +69,7 @@ def run_prog(
             `INFO`, and add a `--log-level` argument to the parser. Default is `True`.
         add_short_full_helps: Whether to add separate options `--help` and `--helpfull`
             to show help messages, using `CorgyHelpFormatter.add_short_full_helps`.
-            Default is `True`. Ignored if `arg_parser` is not `None`.
+            Default is `True`.
         **named_sub_corgys: Sub-commands specified as keyword arguments, with the name
             being the name of the sub-command.
 
@@ -95,7 +95,13 @@ def run_prog(
         **{_s.__name__: _s for _s in sub_corgys},
         **named_sub_corgys,
     }.items():
-        sub_parser = sub_parsers.add_parser(name, formatter_class=formatter_class)
+        if not add_short_full_helps:
+            sub_parser = sub_parsers.add_parser(name, formatter_class=formatter_class)
+        else:
+            sub_parser = sub_parsers.add_parser(
+                name, formatter_class=formatter_class, add_help=False
+            )
+            CorgyHelpFormatter.add_short_full_helps(sub_parser)
         sub_parser.set_defaults(corgy=sub_corgy)
         sub_corgy.add_args_to_parser(sub_parser)
 

@@ -67,7 +67,7 @@ options:
 
     * **add_short_full_helps** – Whether to add separate options `--help` and `--helpfull`
     to show help messages, using `CorgyHelpFormatter.add_short_full_helps`.
-    Default is `True`. Ignored if `arg_parser` is not `None`.
+    Default is `True`.
 
 
     * **\*\*named_sub_corgys** – Sub-commands specified as keyword arguments, with the name
