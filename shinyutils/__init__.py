@@ -16,6 +16,7 @@ def run_prog(
     formatter_class=CorgyHelpFormatter,
     arg_parser=None,
     add_logging=True,
+    add_short_full_helps=True,
     **named_sub_corgys,
 ):
     """Create and run a program with sub-commands defined using `Corgy`.
@@ -66,6 +67,9 @@ def run_prog(
             new instance will be created.
         add_logging: Whether to call `logng.conf_logging` to set the log level to
             `INFO`, and add a `--log-level` argument to the parser. Default is `True`.
+        add_short_full_helps: Whether to add separate options `--help` and `--helpfull`
+            to show help messages, using `CorgyHelpFormatter.add_short_full_helps`.
+            Default is `True`. Ignored if `arg_parser` is not `None`.
         **named_sub_corgys: Sub-commands specified as keyword arguments, with the name
             being the name of the sub-command.
 
@@ -76,7 +80,11 @@ def run_prog(
     returned.
     """
     if arg_parser is None:
-        arg_parser = ArgumentParser(formatter_class=formatter_class)
+        if not add_short_full_helps:
+            arg_parser = ArgumentParser(formatter_class=formatter_class)
+        else:
+            arg_parser = ArgumentParser(formatter_class=formatter_class, add_help=False)
+            CorgyHelpFormatter.add_short_full_helps(arg_parser)
     if add_logging:
         conf_logging(log_level="INFO", arg_parser=arg_parser)
 
