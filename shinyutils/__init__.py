@@ -5,12 +5,18 @@ from typing import Type, TypeVar
 
 from corgy import Corgy, CorgyHelpFormatter
 
-from shinyutils._version import __version__
+from ._version import __version__
+from .logng import conf_logging
 
 _T = TypeVar("_T", bound="Corgy", covariant=True)
 
 
-def run_prog(*sub_corgys: Type[_T], formatter_class=CorgyHelpFormatter):
+def run_prog(
+    *sub_corgys: Type[_T],
+    formatter_class=CorgyHelpFormatter,
+    arg_parser=None,
+    add_logging=True
+):
     """Create and run a program with sub-commands defined using `Corgy`.
 
     Example::
@@ -55,6 +61,10 @@ def run_prog(*sub_corgys: Type[_T], formatter_class=CorgyHelpFormatter):
             a `__call__` method.
         formatter_class: Class to use for the help formatter. Default is
             `CorgyHelpFormatter`.
+        arg_parser: Optional `ArgumentParser` instance to use. If `None` (default), a
+            new instance will be created.
+        add_logging: Whether to call `logng.conf_logging` to set the log level to
+            `INFO`, and add a `--log-level` argument to the parser. Default is `True`.
 
     The function will create an `ArgumentParser` instance with sub-parsers corresponding
     to each `Corgy` class in `sub_corgys`. When the program is run, and passed the name
@@ -62,7 +72,11 @@ def run_prog(*sub_corgys: Type[_T], formatter_class=CorgyHelpFormatter):
     arguments, and the instance will be called. The `__call__` method's return value is
     returned.
     """
-    arg_parser = ArgumentParser(formatter_class=formatter_class)
+    if arg_parser is None:
+        arg_parser = ArgumentParser(formatter_class=formatter_class)
+    if add_logging:
+        conf_logging(log_level="INFO", arg_parser=arg_parser)
+
     sub_parsers = arg_parser.add_subparsers(dest="cmd")
     sub_parsers.required = True
 

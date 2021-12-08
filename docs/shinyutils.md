@@ -3,7 +3,7 @@
 Collection of personal utilities.
 
 
-### shinyutils.run_prog(\*sub_corgys, formatter_class=<class 'corgy._helpfmt.CorgyHelpFormatter'>)
+### shinyutils.run_prog(\*sub_corgys, formatter_class=<class 'corgy._helpfmt.CorgyHelpFormatter'>, arg_parser=None, add_logging=True)
 Create and run a program with sub-commands defined using `Corgy`.
 
 Example:
@@ -55,6 +55,14 @@ options:
 
     * **formatter_class** – Class to use for the help formatter. Default is
     `CorgyHelpFormatter`.
+
+
+    * **arg_parser** – Optional `ArgumentParser` instance to use. If `None` (default), a
+    new instance will be created.
+
+
+    * **add_logging** – Whether to call `logng.conf_logging` to set the log level to
+    `INFO`, and add a `--log-level` argument to the parser. Default is `True`.
 
 
 The function will create an `ArgumentParser` instance with sub-parsers corresponding
