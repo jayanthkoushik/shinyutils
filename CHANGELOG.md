@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [12.2.0](https://github.com/jayanthkoushik/shinyutils/compare/v12.1.1...v12.2.0) (2021-12-08)
+
+
+### Features
+
+* add `add_short_full_helps` argument to `run_prog` ([bc5c85b](https://github.com/jayanthkoushik/shinyutils/commit/bc5c85b0ca3cedfa4438f730004d6782b12bc1d7))
+* add `run_prog` function ([fdae9ae](https://github.com/jayanthkoushik/shinyutils/commit/fdae9aef2773c83c52837cc97977e4b7f8ba71c7))
+* add more arguments to `run_prog` ([20cd2bd](https://github.com/jayanthkoushik/shinyutils/commit/20cd2bdf392d819d995492a17c5fb5881fe30aa0))
+* allow specifying sub-commands with keyword arguments in `run_prog` ([745b4f2](https://github.com/jayanthkoushik/shinyutils/commit/745b4f28e4a9a633ddca42f63616e9ed4c69e369))
+
+
+### Bug Fixes
+
+* apply `add_short_full_helps` to subparsers in `run_prog` ([df8392b](https://github.com/jayanthkoushik/shinyutils/commit/df8392be5681aa11222ae428fc463711e5653932))
+
 ### [12.1.1](https://github.com/jayanthkoushik/shinyutils/compare/v12.1.0...v12.1.1) (2021-12-07)
 
 
