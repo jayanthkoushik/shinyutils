@@ -3,7 +3,7 @@
 Collection of personal utilities.
 
 
-### shinyutils.run_prog(\*sub_corgys, formatter_class=<class 'corgy._helpfmt.CorgyHelpFormatter'>, arg_parser=None, add_logging=True)
+### shinyutils.run_prog(\*sub_corgys, formatter_class=<class 'corgy._helpfmt.CorgyHelpFormatter'>, arg_parser=None, add_logging=True, \*\*named_sub_corgys)
 Create and run a program with sub-commands defined using `Corgy`.
 
 Example:
@@ -27,12 +27,12 @@ class Cmd2(Corgy):
         ...
 
 if __name__ == "__main__":
-    run_prog(Cmd1, Cmd2)
+    run_prog(Cmd1, cmd2=Cmd2)
 
 
 $ python prog.py --help
 positional arguments:
-  cmd        ({'Cmd1'/'Cmd2'})
+  cmd        ({'Cmd1'/'cmd2'})
 
 options:
   -h/--help  show this help message and exit
@@ -63,6 +63,10 @@ options:
 
     * **add_logging** – Whether to call `logng.conf_logging` to set the log level to
     `INFO`, and add a `--log-level` argument to the parser. Default is `True`.
+
+
+    * **\*\*named_sub_corgys** – Sub-commands specified as keyword arguments, with the name
+    being the name of the sub-command.
 
 
 The function will create an `ArgumentParser` instance with sub-parsers corresponding

@@ -15,7 +15,8 @@ def run_prog(
     *sub_corgys: Type[_T],
     formatter_class=CorgyHelpFormatter,
     arg_parser=None,
-    add_logging=True
+    add_logging=True,
+    **named_sub_corgys,
 ):
     """Create and run a program with sub-commands defined using `Corgy`.
 
@@ -39,12 +40,12 @@ def run_prog(
                 ...
 
         if __name__ == "__main__":
-            run_prog(Cmd1, Cmd2)
+            run_prog(Cmd1, cmd2=Cmd2)
 
 
         $ python prog.py --help
         positional arguments:
-          cmd        ({'Cmd1'/'Cmd2'})
+          cmd        ({'Cmd1'/'cmd2'})
 
         options:
           -h/--help  show this help message and exit
@@ -65,6 +66,8 @@ def run_prog(
             new instance will be created.
         add_logging: Whether to call `logng.conf_logging` to set the log level to
             `INFO`, and add a `--log-level` argument to the parser. Default is `True`.
+        **named_sub_corgys: Sub-commands specified as keyword arguments, with the name
+            being the name of the sub-command.
 
     The function will create an `ArgumentParser` instance with sub-parsers corresponding
     to each `Corgy` class in `sub_corgys`. When the program is run, and passed the name
@@ -80,10 +83,11 @@ def run_prog(
     sub_parsers = arg_parser.add_subparsers(dest="cmd")
     sub_parsers.required = True
 
-    for sub_corgy in sub_corgys:
-        sub_parser = sub_parsers.add_parser(
-            sub_corgy.__name__, formatter_class=formatter_class
-        )
+    for name, sub_corgy in {
+        **{_s.__name__: _s for _s in sub_corgys},
+        **named_sub_corgys,
+    }.items():
+        sub_parser = sub_parsers.add_parser(name, formatter_class=formatter_class)
         sub_parser.set_defaults(corgy=sub_corgy)
         sub_corgy.add_args_to_parser(sub_parser)
 
