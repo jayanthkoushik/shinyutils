@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [12.2.1](https://github.com/jayanthkoushik/shinyutils/compare/v12.2.0...v12.2.1) (2021-12-09)
+
+
+### Bug Fixes
+
+* make `MatWrap` properties work for Python 3.8 and below ([79640a1](https://github.com/jayanthkoushik/shinyutils/commit/79640a169ab1e8ff9e02cf5f55ecc67cbdaae4ab))
+
 ## [12.2.0](https://github.com/jayanthkoushik/shinyutils/compare/v12.1.1...v12.2.0) (2021-12-08)
 
 
