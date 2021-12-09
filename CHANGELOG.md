@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [12.3.0](https://github.com/jayanthkoushik/shinyutils/compare/v12.2.1...v12.3.0) (2021-12-09)
+
+
+### Features
+
+* allow `run_prog` to run without sub-parsers for single command programs ([f54ed2e](https://github.com/jayanthkoushik/shinyutils/commit/f54ed2ed2e3d259f6a1f623e06a36effb71c1f43))
+
 ### [12.2.1](https://github.com/jayanthkoushik/shinyutils/compare/v12.2.0...v12.2.1) (2021-12-09)
 
 
