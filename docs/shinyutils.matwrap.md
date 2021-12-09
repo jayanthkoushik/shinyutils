@@ -58,18 +58,6 @@ Configure matplotlib and seaborn.
 
 
 
-#### _class property_ mpl()
-`matplotlib` module.
-
-
-#### _class property_ plt()
-`matplotlib.pyplot` module.
-
-
-#### _class property_ sns()
-`seaborn` module.
-
-
 #### _classmethod_ palette(n=8)
 Color universal design palette.
 

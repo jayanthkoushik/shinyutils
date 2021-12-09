@@ -34,7 +34,26 @@ def __getattr__(name):
     raise AttributeError
 
 
-class MatWrap:
+class _MatWrapMeta(type):
+    # Metaclass for `MatWrap` to implement `classmethod` properties.
+    # Wrapping properties with `@classmethod` is only possible in Python 3.9+.
+    @property
+    def mpl(cls):
+        cls._ensure_conf()
+        return cls._mpl
+
+    @property
+    def plt(cls):
+        cls._ensure_conf()
+        return cls._plt
+
+    @property
+    def sns(cls):
+        cls._ensure_conf()
+        return cls._sns
+
+
+class MatWrap(metaclass=_MatWrapMeta):
     """Wrapper for `matplotlib`, `matplotlib.pyplot`, and `seaborn`.
 
     Usage::
@@ -159,30 +178,6 @@ class MatWrap:
     def _ensure_conf(cls):
         if cls._mpl is None:
             cls.configure()
-
-    @classmethod
-    @property
-    def mpl(cls):
-        """`matplotlib` module."""
-        cls._ensure_conf()
-        assert cls._mpl is not None
-        return cls._mpl
-
-    @classmethod
-    @property
-    def plt(cls):
-        """`matplotlib.pyplot` module."""
-        cls._ensure_conf()
-        assert cls._plt is not None
-        return cls._plt
-
-    @classmethod
-    @property
-    def sns(cls):
-        """`seaborn` module."""
-        cls._ensure_conf()
-        assert cls._sns is not None
-        return cls._sns
 
     @classmethod
     def palette(cls, n=8) -> List[str]:
