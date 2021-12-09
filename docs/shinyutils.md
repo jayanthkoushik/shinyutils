@@ -80,6 +80,9 @@ of a sub-command, a `Corgy` instance will be created with the command line
 arguments, and the instance will be called. The `__call__` method’s return value is
 returned.
 
+If there is only one sub-command, and it is passed as a positional argument, no
+sub-parsers are created, and arguments are added to the main parser.
+
 ## Submodules
 
 

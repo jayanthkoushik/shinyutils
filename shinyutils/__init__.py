@@ -78,6 +78,9 @@ def run_prog(
     of a sub-command, a `Corgy` instance will be created with the command line
     arguments, and the instance will be called. The `__call__` method's return value is
     returned.
+
+    If there is only one sub-command, and it is passed as a positional argument, no
+    sub-parsers are created, and arguments are added to the main parser.
     """
     if arg_parser is None:
         if not add_short_full_helps:
@@ -88,22 +91,27 @@ def run_prog(
     if add_logging:
         conf_logging(log_level="INFO", arg_parser=arg_parser)
 
-    sub_parsers = arg_parser.add_subparsers(dest="cmd")
-    sub_parsers.required = True
+    if len(sub_corgys) == 1 and not named_sub_corgys:
+        sub_corgys[0].add_args_to_parser(arg_parser)
+    else:
+        sub_parsers = arg_parser.add_subparsers(dest="cmd")
+        sub_parsers.required = True
 
-    for name, sub_corgy in {
-        **{_s.__name__: _s for _s in sub_corgys},
-        **named_sub_corgys,
-    }.items():
-        if not add_short_full_helps:
-            sub_parser = sub_parsers.add_parser(name, formatter_class=formatter_class)
-        else:
-            sub_parser = sub_parsers.add_parser(
-                name, formatter_class=formatter_class, add_help=False
-            )
-            CorgyHelpFormatter.add_short_full_helps(sub_parser)
-        sub_parser.set_defaults(corgy=sub_corgy)
-        sub_corgy.add_args_to_parser(sub_parser)
+        for name, sub_corgy in {
+            **{_s.__name__: _s for _s in sub_corgys},
+            **named_sub_corgys,
+        }.items():
+            if not add_short_full_helps:
+                sub_parser = sub_parsers.add_parser(
+                    name, formatter_class=formatter_class
+                )
+            else:
+                sub_parser = sub_parsers.add_parser(
+                    name, formatter_class=formatter_class, add_help=False
+                )
+                CorgyHelpFormatter.add_short_full_helps(sub_parser)
+            sub_parser.set_defaults(corgy=sub_corgy)
+            sub_corgy.add_args_to_parser(sub_parser)
 
     args = arg_parser.parse_args()
     sub_args = args.corgy(**vars(args))
