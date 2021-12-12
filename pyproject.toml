@@ -52,7 +52,7 @@ ignore_missing_imports = true
 
 [tool.poetry]
 name = "shinyutils"
-version = "12.3.0"
+version = "0.0.0"  # managed by `poetry-dynamic-versioning`
 description = "Personal collection of common utilities"
 authors = ["Jayanth Koushik <jnkoushik@gmail.com>"]
 license = "MIT"
@@ -94,6 +94,14 @@ Sphinx = "^4.0"
 sphinx-markdown-builder = { git = "https://github.com/clayrisser/sphinx-markdown-builder" }
 types-setuptools = "^57.0"
 
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "semver"
+
+[tool.poetry-dynamic-versioning.substitution]
+files = ["*/_version.py"]
+
 [build-system]
-requires = ["poetry>=1.0"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+build-backend = "poetry.core.masonry.api"
