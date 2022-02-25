@@ -93,25 +93,25 @@ def run_prog(
 
     if len(sub_corgys) == 1 and not named_sub_corgys:
         sub_corgys[0].add_args_to_parser(arg_parser)
-    else:
-        sub_parsers = arg_parser.add_subparsers(dest="cmd")
-        sub_parsers.required = True
+        args = arg_parser.parse_args()
+        return sub_corgys[0](**vars(args))
 
-        for name, sub_corgy in {
-            **{_s.__name__: _s for _s in sub_corgys},
-            **named_sub_corgys,
-        }.items():
-            if not add_short_full_helps:
-                sub_parser = sub_parsers.add_parser(
-                    name, formatter_class=formatter_class
-                )
-            else:
-                sub_parser = sub_parsers.add_parser(
-                    name, formatter_class=formatter_class, add_help=False
-                )
-                CorgyHelpFormatter.add_short_full_helps(sub_parser)
-            sub_parser.set_defaults(corgy=sub_corgy)
-            sub_corgy.add_args_to_parser(sub_parser)
+    sub_parsers = arg_parser.add_subparsers(dest="cmd")
+    sub_parsers.required = True
+
+    for name, sub_corgy in {
+        **{_s.__name__: _s for _s in sub_corgys},
+        **named_sub_corgys,
+    }.items():
+        if not add_short_full_helps:
+            sub_parser = sub_parsers.add_parser(name, formatter_class=formatter_class)
+        else:
+            sub_parser = sub_parsers.add_parser(
+                name, formatter_class=formatter_class, add_help=False
+            )
+            CorgyHelpFormatter.add_short_full_helps(sub_parser)
+        sub_parser.set_defaults(corgy=sub_corgy)
+        sub_corgy.add_args_to_parser(sub_parser)
 
     args = arg_parser.parse_args()
     sub_args = args.corgy(**vars(args))
