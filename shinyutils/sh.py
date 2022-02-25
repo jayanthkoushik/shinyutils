@@ -50,6 +50,9 @@ class SH:
         self._context_is_async = True
 
     async def __aenter__(self) -> "SH":
+        if self._process is not None:
+            raise TypeError("SH: already inside a context")
+
         self._process = await asyncio.create_subprocess_exec(
             *self._shell,
             stdin=asyncio.subprocess.PIPE,
