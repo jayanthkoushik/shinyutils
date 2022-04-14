@@ -1,7 +1,7 @@
 """Collection of personal utilities."""
 
 from argparse import ArgumentParser
-from typing import Type, TypeVar
+from typing import Protocol, Type, TypeVar
 
 from corgy import Corgy, CorgyHelpFormatter
 
@@ -94,7 +94,8 @@ def run_prog(
     if len(sub_corgys) == 1 and not named_sub_corgys:
         sub_corgys[0].add_args_to_parser(arg_parser)
         args = arg_parser.parse_args()
-        return sub_corgys[0](**vars(args))
+        sub_args = sub_corgys[0](**vars(args))
+        return sub_args()  # type: ignore
 
     sub_parsers = arg_parser.add_subparsers(dest="cmd")
     sub_parsers.required = True
@@ -115,4 +116,4 @@ def run_prog(
 
     args = arg_parser.parse_args()
     sub_args = args.corgy(**vars(args))
-    return sub_args()
+    return sub_args()  # type: ignore
