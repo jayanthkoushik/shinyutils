@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [12.4.0](https://github.com/jayanthkoushik/shinyutils/compare/v12.3.0...v12.4.0) (2022-04-15)
+
+
+### Features
+
+* raise `TypeError` if `SH` instance re-entered ([43393e2](https://github.com/jayanthkoushik/shinyutils/commit/43393e21d0560afcd8797bfcacb256faf0951c30))
+
+
+### Bug Fixes
+
+* handle single command case in `run_prog` ([9584977](https://github.com/jayanthkoushik/shinyutils/commit/95849776cf79db09e8e54df7edf71f14f6f63f0f))
+* handle single unnamed command case in `run_prog` ([08e8170](https://github.com/jayanthkoushik/shinyutils/commit/08e81708e4079cadcf547e2480ce652d22086c1a))
+
 ## [12.3.0](https://github.com/jayanthkoushik/shinyutils/compare/v12.2.1...v12.3.0) (2021-12-09)
 
 
