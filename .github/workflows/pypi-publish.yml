@@ -22,4 +22,4 @@ jobs:
     - name: Publish to pypi
       run: $HOME/.poetry/bin/poetry publish -u __token__ -p $PYPI_TOKEN
       env:
-        PYPI_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
