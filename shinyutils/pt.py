@@ -7,7 +7,6 @@ except ImportError:
 
 import inspect
 import json
-import sys
 import warnings
 from argparse import Action, ArgumentParser, ArgumentTypeError
 from typing import (
@@ -29,11 +28,7 @@ from torch import nn
 from torch.optim.lr_scheduler import _LRScheduler
 from torch.optim.optimizer import Optimizer
 from torch.utils.data import DataLoader, Dataset, TensorDataset
-
-if sys.version_info >= (3, 9):
-    from typing import Annotated
-else:
-    from typing_extensions import Annotated
+from typing_extensions import Annotated
 
 try:
     from tqdm import trange

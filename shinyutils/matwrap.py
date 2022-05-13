@@ -3,22 +3,12 @@
 `MatWrap.configure` is called upon importing this module, which enables default config.
 """
 
-import sys
 from contextlib import AbstractContextManager
 from itertools import cycle, islice
 from typing import Any, Dict, List, Optional, Tuple
 
-if sys.version_info >= (3, 9):
-    from typing import Annotated, Literal
-else:
-    from typing_extensions import Annotated
-
-    if sys.version_info >= (3, 8):
-        from typing import Literal
-    else:
-        from typing_extensions import Literal
-
 from corgy import Corgy
+from typing_extensions import Annotated, Literal
 
 _WRAPPED_NAMES = ("mpl", "plt", "sns")
 __all__ = ("MatWrap", "PlottingArgs", "Plot") + _WRAPPED_NAMES

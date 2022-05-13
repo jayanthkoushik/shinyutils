@@ -1,7 +1,7 @@
 """Collection of personal utilities."""
 
 from argparse import ArgumentParser
-from typing import Protocol, Type, TypeVar
+from typing import Type, TypeVar
 
 from corgy import Corgy, CorgyHelpFormatter
 
