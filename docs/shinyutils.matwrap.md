@@ -2,18 +2,14 @@
 
 Utilities for matplotlib and seaborn.
 
-`MatWrap.configure` is called upon importing this module, which enables default config.
-
-
-### _class_ shinyutils.matwrap.MatWrap()
-Wrapper for `matplotlib`, `matplotlib.pyplot`, and `seaborn`.
-
 Usage:
 
 ```python
 # Do not import `matplotlib` or `seaborn`.
 from shinyutils.matwrap import MatWrap as mw
-# Configure with `mw.configure` (refer to `configure` docs for details).
+# Optionally, configure plotting (refer to `MatWrap.configure` docs for details).
+# This is only needed if modifying default configuration, since `configure` is
+# called upon importing the module.
 mw.configure()
 
 fig = mw.plt().figure()
@@ -30,6 +26,10 @@ from shinyutils.matwrap import mpl, plt, sns
 fig = plt.figure()
 ...
 ```
+
+
+### _class_ shinyutils.matwrap.MatWrap()
+Wrapper for `matplotlib`, `matplotlib.pyplot`, and `seaborn`.
 
 
 #### _classmethod_ configure(context='paper', style='ticks', font='Latin Modern Roman', latex_pkgs=None, backend=None, \*\*rc_extra)

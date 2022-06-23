@@ -1,6 +1,27 @@
 """Utilities for matplotlib and seaborn.
 
-`MatWrap.configure` is called upon importing this module, which enables default config.
+Usage::
+
+    # Do not import `matplotlib` or `seaborn`.
+    from shinyutils.matwrap import MatWrap as mw
+    # Optionally, configure plotting (refer to `MatWrap.configure` docs for details).
+    # This is only needed if modifying default configuration, since `configure` is
+    # called upon importing the module.
+    mw.configure()
+
+    fig = mw.plt().figure()
+    ax = fig.add_subplot(111)  # `ax` can be used normally now
+
+    # Use class properties in `MatWrap` to access `matplotlib`/`seaborn` functions.
+    mw.mpl  # returns `matplotlib` module
+    mw.plt  # returns `matplotlib.pyplot` module
+    mw.sns  # returns `seaborn` module
+
+    # You can also import the module names from `matwrap`
+    from shinyutils.matwrap import mpl, plt, sns
+
+    fig = plt.figure()
+    ...
 """
 
 from contextlib import AbstractContextManager
@@ -44,29 +65,7 @@ class _MatWrapMeta(type):
 
 
 class MatWrap(metaclass=_MatWrapMeta):
-    """Wrapper for `matplotlib`, `matplotlib.pyplot`, and `seaborn`.
-
-    Usage::
-
-        # Do not import `matplotlib` or `seaborn`.
-        from shinyutils.matwrap import MatWrap as mw
-        # Configure with `mw.configure` (refer to `configure` docs for details).
-        mw.configure()
-
-        fig = mw.plt().figure()
-        ax = fig.add_subplot(111)  # `ax` can be used normally now
-
-        # Use class properties in `MatWrap` to access `matplotlib`/`seaborn` functions.
-        mw.mpl  # returns `matplotlib` module
-        mw.plt  # returns `matplotlib.pyplot` module
-        mw.sns  # returns `seaborn` module
-
-        # You can also import the module names from `matwrap`
-        from shinyutils.matwrap import mpl, plt, sns
-
-        fig = plt.figure()
-        ...
-    """
+    """Wrapper for `matplotlib`, `matplotlib.pyplot`, and `seaborn`."""
 
     _rc_defaults: Dict[str, Any] = {
         "axes.grid": True,
