@@ -14,10 +14,10 @@ from typing import (
     Callable,
     Iterable,
     Optional,
-    overload,
     Sequence,
     Tuple,
     TYPE_CHECKING,
+    Union,
 )
 from unittest.mock import Mock
 
@@ -271,19 +271,9 @@ class NNTrainer(Corgy):
     drop_last: Annotated[bool, "whether to drop the last incomplete batch"] = False
     pbar_desc: Annotated[str, "description for training progress bar"] = "Training"
 
-    @overload
-    def set_dataset(self, value: Dataset):
-        ...
-
-    @overload
-    def set_dataset(self, value: Tuple[torch.Tensor, ...]):
-        ...
-
-    @overload
-    def set_dataset(self, value: Tuple["np.ndarray", ...]):
-        ...
-
-    def set_dataset(self, value):
+    def set_dataset(
+        self, value: Union[Dataset, Tuple[torch.Tensor, ...], Tuple["np.ndarray", ...]]
+    ):
         """Set the training data.
 
         Args:
@@ -294,7 +284,7 @@ class NNTrainer(Corgy):
             self._dataset = value
         elif isinstance(value, tuple):
             if not isinstance(value[0], torch.Tensor):
-                value = [torch.from_numpy(val_i) for val_i in value]
+                value = tuple(torch.from_numpy(val_i) for val_i in value)
             self._dataset = TensorDataset(*value)
         else:
             raise ValueError(f"can't set dataset from type `{type(value)}`")

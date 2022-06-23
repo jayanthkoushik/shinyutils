@@ -8,11 +8,11 @@ from corgy import Corgy, CorgyHelpFormatter
 from ._version import __version__
 from .logng import conf_logging
 
-_T = TypeVar("_T", bound="Corgy", covariant=True)
+_T_co = TypeVar("_T_co", bound="Corgy", covariant=True)
 
 
 def run_prog(
-    *sub_corgys: Type[_T],
+    *sub_corgys: Type[_T_co],
     formatter_class=CorgyHelpFormatter,
     arg_parser=None,
     add_logging=True,
