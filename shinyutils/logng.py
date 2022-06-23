@@ -2,9 +2,7 @@
 
 import argparse
 import logging
-from typing import Optional
-
-from typing_extensions import Literal
+from typing import Literal, Optional
 
 try:
     from rich.logging import RichHandler

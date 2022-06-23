@@ -5,10 +5,10 @@
 
 from contextlib import AbstractContextManager
 from itertools import cycle, islice
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Literal, Optional, Tuple
 
 from corgy import Corgy
-from typing_extensions import Annotated, Literal
+from typing_extensions import Annotated
 
 _WRAPPED_NAMES = ("mpl", "plt", "sns")
 __all__ = ("MatWrap", "PlottingArgs", "Plot") + _WRAPPED_NAMES
