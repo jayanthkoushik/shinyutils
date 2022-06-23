@@ -132,8 +132,8 @@ class MatWrap(metaclass=_MatWrapMeta):
             # pylint: disable=import-outside-toplevel
             try:
                 import matplotlib
-            except ImportError:
-                raise ImportError("shinyutils.matwrap needs `matplotlib`") from None
+            except Exception as e:
+                raise ImportError(f"could not import `matplotlib`: {e}") from None
 
             cls._mpl = matplotlib
             cls._mpl_default_rc = cls._mpl.rcParams.copy()
@@ -143,8 +143,8 @@ class MatWrap(metaclass=_MatWrapMeta):
 
             try:
                 import seaborn
-            except ImportError:
-                raise ImportError("shinyutils.matwrap needs `seaborn`") from None
+            except Exception as e:
+                raise ImportError(f"could not import `seaborn`: {e}") from None
 
             cls._plt = matplotlib.pyplot
             cls._sns = seaborn
