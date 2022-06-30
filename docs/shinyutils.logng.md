@@ -44,3 +44,7 @@ parser = ArgumentParser()
 conf_logging(log_level="DEBUG", arg_parser=parser)  # add argument to parser
 parser.parse_args(["--log-level", "INFO"])  # update log level to INFO
 ```
+
+
+### shinyutils.logng.is_debug_mode()
+Return whether the current log level is `DEBUG`.

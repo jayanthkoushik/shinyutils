@@ -12,7 +12,7 @@ else:
     HAS_RICH = True
 
 
-__all__ = ("conf_logging",)
+__all__ = ("conf_logging", "is_debug_mode")
 
 
 class _SetLogLevel(argparse.Action):
@@ -96,3 +96,8 @@ def conf_logging(
             help=arg_help,
             default=log_level,
         )
+
+
+def is_debug_mode() -> bool:
+    """Return whether the current log level is `DEBUG`."""
+    return logging.root.level == logging.DEBUG
