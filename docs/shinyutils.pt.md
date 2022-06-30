@@ -3,6 +3,32 @@
 Utilities for pytorch.
 
 
+### shinyutils.pt.match_tensors(tensor1, tensor2, rtol=0.001, atol=1e-05, equal_nan=False, do_fail=True)
+Check if two tensors are close to each other.
+
+
+* **Parameters**
+
+
+    * **tensor1** – A tensor.
+
+
+    * **tensor2** – A tensor.
+
+
+    * **rtol** – relative tolerance for comparison.
+
+
+    * **atol** – absolute tolerance for comparison.
+
+
+    * **equal_nan** – whether to treat NaNs as equal to each other.
+
+
+    * **do_fail** – whether to raise an error if the tensors are not close.
+
+
+
 ### _class_ shinyutils.pt.PTOpt(\*\*kwargs)
 Wrapper around PyTorch optimizer and learning rate scheduler.
 

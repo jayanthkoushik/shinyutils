@@ -7,6 +7,7 @@ except ImportError:
 
 import inspect
 import json
+import logging
 import warnings
 from argparse import Action, ArgumentParser, ArgumentTypeError
 from typing import (
@@ -49,9 +50,50 @@ except ImportError:
 if TYPE_CHECKING:
     import numpy as np
 
-__all__ = ("DEFAULT_DEVICE", "PTOpt", "FCNet", "NNTrainer", "TBLogs")
+__all__ = ("DEFAULT_DEVICE", "match_tensors", "PTOpt", "FCNet", "NNTrainer", "TBLogs")
 
 DEFAULT_DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+def match_tensors(
+    tensor1: torch.Tensor,
+    tensor2: torch.Tensor,
+    rtol: float = 1e-3,
+    atol: float = 1e-5,
+    equal_nan: bool = False,
+    do_fail: bool = True,
+) -> None:
+    """Check if two tensors are close to each other.
+
+    Args:
+        tensor1: A tensor.
+        tensor2: A tensor.
+        rtol: relative tolerance for comparison.
+        atol: absolute tolerance for comparison.
+        equal_nan: whether to treat NaNs as equal to each other.
+        do_fail: whether to raise an error if the tensors are not close.
+    """
+    _log = logging.critical if do_fail else logging.error
+    try:
+        assert torch.allclose(tensor1, tensor2, rtol, atol, equal_nan)
+    except RuntimeError:
+        _log(
+            "shape mismatch when comparing tensors: %s != %s",
+            tensor1.shape,
+            tensor2.shape,
+        )
+        if do_fail:
+            raise
+    except AssertionError:
+        _abs_diff = (tensor1 - tensor2).abs()
+        _rel_diff = _abs_diff / tensor2.abs()
+        _log(
+            "mismatch when comparing tensors: max abs diff: %s, max rel diff: %s",
+            _abs_diff.max(),
+            _rel_diff.max(),
+        )
+        if do_fail:
+            raise
 
 
 class PTOpt(Corgy):
