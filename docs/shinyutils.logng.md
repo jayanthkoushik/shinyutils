@@ -3,7 +3,7 @@
 Utilities for logging.
 
 
-### shinyutils.logng.conf_logging(log_level='INFO', use_colors=None, arg_parser=None, arg_name='--log-level', arg_help='set the log level')
+### shinyutils.logng.conf_logging(log_level='INFO', use_colors=None, arg_parser=None, arg_name='--log-level', arg_help='set the log level', use_env_var=True, fail_on_bad_env_var=False)
 Set up logging.
 
 This function configures the root logger, and optionally, adds an argument to an
@@ -34,6 +34,15 @@ This function configures the root logger, and optionally, adds an argument to an
     is “set the log level”.
 
 
+    * **use_env_var** – Whether to read the log level from an environment variable named
+    `LOG_LEVEL` (True by default). The value of the variable should be a string
+    log level (case insensitive).
+
+
+    * **fail_on_bad_env_var** – Whether to raise an exception if the environment variable
+    is set to an invalid log level (False by default).
+
+
 Usage:
 
 ```python
@@ -44,6 +53,9 @@ parser = ArgumentParser()
 conf_logging(log_level="DEBUG", arg_parser=parser)  # add argument to parser
 parser.parse_args(["--log-level", "INFO"])  # update log level to INFO
 ```
+
+The order of precedence for the log level is (highest to lowest): 1) command line
+argument, 2) environment variable, 3) this function’s argument.
 
 
 ### shinyutils.logng.is_debug_mode()

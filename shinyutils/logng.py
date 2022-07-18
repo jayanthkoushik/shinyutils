@@ -2,6 +2,7 @@
 
 import argparse
 import logging
+import os
 from typing import Literal, Optional
 
 try:
@@ -27,6 +28,8 @@ def conf_logging(
     arg_parser: Optional[argparse.ArgumentParser] = None,
     arg_name: str = "--log-level",
     arg_help: str = "set the log level",
+    use_env_var: bool = True,
+    fail_on_bad_env_var: bool = False,
 ):
     """Set up logging.
 
@@ -45,6 +48,11 @@ def conf_logging(
             `--log-level`.
         arg_help: The help string for the argument added to `arg_parser`. The default
             is "set the log level".
+        use_env_var: Whether to read the log level from an environment variable named
+            `LOG_LEVEL` (True by default). The value of the variable should be a string
+            log level (case insensitive).
+        fail_on_bad_env_var: Whether to raise an exception if the environment variable
+            is set to an invalid log level (False by default).
 
     Usage::
 
@@ -54,7 +62,24 @@ def conf_logging(
         parser = ArgumentParser()
         conf_logging(log_level="DEBUG", arg_parser=parser)  # add argument to parser
         parser.parse_args(["--log-level", "INFO"])  # update log level to INFO
+
+    The order of precedence for the log level is (highest to lowest): 1) command line
+    argument, 2) environment variable, 3) this function's argument.
     """
+    if use_env_var and (_env_log_level := os.getenv("LOG_LEVEL", None)) is not None:
+        if _env_log_level.upper() not in (
+            "DEBUG",
+            "INFO",
+            "WARNING",
+            "ERROR",
+            "CRITICAL",
+        ):
+            if fail_on_bad_env_var:
+                raise ValueError(
+                    f"invalid log level from environment variable: {_env_log_level}"
+                )
+        else:
+            log_level = _env_log_level.upper()  # type: ignore
     logging.root.setLevel(log_level)
 
     if use_colors is None:
