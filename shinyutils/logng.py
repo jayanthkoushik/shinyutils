@@ -17,7 +17,7 @@ __all__ = ("conf_logging", "is_debug_mode")
 
 class _SetLogLevel(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        conf_logging(log_level=values)
+        logging.root.setLevel(values)
         setattr(namespace, self.dest, values)
 
 
